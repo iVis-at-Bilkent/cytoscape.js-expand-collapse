@@ -1,0 +1,103 @@
+<!DOCTYPE>
+
+<html>
+
+	<head>
+		<title>cytoscape-expand-collapse.js demo</title>
+
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+		<script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
+
+		<!-- for testing with local version of cytoscape.js -->
+		<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
+
+		<script src="cytoscape-expand-collapse.js"></script>
+
+		<style>
+			body {
+				font-family: helvetica neue, helvetica, liberation sans, arial, sans-serif;
+				font-size: 14px;
+			}
+
+			#cy {
+				position: absolute;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				right: 0;
+				z-index: 999;
+			}
+
+			h1 {
+				opacity: 0.5;
+				font-size: 1em;
+				font-weight: bold;
+			}
+		</style>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function(){
+
+				var cy = window.cy = cytoscape({
+					container: document.getElementById('cy'),
+
+					style: [
+						{
+							selector: 'node',
+							style: {
+								'content': 'data(name)'
+							}
+						},
+
+						{
+							selector: 'edge',
+							style: {
+								'target-arrow-shape': 'triangle'
+							}
+						},
+
+						{
+							selector: ':selected',
+							style: {
+
+							}
+						}
+					],
+
+					elements: {
+						nodes: [
+							{ data: { id: 'j', name: 'Jerry' } },
+							{ data: { id: 'e', name: 'Elaine' } },
+							{ data: { id: 'k', name: 'Kramer' } },
+							{ data: { id: 'g', name: 'George' } }
+						],
+						edges: [
+							{ data: { source: 'j', target: 'e' } },
+							{ data: { source: 'j', target: 'k' } },
+							{ data: { source: 'j', target: 'g' } },
+							{ data: { source: 'e', target: 'j' } },
+							{ data: { source: 'e', target: 'k' } },
+							{ data: { source: 'k', target: 'j' } },
+							{ data: { source: 'k', target: 'e' } },
+							{ data: { source: 'k', target: 'g' } },
+							{ data: { source: 'g', target: 'j' } }
+						]
+					},
+				});
+
+				// demo your collection ext
+				cy.elements().expand-collapse( /* args... */ );
+
+			});
+		</script>
+	</head>
+
+	<body>
+		<h1>cytoscape-expand-collapse demo</h1>
+
+		<div id="cy"></div>
+
+	</body>
+
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "cytoscape-expand-collapse",
+  "description": "This extension provides an interface to expand&#x2F;collapse nodes.",
+  "main": "cytoscape-expand-collapse.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse.git"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "keywords": [
+    "cytoscape",
+    "cyext"
+  ],
+  "license": "MIT"
+}

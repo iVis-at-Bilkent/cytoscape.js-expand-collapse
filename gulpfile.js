@@ -9,10 +9,36 @@ var jshStylish = require('jshint-stylish');
 var exec = require('child_process').exec;
 var runSequence = require('run-sequence');
 var prompt = require('gulp-prompt');
+var browserify = require('browserify');
+var buffer = require('vinyl-buffer');
+var source = require('vinyl-source-stream');
+var gutil = require('gulp-util');
+var notifier = require('node-notifier');
+var derequire = require('gulp-derequire');
 var version;
 
-gulp.task('default', [], function( next ){
-  console.log('You must explicitly call `gulp publish` to publish the extension');
+var browserifyOpts = {
+  entries: './src/index.js',
+  debug: true,
+  standalone: 'cytoscape-expand-collapse'
+};
+
+var logError = function( err ){
+  notifier.notify({ title: 'cytoscape-expand-collapse', message: 'Error: ' + err.message });
+  gutil.log( gutil.colors.red('Error in watch:'), gutil.colors.red(err) );
+};
+
+gulp.task('build', function(){
+  return browserify( browserifyOpts )
+    .bundle()
+    .on( 'error', logError )
+    .pipe( source('cytoscape-expand-collapse.js') )
+    .pipe( buffer() )
+    .pipe( derequire() )
+    .pipe( gulp.dest('.') )
+});
+
+gulp.task('default', ['build'], function( next ){
   next();
 });
 

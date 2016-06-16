@@ -10,8 +10,9 @@
 
         var cy;
         var options = {
-            rearrangeOptions: null, // for rearrange after expand/collapse
+            layoutBy: null, // for rearrange after expand/collapse
             fisheye: true,
+            animate: true,
             ready: function () { }
         };
 
@@ -150,6 +151,24 @@
             });
         });
 
+        var boundingBoxUtilities = {
+            equalBoundingBoxes: function(bb1, bb2){
+                return bb1.x1 == bb2.x1 && bb1.x2 == bb2.x2 && bb1.y1 == bb2.y1 && bb1.y2 == bb2.y2;
+            },
+            getUnion: function(bb1, bb2){
+                var union = {
+                    x1: Math.min(bb1.x1, bb2.x1),
+                    x2: Math.max(bb1.x2, bb2.x2),
+                    y1: Math.min(bb1.y1, bb2.y1),
+                    y2: Math.max(bb1.y2, bb2.y2),
+                };
+
+                union.w = union.x2 - union.x1;
+                union.h = union.y2 - union.y1;
+
+                return union;
+            }
+        };
 
         // Expand collapse utilities
         var expandCollapseUtilities = {
@@ -161,9 +180,10 @@
             collapsedMetaEdgesInfo: {},
             //This map keeps track of the meta levels of edges by their id's
             edgesMetaLevels: {},
-            moveNodes: function (positionDiff, nodes) {//*//
-                for (var i = 0; i < nodes.length; i++) {
-                    var node = nodes[i];
+            moveNodes: function(positionDiff, nodes, notCalcTopMostNodes) {
+                var topMostNodes = notCalcTopMostNodes?nodes:this.getTopMostNodes(nodes);
+                for (var i = 0; i < topMostNodes.length; i++) {
+                    var node = topMostNodes[i];
                     var oldX = node.position("x");
                     var oldY = node.position("y");
                     node.position({
@@ -171,7 +191,7 @@
                         y: oldY + positionDiff.y
                     });
                     var children = node.children();
-                    moveNodes(positionDiff, children);
+                    this.moveNodes(positionDiff, children, true);
                 }
             },
             getTopMostNodes: function (nodes) {//*//
@@ -192,11 +212,11 @@
 
                 return roots;
             },
-            rearrange: function (rearrangeOptions) {//*//
-                if (rearrangeOptions){
-                    cy.trigger("beforeRearrange", rearrangeOptions);
-                    cy.layout(rearrangeOptions);
-                    cy.trigger("afterRearrange", rearrangeOptions);
+            rearrange: function (layoutBy) {//*//
+                if (typeof layoutBy === "function") {
+                    layoutBy();
+                } else if (layoutBy != null) {
+                    cy.layout(layoutBy);
                 }
             },
             //This method changes source or target id of the collapsed edge data kept in the data of the node
@@ -213,7 +233,7 @@
                 }
             },
             //A funtion basicly expanding a node it is to be called when a node is expanded anyway
-            expandNodeBaseFunction: function (node, triggerLayout) {//*//
+            expandNodeBaseFunction: function (node, triggerLayout, single, layoutBy) {//*//
                 //check how the position of the node is changed
                 var positionDiff = {
                     x: node.position('x') - node.data('position-before-collapse').x,
@@ -222,7 +242,7 @@
 
                 node.removeData("infoLabel");
                 node.data('expanded-collapsed', 'expanded');
-                node._private.data.collapsedChildren.restore();
+                node._private.data.collapsedChildren.nodes().restore();
                 this.repairEdgesOfCollapsedChildren(node);
                 node._private.data.collapsedChildren = null;
 
@@ -233,13 +253,15 @@
                     node.removeStyle('content');
                 }
 
-                moveNodes(positionDiff, node.children());
+                this.moveNodes(positionDiff, node.children());
                 node.removeData('position-before-collapse');
 
+                if(single)
+                    this.endOperation();
                 // refreshPaddings();
+                if (triggerLayout){ //*/*/*asdsadda
+                    this.rearrange(layoutBy);
 
-                if (triggerLayout) {
-                    triggerIncrementalLayout();
                 }
             },
             simpleCollapseGivenNodes: function (nodes) {//*//
@@ -253,7 +275,7 @@
             },
             simpleExpandGivenNodes: function (nodes, applyFishEyeViewToEachNode) {//*//
                 nodes.data("expand", true);
-                var roots = sbgnElementUtilities.getTopMostNodes(nodes);
+                var roots = this.getTopMostNodes(nodes);
                 for (var i = 0; i < roots.length; i++) {
                     var root = roots[i];
                     this.expandTopDown(root, applyFishEyeViewToEachNode);
@@ -265,7 +287,12 @@
                     nodes = cy.nodes();
                 }
                 var orphans;
-                orphans = nodes.orphans();
+                console.log(this.getTopMostNodes(nodes).map(function (e) {
+                    return e.id();
+                }), nodes.orphans().map(function (e) {
+                    return e.id();
+                }));
+                orphans = this.getTopMostNodes(nodes);
                 var expandStack = [];
                 for (var i = 0; i < orphans.length; i++) {
                     var root = orphans[i];
@@ -297,7 +324,7 @@
 
                 this.endOperation();
 
-                this.rearrange(options.rearrangeOptions);
+                this.rearrange(options.layoutBy);
 
                 /*
                  * return the nodes to undo the operation
@@ -319,11 +346,17 @@
             expandGivenNodes: function (nodes, options) {//*//
                 this.beginOperation();
                 cy.trigger("beforeExpand", [nodes, options]);
-                this.simpleExpandGivenNodes(nodes, options.fisheye);
-                cy.trigger("afterExpand", [nodes, options]);
+                if (nodes.length === 1){
+                    this.expandNode(nodes[0], options.fisheye, options.animate, options.layoutBy);
+                    cy.trigger("afterExpand", [nodes, options]);
 
-                this.endOperation();
-                this.rearrange(options.rearrangeOptions);
+                } else {
+                    this.simpleExpandGivenNodes(nodes, options.fisheye);
+                    this.endOperation();
+                    cy.trigger("afterExpand", [nodes, options]);
+
+                    this.rearrange(options.layoutBy);
+                }
 
                 /*
                  * return the nodes to undo the operation
@@ -338,7 +371,7 @@
                 cy.trigger("beforeCollapse", [nodes, options]);
 
                 this.endOperation();
-                this.rearrange(options.rearrangeOptions);
+                this.rearrange(options.layoutBy);
 
                 /*
                  * return the nodes to undo the operation
@@ -370,6 +403,28 @@
                     this.expandTopDown(node);
                 }
             },
+            expandNode: function (node, fisheye, animate, layoutBy) {
+                if (node._private.data.collapsedChildren != null) {
+                    this.simpleExpandNode(node, fisheye, true, animate, layoutBy);
+
+                    /*
+                     * return the node to undo the operation
+                     */
+                    return node;
+                }
+            },
+            convertToModelPosition: function(renderedPosition){
+                var pan = cy.pan();
+                var zoom = cy.zoom();
+
+                var x = (renderedPosition.x - pan.x) / zoom;
+                var y = (renderedPosition.y - pan.y) / zoom;
+
+                return {
+                    x: x,
+                    y: y
+                };
+            },
             /*
              *
              * This method expands the given node
@@ -377,28 +432,28 @@
              * after expand operation it will be simply
              * used to undo the collapse operation
              */
-            simpleExpandNode: function (node, applyFishEyeViewToEachNode, singleNotSimple, animate) {//*//
+            simpleExpandNode: function (node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy) {//*//
                 var self = this;
 
-                var commonExpandOperation = function (node, applyFishEyeViewToEachNode, singleNotSimple, animate) {
+                var commonExpandOperation = function (node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy) {
                     if (applyFishEyeViewToEachNode) {
 
                         node.data('width-before-fisheye', node.data('size-before-collapse').w);
                         node.data('height-before-fisheye', node.data('size-before-collapse').h);
 
-                        self.fishEyeViewExpandGivenNode(node, singleNotSimple, node, animate);
+                        self.fishEyeViewExpandGivenNode(node, singleNotSimple, node, animate, layoutBy);
                     }
 
                     if (!singleNotSimple || !applyFishEyeViewToEachNode || !animate) {
-                        self.expandNodeBaseFunction(node, singleNotSimple); //*****
+                        self.expandNodeBaseFunction(node, singleNotSimple, singleNotSimple, layoutBy); //*****
                     }
                 };
 
                 if (node._private.data.collapsedChildren != null) {
                     this.storeWidthHeight(node);
                     if (applyFishEyeViewToEachNode && singleNotSimple) {
-                        var topLeftPosition = convertToModelPosition({x: 0, y: 0});
-                        var bottomRightPosition = convertToModelPosition({x: cy.width(), y: cy.height()});
+                        var topLeftPosition = this.convertToModelPosition({x: 0, y: 0});
+                        var bottomRightPosition = this.convertToModelPosition({x: cy.width(), y: cy.height()});
                         var padding = 80;
                         var bb = {
                             x1: topLeftPosition.x,
@@ -426,23 +481,26 @@
                                     pan: viewPort.pan,
                                     zoom: viewPort.zoom,
                                     complete: function () {
-                                        commonExpandOperation(node, applyFishEyeViewToEachNode, singleNotSimple, animate);
+                                        commonExpandOperation(node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy);
                                     }
                                 }, {
                                     duration: 1000
                                 });
+                                console.log("animate");
                             }
                             else {
+                                console.log("zoom");
                                 cy.zoom(viewPort.zoom);
                                 cy.pan(viewPort.pan);
                             }
                         }
                         if (!animating) {
-                            commonExpandOperation(node, applyFishEyeViewToEachNode, singleNotSimple, animate);
+                            console.log("animating");
+                            commonExpandOperation(node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy);
                         }
                     }
                     else {
-                        commonExpandOperation(node, applyFishEyeViewToEachNode, singleNotSimple, animate);
+                        commonExpandOperation(node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy);
                     }
 
                     //return the node to undo the operation
@@ -503,7 +561,7 @@
 
             },
 
-            fishEyeViewExpandGivenNode: function (node, singleNotSimple, nodeToExpand, animate) {//*//
+            fishEyeViewExpandGivenNode: function (node, singleNotSimple, nodeToExpand, animate, layoutBy) {//*//
                 var siblings = this.getSiblings(node);
 
                 var x_a = this.xPositionInParent(node);
@@ -593,12 +651,12 @@
                         T_y = -1 * T_y;
                     }
 
-                    this.fishEyeViewMoveNode(sibling, T_x, T_y, nodeToExpand, singleNotSimple, animate);
+                    this.fishEyeViewMoveNode(sibling, T_x, T_y, nodeToExpand, singleNotSimple, animate, layoutBy);
                 }
 
 
                 if (node.parent()[0] != null) {
-                    this.fishEyeViewExpandGivenNode(node.parent()[0], singleNotSimple, nodeToExpand, animate);
+                    this.fishEyeViewExpandGivenNode(node.parent()[0], singleNotSimple, nodeToExpand, animate, layoutBy);
                 }
 
                 return node;
@@ -626,7 +684,7 @@
              * Move node operation specialized for fish eye view expand operation
              * Moves the node by moving its descandents. Movement is animated if singleNotSimple flag is truthy.
              */
-            fishEyeViewMoveNode: function (node, T_x, T_y, nodeToExpand, singleNotSimple, animate) {//*//
+            fishEyeViewMoveNode: function (node, T_x, T_y, nodeToExpand, singleNotSimple, animate, layoutBy) {//*//
                 var childrenList = node.children();
                 var self = this;
 
@@ -637,16 +695,17 @@
                     }
                     else {
                         this.animatedlyMovingNodeCount++;
-
                         node.animate({
                             position: newPosition,
                             complete: function () {
                                 self.animatedlyMovingNodeCount--;
                                 if (self.animatedlyMovingNodeCount > 0 || nodeToExpand.data('expanded-collapsed') === 'expanded') {
+
                                     return;
                                 }
 
-                                self.expandNodeBaseFunction(nodeToExpand, singleNotSimple);
+                                self.expandNodeBaseFunction(nodeToExpand, singleNotSimple, true, layoutBy);
+
                             }
                         }, {
                             duration: 1000
@@ -656,7 +715,7 @@
                 else {
 
                     for (var i = 0; i < childrenList.length; i++) {
-                        this.fishEyeViewMoveNode(childrenList[i], T_x, T_y, nodeToExpand, singleNotSimple, animate);
+                        this.fishEyeViewMoveNode(childrenList[i], T_x, T_y, nodeToExpand, singleNotSimple, animate, layoutBy);
                     }
                 }
             },

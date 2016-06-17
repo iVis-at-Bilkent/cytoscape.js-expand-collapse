@@ -573,7 +573,10 @@ var expandCollapseUtilities = {
       var target = edge.data("target");
       var sourceNode = edge.source();
       var targetNode = edge.target();
-      var newEdge = jQuery.extend(true, {}, edge.jsons()[0]);
+
+      var newEdge =  {}; //jQuery.extend(true, {}, edge.jsons()[0]);
+      for (var key in edge.jsons()[0])
+        newEdge[key] = edge.jsons()[0][key];
 
       //Initilize the meta level of this edge if it is not initilized yet
       if (this.edgesMetaLevels[edge.id()] == null) {

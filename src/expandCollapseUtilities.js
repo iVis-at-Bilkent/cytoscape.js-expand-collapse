@@ -1,4 +1,5 @@
 var boundingBoxUtilities = require('./boundingBoxUtilities');
+var elementUtilities = require('./elementUtilities');
 
 // Expand collapse utilities
 var expandCollapseUtilities = {
@@ -9,45 +10,6 @@ var expandCollapseUtilities = {
   collapsedMetaEdgesInfo: {},
   //This map keeps track of the meta levels of edges by their id's
   edgesMetaLevels: {},
-  moveNodes: function (positionDiff, nodes, notCalcTopMostNodes) {
-    var topMostNodes = notCalcTopMostNodes ? nodes : this.getTopMostNodes(nodes);
-    for (var i = 0; i < topMostNodes.length; i++) {
-      var node = topMostNodes[i];
-      var oldX = node.position("x");
-      var oldY = node.position("y");
-      node.position({
-        x: oldX + positionDiff.x,
-        y: oldY + positionDiff.y
-      });
-      var children = node.children();
-      this.moveNodes(positionDiff, children, true);
-    }
-  },
-  getTopMostNodes: function (nodes) {//*//
-    var nodesMap = {};
-    for (var i = 0; i < nodes.length; i++) {
-      nodesMap[nodes[i].id()] = true;
-    }
-    var roots = nodes.filter(function (i, ele) {
-      var parent = ele.parent()[0];
-      while (parent != null) {
-        if (nodesMap[parent.id()]) {
-          return false;
-        }
-        parent = parent.parent()[0];
-      }
-      return true;
-    });
-
-    return roots;
-  },
-  rearrange: function (layoutBy) {//*//
-    if (typeof layoutBy === "function") {
-      layoutBy();
-    } else if (layoutBy != null) {
-      cy.layout(layoutBy);
-    }
-  },
   //This method changes source or target id of the collapsed edge data kept in the data of the node
   //with id of createdWhileBeingCollapsed
   alterSourceOrTargetOfCollapsedEdge: function (createdWhileBeingCollapsed, edgeId, sourceOrTarget) {//*//
@@ -82,20 +44,20 @@ var expandCollapseUtilities = {
       node.removeStyle('content');
     }
 
-    this.moveNodes(positionDiff, node.children());
+    elementUtilities.moveNodes(positionDiff, node.children());
     node.removeData('position-before-collapse');
 
     if (single)
       this.endOperation();
     // refreshPaddings();
     if (triggerLayout) { //*/*/*asdsadda
-      this.rearrange(layoutBy);
+      elementUtilities.rearrange(layoutBy);
 
     }
   },
   simpleCollapseGivenNodes: function (nodes) {//*//
     nodes.data("collapse", true);
-    var roots = this.getTopMostNodes(nodes);
+    var roots = elementUtilities.getTopMostNodes(nodes);
     for (var i = 0; i < roots.length; i++) {
       var root = roots[i];
       this.collapseBottomUp(root);
@@ -104,7 +66,7 @@ var expandCollapseUtilities = {
   },
   simpleExpandGivenNodes: function (nodes, applyFishEyeViewToEachNode) {//*//
     nodes.data("expand", true);
-    var roots = this.getTopMostNodes(nodes);
+    var roots = elementUtilities.getTopMostNodes(nodes);
     for (var i = 0; i < roots.length; i++) {
       var root = roots[i];
       this.expandTopDown(root, applyFishEyeViewToEachNode);
@@ -116,12 +78,7 @@ var expandCollapseUtilities = {
       nodes = cy.nodes();
     }
     var orphans;
-    console.log(this.getTopMostNodes(nodes).map(function (e) {
-      return e.id();
-    }), nodes.orphans().map(function (e) {
-      return e.id();
-    }));
-    orphans = this.getTopMostNodes(nodes);
+    orphans = elementUtilities.getTopMostNodes(nodes);
     var expandStack = [];
     for (var i = 0; i < orphans.length; i++) {
       var root = orphans[i];
@@ -153,7 +110,7 @@ var expandCollapseUtilities = {
 
     this.endOperation();
 
-    this.rearrange(options.layoutBy);
+    elementUtilities.rearrange(options.layoutBy);
 
     /*
      * return the nodes to undo the operation
@@ -184,7 +141,7 @@ var expandCollapseUtilities = {
       this.endOperation();
       cy.trigger("afterExpand", [nodes, options]);
 
-      this.rearrange(options.layoutBy);
+      elementUtilities.rearrange(options.layoutBy);
     }
 
     /*
@@ -200,7 +157,7 @@ var expandCollapseUtilities = {
     cy.trigger("beforeCollapse", [nodes, options]);
 
     this.endOperation();
-    this.rearrange(options.layoutBy);
+    elementUtilities.rearrange(options.layoutBy);
 
     /*
      * return the nodes to undo the operation
@@ -315,16 +272,13 @@ var expandCollapseUtilities = {
             }, {
               duration: 1000
             });
-            console.log("animate");
           }
           else {
-            console.log("zoom");
             cy.zoom(viewPort.zoom);
             cy.pan(viewPort.pan);
           }
         }
         if (!animating) {
-          console.log("animating");
           commonExpandOperation(node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy);
         }
       }
@@ -568,10 +522,6 @@ var expandCollapseUtilities = {
 
     // Given node is not a direct child of the the root graph
     if (parent != null) {
-      /*console.log("Node ID: " + node.id());
-       console.log("Parent ID: " + parent.id());
-       console.log("Parent.width: " + parent.width());
-       console.log("Parent.height: " + parent.height());*/
       y_a = node.relativePosition('y') + (parent.height() / 2);
     }
     // Given node is a direct child of the the root graph

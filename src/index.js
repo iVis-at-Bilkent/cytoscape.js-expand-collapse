@@ -33,8 +33,6 @@
       return tempOpts;
     }
 
-    var tappedBefore;
-    var tappedTimeout;
 
     // cy.expandCollapse()
     cytoscape("core", "expandCollapse", function (opts) {
@@ -42,31 +40,6 @@
       options = setOptions(opts);
 
       undoRedoUtilities(options.undoable);
-
-      // test for expand-collapse
-      cy.on('tap', function (event) {
-        var tappedNow = event.cyTarget;
-        if (tappedTimeout && tappedBefore) {
-          clearTimeout(tappedTimeout);
-        }
-        if (tappedBefore === tappedNow) {
-          tappedNow.trigger('doubleTap');
-          tappedBefore = null;
-        } else {
-          tappedTimeout = setTimeout(function () {
-            tappedBefore = null;
-          }, 300);
-          tappedBefore = tappedNow;
-        }
-      });
-
-      cy.on("doubleTap", ':parent, [expanded-collapsed]', function (e) {
-        if (e.cyTarget.data("expanded-collapsed") == "collapsed") {
-          e.cyTarget.expand();
-        } else {
-          e.cyTarget.collapse();
-        }
-      });
 
       options.ready();
 
@@ -83,7 +56,7 @@
     });
 
     // eles.collapseAll(options)
-    cytoscape('collection', 'collapseAll', function (opts) {
+    cytoscape('collection', 'collapseRecursively', function (opts) {
       var eles = this.collapsibleNodes();
       var tempOptions = setOptions(opts);
 
@@ -99,7 +72,7 @@
     });
 
     // eles.expandAll(options)
-    cytoscape('collection', 'expandAll', function (opts) {
+    cytoscape('collection', 'expandRecursively', function (opts) {
       var eles = this.expandableNodes();
       var tempOptions = setOptions(opts);
 
@@ -114,7 +87,7 @@
       var cy = this;
       var tempOptions = setOptions(opts);
 
-      return cy.nodes().collapsibleNodes().collapseAll(tempOptions);
+      return cy.collapsibleNodes().collapseRecursively(tempOptions);
     });
 
     // cy.expandAll(options)
@@ -122,7 +95,7 @@
       var cy = this;
       var tempOptions = setOptions(opts);
 
-      return cy.nodes().expandableNodes().expandAll();
+      return cy.expandableNodes().expandRecursively(tempOptions);
     });
 
 

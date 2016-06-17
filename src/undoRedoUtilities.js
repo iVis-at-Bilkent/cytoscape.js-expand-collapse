@@ -60,10 +60,10 @@ module.exports = function (undoable) {
       var nodes = getEles(args.nodes);
       if (args.firstTime) {
         result.oldData = getNodePositionsAndSizes();
-        result.nodes = nodes[func]();
+        result.nodes = func.indexOf("All") > 0 ? cy[func](args.options) : nodes[func](args.options);
       } else {
         result.oldData = getNodePositionsAndSizes();
-        result.nodes = nodes[func](secondTimeOpts);
+        result.nodes = func.indexOf("All") > 0 ? cy[func](secondTimeOpts) : nodes[func](secondTimeOpts);
         returnToPositionsAndSizes(args.oldData);
       }
 
@@ -71,9 +71,11 @@ module.exports = function (undoable) {
     };
   }
 
-  var actions = ["collapse", "collapseAll", "expand", "expandAll"];
+  var actions = ["collapse", "collapseRecursively", "collapseAll", "expand", "expandRecursively", "expandAll"];
 
-  for (var i = 0; i < actions.length; i++)
-    ur.action(actions[i], doIt(actions[i]), doIt(actions[(i + 2) % 4]));
+  for (var i = 0; i < actions.length; i++) {
+    ur.action(actions[i], doIt(actions[i]), doIt(actions[(i + 3) % 6]));
+    console.log(actions[i] + "->" + actions[(i + 3) % 6]);
+  }
 
 };

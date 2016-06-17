@@ -111,7 +111,8 @@
                 var action = redoStack.pop();
 
                 cy.trigger(action.firstTime ? "do" : "redo", [action.name, action.args]);
-
+                if (!action.args)
+                    action.args = {};
                 action.args.firstTime = action.firstTime ? true : false;
 
                 var res = actions[action.name]._do(action.args);
@@ -138,8 +139,6 @@
                 args: args,
                 firstTime: true
             });
-
-            this.redo();
 
             return this.redo();
         };
@@ -222,7 +221,7 @@
                         y: node.position("y")
                     };
                     if (mouseUpPosition.x != lastMouseDownPosition.x ||
-                        mouseUpPosition.y != lastMouseDownPosition.y) {
+                      mouseUpPosition.y != lastMouseDownPosition.y) {
                         var positionDiff = {
                             x: mouseUpPosition.x - lastMouseDownPosition.x,
                             y: mouseUpPosition.y - lastMouseDownPosition.y

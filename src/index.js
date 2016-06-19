@@ -330,8 +330,6 @@
 
     $.fn.cyExpandCollapse = $.fn.cytoscapeExpandCollapse;
 
-    var tappedBefore;
-    var tappedTimeout;
 
     // cy.expandCollapse()
     cytoscape("core", "expandCollapse", function (opts) {

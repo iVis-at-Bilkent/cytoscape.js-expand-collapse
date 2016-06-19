@@ -5,6 +5,7 @@
   var expandCollapseUtilities = require('./expandCollapseUtilities');
   var undoRedoUtilities = require('./undoRedoUtilities');
   var debounce = require('./debounce');
+  var elementUtilities = require('./elementUtilities');
 
   // registers the extension on a cytoscape lib ref
   var register = function (cytoscape) {
@@ -23,7 +24,10 @@
       undoable: true, // and if undoRedoExtension exists,
       handleColor: '#000000', // the colour of the handle and the line drawn from it
       hoverDelay: 150, // time spend over a target node before it is considered a target selection
-      enabled: true // whether to start the plugin in the enabled state
+      enabled: true, // whether to start the plugin in the enabled state,
+      expandCollapseBoxPosition: 'top-left', // default box position is top left you can specify a function per node too
+      expandCollapseBoxSize: 12, // size of expand-collapse box
+      expandCollapseLineSize: 8 // size of lines used for drawing plus-minus icons
     };
 
     function setOptions(from) {
@@ -63,7 +67,7 @@
             options[name] = value;
           }
 
-          $container.data('cynoderesize', data);
+          $container.data('cyexpandcollapse', data);
 
           return $container;
         },
@@ -73,15 +77,6 @@
           var $container = $(this);
           var cy;
           var $canvas = $('<canvas></canvas>');
-          var handle;
-          var line, linePoints;
-          var mdownOnHandle = false;
-          var grabbingNode = false;
-          var inForceStart = false;
-          var hoverTimeout;
-          var drawsClear = true;
-          var sourceNode;
-          var drawMode = false;
 
           $container.append($canvas);
 
@@ -108,6 +103,7 @@
                       })
                       ;
             }, 0);
+
           }, 250);
 
           function sizeCanvas() {
@@ -123,7 +119,7 @@
           var ctx = $canvas[0].getContext('2d');
 
           // write options to data
-          var data = $container.data('cynoderesize');
+          var data = $container.data('cyexpandcollapse');
           if (data == null) {
             data = {};
           }
@@ -132,33 +128,35 @@
           var optCache;
 
           function options() {
-            return optCache || (optCache = $container.data('cynoderesize').options);
+            return optCache || (optCache = $container.data('cyexpandcollapse').options);
           }
 
           function clearDraws(keepExpandBoxes) {
-
-            if (drawsClear) {
-              return;
-            } // break early to be efficient
 
             var w = $container.width();
             var h = $container.height();
 
             ctx.clearRect(0, 0, w, h);
-            
-//            if (keepExpandBoxes){
-//              var collapsedNodes = cy.nodes('[expanded-collapsed="collapsed"]');
-//              for(var i = 0; i < collapsedNodes.length; i++){
-//                drawExpandCollapseBox(collapsedNodes[i]);
-//              }
-//            }
-            
-            drawsClear = true;
+
+            if (keepExpandBoxes) {
+              var collapsedNodes = cy.nodes('[expanded-collapsed="collapsed"]');
+              for (var i = 0; i < collapsedNodes.length; i++) {
+                drawExpandCollapseBox(collapsedNodes[i]);
+              }
+            }
           }
 
-          var lastPanningEnabled, lastZoomingEnabled, lastBoxSelectionEnabled;
+          function clearNodeDraw(node) {
 
+            var x = node._private.data.expandcollapseRenderedStartX;
+            var y = node._private.data.expandcollapseRenderedStartY;
+            var s = node._private.data.expandcollapseRenderedBoxSize;
 
+            if (node.data('expanded-collapsed') === 'collapsed') {
+              drawExpandCollapseBox(node);
+            }
+            ctx.clearRect(x, y, s, s);
+          }
 
           function drawExpandCollapseBox(node) {
             var cy = node.cy();
@@ -178,26 +176,44 @@
             var expandedOrcollapsed = node.data('expanded-collapsed');
 
             //Draw expand-collapse rectangles
-            var rectSize = 12;
-            var lineSize = 8;
-            var startOffset = 5;
+            var rectSize = options().expandCollapseBoxSize;
+            var lineSize = options().expandCollapseLineSize;
             var diff;
 
-            var p = node.renderedPosition();
-            var w = node.renderedOuterWidth();
-            var h = node.renderedOuterHeight();
             rectSize = rectSize * cy.zoom();
             lineSize = lineSize * cy.zoom();
             diff = (rectSize - lineSize) / 2;
 
-            node._private.data.expandcollapseStartX = p.x - w / 2 - rectSize / 4;
-            node._private.data.expandcollapseStartY = p.y - h / 2 - rectSize / 4;
-            node._private.data.expandcollapseEndX = node._private.data.expandcollapseStartX + rectSize;
-            node._private.data.expandcollapseEndY = node._private.data.expandcollapseStartY + rectSize;
-            node._private.data.expandcollapseRectSize = rectSize;
+            var expandcollapseStartX;
+            var expandcollapseStartY;
+            var expandcollapseEndX;
+            var expandcollapseEndY;
+            var expandcollapseRectSize;
 
-            var expandCollapseCenterX = node._private.data.expandcollapseStartX + rectSize / 2;
-            var expandCollapseCenterY = node._private.data.expandcollapseStartY + rectSize / 2;
+            var expandcollapseCenterX;
+            var expandcollapseCenterY;
+
+            if (options().expandCollapseBoxPosition === 'top-left') {
+              var p = node.renderedPosition();
+              var w = node.renderedOuterWidth();
+              var h = node.renderedOuterHeight();
+
+              expandcollapseCenterX = p.x - w / 2 - rectSize / 4 + rectSize / 2;
+              expandcollapseCenterY = p.y - h / 2 - rectSize / 4 + rectSize / 2;
+            } else {
+              var option = options().expandCollapseBoxPosition;
+              var boxCenter = typeof option === 'function' ? option.call(this, node) : option;
+              var expandcollapseCenter = elementUtilities.convertToRenderedPosition(boxCenter);
+
+              expandcollapseCenterX = expandcollapseCenter.x;
+              expandcollapseCenterY = expandcollapseCenter.y;
+            }
+
+            expandcollapseStartX = expandcollapseCenterX - rectSize / 2;
+            expandcollapseStartY = expandcollapseCenterY - rectSize / 2;
+            expandcollapseEndX = expandcollapseStartX + rectSize;
+            expandcollapseEndY = expandcollapseStartY + rectSize;
+            expandcollapseRectSize = rectSize;
 
             var oldFillStyle = ctx.fillStyle;
             var oldWidth = ctx.lineWidth;
@@ -206,8 +222,7 @@
             ctx.fillStyle = "black";
             ctx.strokeStyle = "black";
 
-//            window.cyNodeShapes['ellipse'].draw(ctx, expandCollapseCenterX, expandCollapseCenterY, rectSize, rectSize);
-            ctx.ellipse(expandCollapseCenterX, expandCollapseCenterY, rectSize / 2, rectSize / 2, 0, 0, 2 * Math.PI);
+            ctx.ellipse(expandcollapseCenterX, expandcollapseCenterY, rectSize / 2, rectSize / 2, 0, 0, 2 * Math.PI);
             ctx.fill();
 
             ctx.beginPath();
@@ -215,12 +230,12 @@
             ctx.strokeStyle = "white";
             ctx.lineWidth = 2.6 * cy.zoom();
 
-            ctx.moveTo(node._private.data.expandcollapseStartX + diff, node._private.data.expandcollapseStartY + rectSize / 2);
-            ctx.lineTo(node._private.data.expandcollapseStartX + lineSize + diff, node._private.data.expandcollapseStartY + +rectSize / 2);
+            ctx.moveTo(expandcollapseStartX + diff, expandcollapseStartY + rectSize / 2);
+            ctx.lineTo(expandcollapseStartX + lineSize + diff, expandcollapseStartY + +rectSize / 2);
 
             if (expandedOrcollapsed == 'collapsed') {
-              ctx.moveTo(node._private.data.expandcollapseStartX + rectSize / 2, node._private.data.expandcollapseStartY + diff);
-              ctx.lineTo(node._private.data.expandcollapseStartX + rectSize / 2, node._private.data.expandcollapseStartY + lineSize + diff);
+              ctx.moveTo(expandcollapseStartX + rectSize / 2, expandcollapseStartY + diff);
+              ctx.lineTo(expandcollapseStartX + rectSize / 2, expandcollapseStartY + lineSize + diff);
             }
 
             ctx.closePath();
@@ -230,18 +245,19 @@
             ctx.fillStyle = oldFillStyle;
             ctx.lineWidth = oldWidth;
 
-            drawsClear = false;
+            node._private.data.expandcollapseRenderedStartX = expandcollapseStartX;
+            node._private.data.expandcollapseRenderedStartY = expandcollapseStartY;
+            node._private.data.expandcollapseRenderedBoxSize = expandcollapseRectSize;
           }
 
           $container.cytoscape(function (e) {
             cy = this;
+            clearDraws(true);
 
-            var transformHandler;
-            cy.bind('zoom pan', transformHandler = function () {
-              clearDraws();
+            cy.bind('zoom pan', function () {
+              clearDraws(true);
             });
 
-            var startHandler, hoverHandler, leaveHandler, grabNodeHandler, freeNodeHandler, dragNodeHandler, forceStartHandler, removeHandler, tapToStartHandler, dragHandler, grabHandler;
             cy.on('mouseover', 'node', function (e) {
 
               var node = this;
@@ -252,34 +268,52 @@
               // add new handle
               drawExpandCollapseBox(node);
 
-              node.trigger('cynoderesize.showhandle');
               var lastPosition = {};
 
             });
-            
+
             cy.on('mouseout tapdragout', 'node', function (e) {
 
               clearDraws(true);
 
             });
 
+            cy.on('position', 'node', function () {
+              var node = this;
 
+              clearNodeDraw(node);
+            });
 
-//            data.unbind = function () {
-//              cy
-//                      .off('mouseover', 'node', startHandler)
-//                      .off('mouseover', 'node', hoverHandler)
-//                      .off('mouseout', 'node', leaveHandler)
-//                      .off('drag position', 'node', dragNodeHandler)
-//                      .off('grab', 'node', grabNodeHandler)
-//                      .off('free', 'node', freeNodeHandler)
-//                      .off('cynoderesize.forcestart', 'node', forceStartHandler)
-//                      .off('remove', 'node', removeHandler)
-//                      .off('tap', 'node', tapToStartHandler);
-//            };
+            cy.on('remove', 'node', function () {
+              var node = this;
+              clearNodeDraw(node);
+            });
+
+            cy.on('tap', 'node', function (event) {
+              var node = this;
+
+              var expandcollapseRenderedStartX = node._private.data.expandcollapseRenderedStartX;
+              var expandcollapseRenderedStartY = node._private.data.expandcollapseRenderedStartY;
+              var expandcollapseRenderedRectSize = node._private.data.expandcollapseRenderedBoxSize;
+              var expandcollapseRenderedEndX = expandcollapseRenderedStartX + expandcollapseRenderedRectSize;
+              var expandcollapseRenderedEndY = expandcollapseRenderedStartY + expandcollapseRenderedRectSize;
+
+              var cyRenderedPosX = event.cyRenderedPosition.x;
+              var cyRenderedPosY = event.cyRenderedPosition.y;
+              if (cyRenderedPosX >= expandcollapseRenderedStartX - expandcollapseRenderedRectSize * 0.5
+                      && cyRenderedPosX <= expandcollapseRenderedEndX + expandcollapseRenderedRectSize * 0.5
+                      && cyRenderedPosY >= expandcollapseRenderedStartY - expandcollapseRenderedRectSize * 0.5
+                      && cyRenderedPosY <= expandcollapseRenderedEndY + expandcollapseRenderedRectSize * 0.5) {
+                if (node.isCollapsible()) {
+                  node.collapse();
+                } else {
+                  node.expand();
+                }
+              }
+            });
           });
 
-          $container.data('cynoderesize', data);
+          $container.data('cyexpandcollapse', data);
         }
       };
 

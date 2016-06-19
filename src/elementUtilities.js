@@ -37,6 +37,18 @@ var elementUtilities = {
     } else if (layoutBy != null) {
       cy.layout(layoutBy);
     }
+  },
+  convertToRenderedPosition: function (modelPosition) {
+    var pan = cy.pan();
+    var zoom = cy.zoom();
+
+    var x = modelPosition.x * zoom + pan.x;
+    var y = modelPosition.y * zoom + pan.y;
+
+    return {
+      x: x,
+      y: y
+    };
   }
 };
 

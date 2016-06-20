@@ -1,5 +1,5 @@
-module.exports = function (undoable) {
-  if (!undoable || cy.undoRedo == null)
+module.exports = function () {
+  if (cy.undoRedo == null)
     return;
 
   var ur = cy.undoRedo({

@@ -94,33 +94,6 @@
 				});
 
 
-				var tappedBefore;
-				var tappedTimeout;
-				// test for expand-collapse
-				cy.on('tap', function (event) {
-					var tappedNow = event.cyTarget;
-					if (tappedTimeout && tappedBefore) {
-						clearTimeout(tappedTimeout);
-					}
-					if (tappedBefore === tappedNow) {
-						tappedNow.trigger('doubleTap');
-						tappedBefore = null;
-					} else {
-						tappedTimeout = setTimeout(function () {
-							tappedBefore = null;
-						}, 300);
-						tappedBefore = tappedNow;
-					}
-				});
-
-				cy.nodes().on("doubleTap", function (e) {
-					if (e.cyTarget.isCollapsible()){
-						e.cyTarget.collapse();
-					} else {
-						e.cyTarget.expand();
-					}
-				});
-
 				document.getElementById("collapseRecursively").addEventListener("click", function () {
 					cy.$(":selected").collapseRecursively();
 				});
@@ -144,7 +117,6 @@
 	<body>
 		<h1>cytoscape-expand-collapse demo</h1>
 
-		<b style="color: darkblue">Double-click</b> to expand/collapse a node.<br/>
 			<b id="collapseAll" style="cursor: pointer;color: darkred">Collapse all</b> / <b id="expandAll" style="cursor: pointer; color: darkslateblue">Expand all</b> <br/>
 			<b id="collapseRecursively" style="cursor: pointer; color: darksalmon">Collapse selected recursively</b> / <b id="expandRecursively" style="cursor: pointer; color: darkmagenta">Expand selected recursively</b>
 

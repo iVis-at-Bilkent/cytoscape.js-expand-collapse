@@ -296,7 +296,7 @@
               var node = this;
               clearNodeDraw(node);
             });
-
+            var ur;
             cy.on('tap', 'node', function (event) {
               var node = this;
 
@@ -315,11 +315,26 @@
                       && cyRenderedPosX <= expandcollapseRenderedEndX + expandcollapseRenderedRectSize * factor
                       && cyRenderedPosY >= expandcollapseRenderedStartY - expandcollapseRenderedRectSize * factor
                       && cyRenderedPosY <= expandcollapseRenderedEndY + expandcollapseRenderedRectSize * factor) {
-                if (node.isCollapsible()) {
-                  node.collapse();
-                } else {
-                  node.expand();
-                }
+                if(opts.undoable && !ur)
+                  ur = cy.undoRedo({
+                    defaultActions: false
+                  });
+                if(node.isCollapsible())
+                  if (opts.undoable)
+                    ur.do("collapse", {
+                      nodes: node,
+                      options: opts
+                    });
+                  else
+                    node.collapse(opts);
+                else if(node.isExpandable())
+                  if (opts.undoable)
+                    ur.do("expand", {
+                      nodes: node,
+                      options: opts
+                    });
+                  else
+                    node.expand(opts);
               }
             });
           });
@@ -349,7 +364,7 @@
 
       // All parent nodes are expanded on load
       cy.nodes(':parent').data('expanded-collapsed', 'expanded');
-      undoRedoUtilities(options.undoable);
+      undoRedoUtilities();
 
       options.ready();
 

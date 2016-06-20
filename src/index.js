@@ -21,6 +21,8 @@
       animate: true,
       ready: function () { },
       undoable: true, // and if undoRedoExtension exists,
+
+      cueEnabled: true,
       expandCollapseCuePosition: 'top-left', // default cue position is top left you can specify a function per node too
       expandCollapseCueSize: 12, // size of expand-collapse cue
       expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
@@ -52,7 +54,12 @@
       undoRedoUtilities();
 
       options.ready();
-      $(cy.container()).cytoscapeExpandCollapse(options);
+
+      if(cueEnabled)
+        $(cy.container()).cytoscapeExpandCollapse(options);
+      else {
+        // TODO: destroy if initialized
+      }
 
       return cy;
     });

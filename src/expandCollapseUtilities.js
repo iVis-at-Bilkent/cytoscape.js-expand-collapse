@@ -37,23 +37,14 @@ var expandCollapseUtilities = {
     this.repairEdgesOfCollapsedChildren(node);
     node._private.data.collapsedChildren = null;
 
-    cy.nodes().updateCompoundBounds();
-
-    //Don't show children info when the complex node is expanded
-    if (node._private.data.sbgnclass == "complex") {
-      node.removeStyle('content');
-    }
-
     elementUtilities.moveNodes(positionDiff, node.children());
     node.removeData('position-before-collapse');
 
     if (single)
-      this.endOperation();
+      this.endOperation(layoutBy);
     // refreshPaddings();
-    if (triggerLayout) { //*/*/*asdsadda
-      elementUtilities.rearrange(layoutBy);
-
-    }
+   /* if (triggerLayout)
+      elementUtilities.rearrange(layoutBy);*/
   },
   simpleCollapseGivenNodes: function (nodes) {//*//
     nodes.data("collapse", true);
@@ -89,18 +80,22 @@ var expandCollapseUtilities = {
   beginOperation: function () {
     this.edgesToRepair = cy.collection();
   },
-  endOperation: function () {
-    this.edgesToRepair.restore();
-    for (var i = 0; i < this.edgesToRepair.length; i++) {
-      var edge = this.edgesToRepair[i];
-      if (this.edgesMetaLevels[edge.id()] == null || this.edgesMetaLevels[edge.id()] == 0) {
-        edge.removeClass("meta");
+  endOperation: function (layoutBy) {
+    var self = this;
+    cy.ready(function () {
+      self.edgesToRepair.restore();
+      for (var i = 0; i < self.edgesToRepair.length; i++) {
+        var edge = self.edgesToRepair[i];
+        if (self.edgesMetaLevels[edge.id()] == null || self.edgesMetaLevels[edge.id()] == 0) {
+          edge.removeClass("meta");
+        }
+        else {
+          edge.addClass("meta");
+        }
       }
-      else {
-        edge.addClass("meta");
-      }
-    }
-    this.edgesToRepair = cy.collection();
+      this.edgesToRepair = cy.collection();
+      elementUtilities.rearrange(layoutBy);
+    });
   },
   expandAllNodes: function (nodes, options) {//*//
     this.beginOperation();
@@ -108,9 +103,9 @@ var expandCollapseUtilities = {
     var expandedStack = this.simpleExpandAllNodes(nodes, options.fisheye);
     cy.trigger("afterExpand", [nodes, options]);
 
-    this.endOperation();
+    this.endOperation(options.layoutBy);
 
-    elementUtilities.rearrange(options.layoutBy);
+    //elementUtilities.rearrange(options.layoutBy);
 
     /*
      * return the nodes to undo the operation
@@ -138,10 +133,10 @@ var expandCollapseUtilities = {
 
     } else {
       this.simpleExpandGivenNodes(nodes, options.fisheye);
-      this.endOperation();
+      this.endOperation(options.layoutBy);
       cy.trigger("afterExpand", [nodes, options]);
 
-      elementUtilities.rearrange(options.layoutBy);
+      //elementUtilities.rearrange(options.layoutBy);
     }
 
     /*
@@ -156,8 +151,8 @@ var expandCollapseUtilities = {
     this.simpleCollapseGivenNodes(nodes, options);
     cy.trigger("beforeCollapse", [nodes, options]);
 
-    this.endOperation();
-    elementUtilities.rearrange(options.layoutBy);
+    this.endOperation(options.layoutBy);
+    //elementUtilities.rearrange(options.layoutBy);
 
     /*
      * return the nodes to undo the operation
@@ -317,11 +312,6 @@ var expandCollapseUtilities = {
       }
 
       this.removeChildren(node, node);
-      // refreshPaddings();
-
-      if (node._private.data.sbgnclass == "complex") {
-        node.addClass('changeContent');
-      }
 
       node.position(node.data('position-before-collapse'));
 
@@ -628,7 +618,7 @@ var expandCollapseUtilities = {
       }
       else {
         root._private.data.edgesOfcollapsedChildren =
-                root._private.data.edgesOfcollapsedChildren.union(removedEdge);
+          root._private.data.edgesOfcollapsedChildren.union(removedEdge);
       }
 
       //Do not handle the inner edges
@@ -676,7 +666,7 @@ var expandCollapseUtilities = {
     for (var i = 0; i < edgesOfcollapsedChildren.length; i++) {
       //Handle collapsed meta edge info if it is required
       if (collapsedMetaEdgeInfoOfNode != null &&
-              this.collapsedMetaEdgesInfo[edgesOfcollapsedChildren[i]._private.data.id] != null) {
+        this.collapsedMetaEdgesInfo[edgesOfcollapsedChildren[i]._private.data.id] != null) {
         var info = this.collapsedMetaEdgesInfo[edgesOfcollapsedChildren[i]._private.data.id];
         //If the meta edge is not created because of the reason that this node is collapsed
         //handle it by changing source or target of related edge datas
@@ -684,12 +674,12 @@ var expandCollapseUtilities = {
           if (edgesOfcollapsedChildren[i]._private.data.source == info.oldOwner) {
             edgesOfcollapsedChildren[i]._private.data.source = info.createdWhileBeingCollapsed;
             this.alterSourceOrTargetOfCollapsedEdge(info.createdWhileBeingCollapsed
-                    , edgesOfcollapsedChildren[i]._private.data.id, "target");
+              , edgesOfcollapsedChildren[i]._private.data.id, "target");
           }
           else if (edgesOfcollapsedChildren[i]._private.data.target == info.oldOwner) {
             edgesOfcollapsedChildren[i]._private.data.target = info.createdWhileBeingCollapsed;
             this.alterSourceOrTargetOfCollapsedEdge(info.createdWhileBeingCollapsed
-                    , edgesOfcollapsedChildren[i]._private.data.id, "source");
+              , edgesOfcollapsedChildren[i]._private.data.id, "source");
           }
         }
         //Delete the related collapsedMetaEdgesInfo's as they are handled

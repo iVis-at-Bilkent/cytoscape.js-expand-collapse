@@ -33,9 +33,13 @@ var expandCollapseUtilities = {
 
     node.removeData("infoLabel");
     node.data('expanded-collapsed', 'expanded');
+
+    cy.trigger("beforeExpand", [node]);
     node._private.data.collapsedChildren.nodes().restore();
     this.repairEdgesOfCollapsedChildren(node);
     node._private.data.collapsedChildren = null;
+    cy.trigger("afterExpand", [node]);
+
 
     elementUtilities.moveNodes(positionDiff, node.children());
     node.removeData('position-before-collapse');
@@ -99,9 +103,7 @@ var expandCollapseUtilities = {
   },
   expandAllNodes: function (nodes, options) {//*//
     this.beginOperation();
-    cy.trigger("beforeExpand", [nodes, options]);
     var expandedStack = this.simpleExpandAllNodes(nodes, options.fisheye);
-    cy.trigger("afterExpand", [nodes, options]);
 
     this.endOperation(options.layoutBy);
 
@@ -126,15 +128,12 @@ var expandCollapseUtilities = {
   //Expand the given nodes perform incremental layout after expandation
   expandGivenNodes: function (nodes, options) {//*//
     this.beginOperation();
-    cy.trigger("beforeExpand", [nodes, options]);
     if (nodes.length === 1) {
       this.expandNode(nodes[0], options.fisheye, options.animate, options.layoutBy);
-      cy.trigger("afterExpand", [nodes, options]);
 
     } else {
       this.simpleExpandGivenNodes(nodes, options.fisheye);
       this.endOperation(options.layoutBy);
-      cy.trigger("afterExpand", [nodes, options]);
 
       //elementUtilities.rearrange(options.layoutBy);
     }
@@ -147,9 +146,7 @@ var expandCollapseUtilities = {
   //collapse the given nodes then make incremental layout
   collapseGivenNodes: function (nodes, options) {//*//
     this.beginOperation();
-    cy.trigger("beforeCollapse", [nodes, options]);
     this.simpleCollapseGivenNodes(nodes, options);
-    cy.trigger("beforeCollapse", [nodes, options]);
 
     this.endOperation(options.layoutBy);
     //elementUtilities.rearrange(options.layoutBy);

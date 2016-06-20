@@ -102,6 +102,11 @@
                         'left': -(canvasBb.left - containerBb.left)
                       })
                       ;
+              
+              // refresh the cues on canvas resize
+              if(cy){
+                clearDraws(true);
+              }
             }, 0);
 
           }, 250);

@@ -102,6 +102,11 @@
                         'left': -(canvasBb.left - containerBb.left)
                       })
                       ;
+              
+              // refresh the cues on canvas resize
+              if(cy){
+                clearDraws(true);
+              }
             }, 0);
 
           }, 250);
@@ -309,7 +314,6 @@
               var cyRenderedPosX = event.cyRenderedPosition.x;
               var cyRenderedPosY = event.cyRenderedPosition.y;
               var factor = (options().expandCollapseCueSensitivity - 1) / 2;
-              console.log(factor);
               
               if (cyRenderedPosX >= expandcollapseRenderedStartX - expandcollapseRenderedRectSize * factor
                       && cyRenderedPosX <= expandcollapseRenderedEndX + expandcollapseRenderedRectSize * factor
@@ -348,7 +352,7 @@
       } else if (typeof fn == 'object' || !fn) {
         return functions.init.apply(this, arguments);
       } else {
-        $.error('No such function `' + fn + '` for jquery.cytoscapeNodeResize');
+        $.error('No such function `' + fn + '` for cytoscape.js-expand-collapse');
       }
 
       return $(this);

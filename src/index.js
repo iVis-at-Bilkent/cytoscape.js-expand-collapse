@@ -22,10 +22,12 @@
       ready: function () {
       },
       undoable: true, // and if undoRedoExtension exists,
-      enabled: true, // whether to start the plugin in the enabled state,
       expandCollapseCuePosition: 'top-left', // default cue position is top left you can specify a function per node too
       expandCollapseCueSize: 12, // size of expand-collapse cue
-      expandCollapseCueLineSize: 8 // size of lines used for drawing plus-minus icons
+      expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
+      expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
+      collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
+      expandCollapseCueSensitivity: 1 // sensitivity of expand-collapse cues
     };
 
     function setOptions(from) {
@@ -75,7 +77,7 @@
           var $container = $(this);
           var cy;
           var $canvas = $('<canvas></canvas>');
-
+          
           $container.append($canvas);
 
           var _sizeCanvas = debounce(function () {
@@ -166,11 +168,6 @@
               return;
             }
 
-            //If the compound node has no expanded-collapsed data property make it expanded
-            if (node.data()['expanded-collapsed'] == null) {
-              node.data('expanded-collapsed', 'expanded');
-            }
-
             var expandedOrcollapsed = node.data('expanded-collapsed');
 
             //Draw expand-collapse rectangles
@@ -212,36 +209,49 @@
             expandcollapseEndX = expandcollapseStartX + rectSize;
             expandcollapseEndY = expandcollapseStartY + rectSize;
             expandcollapseRectSize = rectSize;
-
-            var oldFillStyle = ctx.fillStyle;
-            var oldWidth = ctx.lineWidth;
-            var oldStrokeStyle = ctx.strokeStyle;
-
-            ctx.fillStyle = "black";
-            ctx.strokeStyle = "black";
-
-            ctx.ellipse(expandcollapseCenterX, expandcollapseCenterY, rectSize / 2, rectSize / 2, 0, 0, 2 * Math.PI);
-            ctx.fill();
-
-            ctx.beginPath();
-
-            ctx.strokeStyle = "white";
-            ctx.lineWidth = 2.6 * cy.zoom();
-
-            ctx.moveTo(expandcollapseStartX + diff, expandcollapseStartY + rectSize / 2);
-            ctx.lineTo(expandcollapseStartX + lineSize + diff, expandcollapseStartY + +rectSize / 2);
-
-            if (expandedOrcollapsed == 'collapsed') {
-              ctx.moveTo(expandcollapseStartX + rectSize / 2, expandcollapseStartY + diff);
-              ctx.lineTo(expandcollapseStartX + rectSize / 2, expandcollapseStartY + lineSize + diff);
+            
+            // Draw expand/collapse cue if specified use image else draw it
+            if (expandedOrcollapsed === 'expanded' && options().expandCueImage) {
+              var img=new Image();
+              img.src = options().expandCueImage;
+              ctx.drawImage(img, expandcollapseCenterX, expandcollapseCenterY, rectSize, rectSize);
             }
+            else if (expandedOrcollapsed === 'collapsed' && options().collapseCueImage) {
+              var img=new Image();
+              img.src = options().collapseCueImage;
+              ctx.drawImage(img, expandcollapseCenterX, expandcollapseCenterY, rectSize, rectSize);
+            }
+            else {
+              var oldFillStyle = ctx.fillStyle;
+              var oldWidth = ctx.lineWidth;
+              var oldStrokeStyle = ctx.strokeStyle;
 
-            ctx.closePath();
-            ctx.stroke();
+              ctx.fillStyle = "black";
+              ctx.strokeStyle = "black";
 
-            ctx.strokeStyle = oldStrokeStyle;
-            ctx.fillStyle = oldFillStyle;
-            ctx.lineWidth = oldWidth;
+              ctx.ellipse(expandcollapseCenterX, expandcollapseCenterY, rectSize / 2, rectSize / 2, 0, 0, 2 * Math.PI);
+              ctx.fill();
+
+              ctx.beginPath();
+
+              ctx.strokeStyle = "white";
+              ctx.lineWidth = 2.6 * cy.zoom();
+
+              ctx.moveTo(expandcollapseStartX + diff, expandcollapseStartY + rectSize / 2);
+              ctx.lineTo(expandcollapseStartX + lineSize + diff, expandcollapseStartY + rectSize / 2);
+
+              if (expandedOrcollapsed == 'collapsed') {
+                ctx.moveTo(expandcollapseStartX + rectSize / 2, expandcollapseStartY + diff);
+                ctx.lineTo(expandcollapseStartX + rectSize / 2, expandcollapseStartY + lineSize + diff);
+              }
+
+              ctx.closePath();
+              ctx.stroke();
+
+              ctx.strokeStyle = oldStrokeStyle;
+              ctx.fillStyle = oldFillStyle;
+              ctx.lineWidth = oldWidth;
+            }
 
             node._private.data.expandcollapseRenderedStartX = expandcollapseStartX;
             node._private.data.expandcollapseRenderedStartY = expandcollapseStartY;
@@ -298,10 +308,13 @@
 
               var cyRenderedPosX = event.cyRenderedPosition.x;
               var cyRenderedPosY = event.cyRenderedPosition.y;
-              if (cyRenderedPosX >= expandcollapseRenderedStartX - expandcollapseRenderedRectSize * 0.5
-                      && cyRenderedPosX <= expandcollapseRenderedEndX + expandcollapseRenderedRectSize * 0.5
-                      && cyRenderedPosY >= expandcollapseRenderedStartY - expandcollapseRenderedRectSize * 0.5
-                      && cyRenderedPosY <= expandcollapseRenderedEndY + expandcollapseRenderedRectSize * 0.5) {
+              var factor = (options().expandCollapseCueSensitivity - 1) / 2;
+              console.log(factor);
+              
+              if (cyRenderedPosX >= expandcollapseRenderedStartX - expandcollapseRenderedRectSize * factor
+                      && cyRenderedPosX <= expandcollapseRenderedEndX + expandcollapseRenderedRectSize * factor
+                      && cyRenderedPosY >= expandcollapseRenderedStartY - expandcollapseRenderedRectSize * factor
+                      && cyRenderedPosY <= expandcollapseRenderedEndY + expandcollapseRenderedRectSize * factor) {
                 if (node.isCollapsible()) {
                   node.collapse();
                 } else {
@@ -334,6 +347,8 @@
       cy = this;
       options = setOptions(opts);
 
+      // All parent nodes are expanded on load
+      cy.nodes(':parent').data('expanded-collapsed', 'expanded');
       undoRedoUtilities(options.undoable);
 
       options.ready();

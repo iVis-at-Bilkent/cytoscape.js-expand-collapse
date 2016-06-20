@@ -22,12 +22,10 @@
       ready: function () {
       },
       undoable: true, // and if undoRedoExtension exists,
-      handleColor: '#000000', // the colour of the handle and the line drawn from it
-      hoverDelay: 150, // time spend over a target node before it is considered a target selection
       enabled: true, // whether to start the plugin in the enabled state,
-      expandCollapseBoxPosition: 'top-left', // default box position is top left you can specify a function per node too
-      expandCollapseBoxSize: 12, // size of expand-collapse box
-      expandCollapseLineSize: 8 // size of lines used for drawing plus-minus icons
+      expandCollapseCuePosition: 'top-left', // default cue position is top left you can specify a function per node too
+      expandCollapseCueSize: 12, // size of expand-collapse cue
+      expandCollapseCueLineSize: 8 // size of lines used for drawing plus-minus icons
     };
 
     function setOptions(from) {
@@ -131,17 +129,17 @@
             return optCache || (optCache = $container.data('cyexpandcollapse').options);
           }
 
-          function clearDraws(keepExpandBoxes) {
+          function clearDraws(keepExpandCues) {
 
             var w = $container.width();
             var h = $container.height();
 
             ctx.clearRect(0, 0, w, h);
 
-            if (keepExpandBoxes) {
+            if (keepExpandCues) {
               var collapsedNodes = cy.nodes('[expanded-collapsed="collapsed"]');
               for (var i = 0; i < collapsedNodes.length; i++) {
-                drawExpandCollapseBox(collapsedNodes[i]);
+                drawExpandCollapseCue(collapsedNodes[i]);
               }
             }
           }
@@ -150,20 +148,20 @@
 
             var x = node._private.data.expandcollapseRenderedStartX;
             var y = node._private.data.expandcollapseRenderedStartY;
-            var s = node._private.data.expandcollapseRenderedBoxSize;
+            var s = node._private.data.expandcollapseRenderedCueSize;
 
             if (node.data('expanded-collapsed') === 'collapsed') {
-              drawExpandCollapseBox(node);
+              drawExpandCollapseCue(node);
             }
             ctx.clearRect(x, y, s, s);
           }
 
-          function drawExpandCollapseBox(node) {
+          function drawExpandCollapseCue(node) {
             var cy = node.cy();
             var children = node.children();
             var collapsedChildren = node._private.data.collapsedChildren;
             var hasChildren = children != null && children.length > 0;
-            //check if the expand or collapse box is to be drawn
+            //check if the expand or collapse cue is to be drawn
             if (!hasChildren && collapsedChildren == null) {
               return;
             }
@@ -176,8 +174,8 @@
             var expandedOrcollapsed = node.data('expanded-collapsed');
 
             //Draw expand-collapse rectangles
-            var rectSize = options().expandCollapseBoxSize;
-            var lineSize = options().expandCollapseLineSize;
+            var rectSize = options().expandCollapseCueSize;
+            var lineSize = options().expandCollapseCueLineSize;
             var diff;
 
             rectSize = rectSize * cy.zoom();
@@ -193,7 +191,7 @@
             var expandcollapseCenterX;
             var expandcollapseCenterY;
 
-            if (options().expandCollapseBoxPosition === 'top-left') {
+            if (options().expandCollapseCuePosition === 'top-left') {
               var p = node.renderedPosition();
               var w = node.renderedOuterWidth();
               var h = node.renderedOuterHeight();
@@ -201,9 +199,9 @@
               expandcollapseCenterX = p.x - w / 2 - rectSize / 4 + rectSize / 2;
               expandcollapseCenterY = p.y - h / 2 - rectSize / 4 + rectSize / 2;
             } else {
-              var option = options().expandCollapseBoxPosition;
-              var boxCenter = typeof option === 'function' ? option.call(this, node) : option;
-              var expandcollapseCenter = elementUtilities.convertToRenderedPosition(boxCenter);
+              var option = options().expandCollapseCuePosition;
+              var cueCenter = typeof option === 'function' ? option.call(this, node) : option;
+              var expandcollapseCenter = elementUtilities.convertToRenderedPosition(cueCenter);
 
               expandcollapseCenterX = expandcollapseCenter.x;
               expandcollapseCenterY = expandcollapseCenter.y;
@@ -247,7 +245,7 @@
 
             node._private.data.expandcollapseRenderedStartX = expandcollapseStartX;
             node._private.data.expandcollapseRenderedStartY = expandcollapseStartY;
-            node._private.data.expandcollapseRenderedBoxSize = expandcollapseRectSize;
+            node._private.data.expandcollapseRenderedCueSize = expandcollapseRectSize;
           }
 
           $container.cytoscape(function (e) {
@@ -266,7 +264,7 @@
               clearDraws(true);
 
               // add new handle
-              drawExpandCollapseBox(node);
+              drawExpandCollapseCue(node);
 
               var lastPosition = {};
 
@@ -294,7 +292,7 @@
 
               var expandcollapseRenderedStartX = node._private.data.expandcollapseRenderedStartX;
               var expandcollapseRenderedStartY = node._private.data.expandcollapseRenderedStartY;
-              var expandcollapseRenderedRectSize = node._private.data.expandcollapseRenderedBoxSize;
+              var expandcollapseRenderedRectSize = node._private.data.expandcollapseRenderedCueSize;
               var expandcollapseRenderedEndX = expandcollapseRenderedStartX + expandcollapseRenderedRectSize;
               var expandcollapseRenderedEndY = expandcollapseRenderedStartY + expandcollapseRenderedRectSize;
 

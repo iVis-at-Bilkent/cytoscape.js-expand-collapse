@@ -302,7 +302,7 @@ var expandCollapseUtilities = {
 
       var children = node.children();
 
-
+      cy.trigger("beforeCollapse", [node]);
       for (var i = 0; i < children.length; i++) {
         var child = children[i];
         this.barrowEdgesOfcollapsedChildren(node, child);
@@ -310,6 +310,8 @@ var expandCollapseUtilities = {
 
       this.removeChildren(node, node);
 
+      cy.trigger("afterCollapse", [node]);
+      
       node.position(node.data('position-before-collapse'));
 
       //return the node to undo the operation

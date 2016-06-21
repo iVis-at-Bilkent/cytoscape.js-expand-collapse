@@ -52,6 +52,16 @@ Returns expandable nodes from whole graph.
 Returns collapsible nodes from whole graph.
 
 
+## Events
+`cy.on("beforeCollapse", function(node) { })` Triggered before a node is collapsed
+
+`cy.on("afterCollapse", function(node) { })` Triggered after a node is collapsed
+
+`cy.on("beforeExpand", function(node) { })` Triggered before a node is expanded
+
+`cy.on("afterExpand", function(node) { })`  Triggered after a node is expanded
+
+
 ## Default Options
 ```javascript
     var options = {
@@ -59,9 +69,32 @@ Returns collapsible nodes from whole graph.
       fisheye: true, // to push nodes around currently expanding node away
       animate: true, // animate nodes & zoom
       ready: function () { }, // callback when expand/collapse initialized
-      undoable: true // and if undoRedoExtension exists
+      undoable: true, // and if undoRedoExtension exists
+      
+      // Can only be changed by cy.expandCollapse(options)
+      cueEnabled: true, // Whether cues are enabled
+      expandCollapseCuePosition: 'top-left', // default cue position is top left you can specify a function per node too
+      expandCollapseCueSize: 12, // size of expand-collapse cue
+      expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
+      expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
+      collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
+      expandCollapseCueSensitivity: 1 // sensitivity of expand-collapse cues
     };
 ```
+
+## Default Undo/Redo Actions
+`ur.do("collapse", { nodes: eles, options: opts)` Equivalent of eles.collapse(opts)
+
+`ur.do("expand", { nodes: eles, options: opts)` Equivalent of eles.expand(opts)
+
+`ur.do("collapseRecursively", { nodes: eles, options: opts)` Equivalent of eles.collapseRecursively(opts)
+
+`ur.do("expandRecursively", { nodes: eles, options: opts)` Equivalent of eles.expandRecursively(opts)
+
+`ur.do("collapseAll", { options: opts)` Equivalent of cy.collapseAll(opts)
+
+`ur.do("expandAll", { options: opts })` Equivalent of cy.expandAll(opts)
+
 
 
 ## Dependencies

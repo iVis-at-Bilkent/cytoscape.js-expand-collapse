@@ -3,6 +3,7 @@ var debounce = require('./debounce');
 module.exports = function (params) {
   var fn = params;
 
+  var eMouseOver, eMouseOut, ePosition, eRemove, eTap, eZoom;
   var functions = {
     init: function () {
       var self = this;
@@ -200,12 +201,12 @@ module.exports = function (params) {
         cy = this;
         clearDraws(true);
 
-        cy.bind('zoom pan', function () {
+        cy.bind('zoom pan', eZoom = function () {
           clearDraws(true);
         });
 
-        cy.on('mouseover', 'node', function (e) {
 
+        cy.on('mouseover', 'node', eMouseOver = function (e) {
           var node = this;
 
           // remove old handle
@@ -218,24 +219,24 @@ module.exports = function (params) {
 
         });
 
-        cy.on('mouseout tapdragout', 'node', function (e) {
+        cy.on('mouseout tapdragout', 'node', eMouseOut = function (e) {
 
           clearDraws(true);
 
         });
 
-        cy.on('position', 'node', function () {
+        cy.on('position', 'node', ePosition = function () {
           var node = this;
 
           clearNodeDraw(node);
         });
 
-        cy.on('remove', 'node', function () {
+        cy.on('remove', 'node', eRemove = function () {
           var node = this;
           clearNodeDraw(node);
         });
         var ur;
-        cy.on('tap', 'node', function (event) {
+        cy.on('tap', 'node', eTap = function (event) {
           var node = this;
 
           var expandcollapseRenderedStartX = node._private.data.expandcollapseRenderedStartX;
@@ -277,6 +278,15 @@ module.exports = function (params) {
       });
 
       $container.data('cyexpandcollapse', data);
+    },
+    unbind: function () {
+        cy.off('mouseover', 'node', eMouseOver)
+          .off('mouseout tapdragout', 'node', eMouseOut)
+          .off('position', 'node', ePosition)
+          .off('remove', 'node', eRemove)
+          .off('tap', 'node', eTap);
+
+        cy.unbind("zoom pan", eZoom);
     }
   };
 

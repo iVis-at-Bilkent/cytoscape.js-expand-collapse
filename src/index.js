@@ -43,7 +43,6 @@
     }
 
 
-
     // cy.expandCollapse()
     cytoscape("core", "expandCollapse", function (opts) {
       cy = this;
@@ -52,14 +51,15 @@
       // All parent nodes are expanded on load
       cy.nodes(':parent').data('expanded-collapsed', 'expanded');
       undoRedoUtilities();
+      
+      if(options.cueEnabled)
+        $(cy.container()).cytoscapeExpandCollapse(options);
+      else
+        $(cy.container()).cytoscapeExpandCollapse("unbind");
+
 
       options.ready();
 
-      if(cueEnabled)
-        $(cy.container()).cytoscapeExpandCollapse(options);
-      else {
-        // TODO: destroy if initialized
-      }
 
       return cy;
     });

@@ -63,7 +63,7 @@ module.exports = function () {
         result.nodes = func.indexOf("All") > 0 ? cy[func](args.options) : nodes[func](args.options);
       } else {
         result.oldData = getNodePositionsAndSizes();
-        result.nodes = func.indexOf("All") > 0 ? cy[func](secondTimeOpts) : nodes[func](secondTimeOpts);
+        result.nodes = func.indexOf("All") > 0 ? cy[func](secondTimeOpts) : cy.collection(nodes)[func](secondTimeOpts);
         returnToPositionsAndSizes(args.oldData);
       }
 

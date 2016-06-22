@@ -38,7 +38,6 @@ var expandCollapseUtilities = {
     node._private.data.collapsedChildren.nodes().restore();
     this.repairEdgesOfCollapsedChildren(node);
     node._private.data.collapsedChildren = null;
-    console.log(node);
     node.trigger("afterExpand");
 
 

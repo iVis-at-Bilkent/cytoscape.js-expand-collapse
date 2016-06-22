@@ -34,11 +34,12 @@ var expandCollapseUtilities = {
     node.removeData("infoLabel");
     node.data('expanded-collapsed', 'expanded');
 
-    cy.trigger("beforeExpand", [node]);
+    node.trigger("beforeExpand");
     node._private.data.collapsedChildren.nodes().restore();
     this.repairEdgesOfCollapsedChildren(node);
     node._private.data.collapsedChildren = null;
-    cy.trigger("afterExpand", [node]);
+    console.log(node);
+    node.trigger("afterExpand");
 
 
     elementUtilities.moveNodes(positionDiff, node.children());
@@ -302,7 +303,7 @@ var expandCollapseUtilities = {
 
       var children = node.children();
 
-      cy.trigger("beforeCollapse", [node]);
+      node.trigger("beforeCollapse");
       for (var i = 0; i < children.length; i++) {
         var child = children[i];
         this.barrowEdgesOfcollapsedChildren(node, child);
@@ -310,7 +311,7 @@ var expandCollapseUtilities = {
 
       this.removeChildren(node, node);
 
-      cy.trigger("afterCollapse", [node]);
+      node.trigger("afterCollapse");
       
       node.position(node.data('position-before-collapse'));
 

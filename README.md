@@ -53,13 +53,13 @@ Returns collapsible nodes from whole graph.
 
 
 ## Events
-`cy.on("beforeCollapse", function(node) { })` Triggered before a node is collapsed
+`cy.nodes().on("beforeCollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed
 
-`cy.on("afterCollapse", function(node) { })` Triggered after a node is collapsed
+`cy.nodes().on("afterCollapse", function(event) { var node = this; ... })` Triggered after a node is collapsed
 
-`cy.on("beforeExpand", function(node) { })` Triggered before a node is expanded
+`cy.nodes().on("beforeExpand", function(event) { var node = this; ... })` Triggered before a node is expanded
 
-`cy.on("afterExpand", function(node) { })`  Triggered after a node is expanded
+`cy.nodes().on("afterExpand", function(event) { var node = this; ... })`  Triggered after a node is expanded
 
 
 ## Default Options

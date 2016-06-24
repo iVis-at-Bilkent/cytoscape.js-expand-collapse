@@ -31,7 +31,7 @@ var elementUtilities = {
 
     return roots;
   },
-  rearrange: function (layoutBy) {//*//
+  rearrange: function (layoutBy) {
     if (typeof layoutBy === "function") {
       layoutBy();
     } else if (layoutBy != null) {

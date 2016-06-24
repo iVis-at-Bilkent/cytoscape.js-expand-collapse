@@ -16,13 +16,13 @@
 
     var cy;
     var options = {
-      layoutBy: null, // for rearrange after expand/collapse
-      fisheye: true,
-      animate: true,
-      ready: function () { },
+      layoutBy: null, // for rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
+      fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too
+      animate: true, // whether to animate on drawing changes you can specify a function too
+      ready: function () { }, // callback when expand/collapse initialized
       undoable: true, // and if undoRedoExtension exists,
 
-      cueEnabled: true,
+      cueEnabled: true, // Whether cues are enabled
       expandCollapseCuePosition: 'top-left', // default cue position is top left you can specify a function per node too
       expandCollapseCueSize: 12, // size of expand-collapse cue
       expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
@@ -40,6 +40,15 @@
         if (tempOpts.hasOwnProperty(key))
           tempOpts[key] = from[key];
       return tempOpts;
+    }
+    
+    // evaluate some specific options in case of they are specified as functions to be dynamically changed
+    function evalOptions(options) {
+      var animate = typeof options.animate === 'function' ? options.animate.call() : options.animate;
+      var fisheye = typeof options.fisheye === 'function' ? options.fisheye.call() : options.fisheye;
+      
+      options.animate = animate;
+      options.fisheye = fisheye;
     }
 
 
@@ -63,6 +72,18 @@
 
       return cy;
     });
+    
+    // set functions
+    
+    // set all options at once
+    cytoscape("core", "setExpandCollapseOptions", function (opts) {
+      options = opts;
+    });
+    
+    // set the option whose name is given
+    cytoscape("core", "setExpandCollapseOption", function (name, opt) {
+      options[name] = opt;
+    });
 
     // Collection functions
 
@@ -70,6 +91,7 @@
     cytoscape('collection', 'collapse', function (opts) {
       var eles = this.collapsibleNodes();
       var tempOptions = setOptions(opts);
+      evalOptions(tempOptions);
 
       return expandCollapseUtilities.collapseGivenNodes(eles, tempOptions);
     });
@@ -78,6 +100,7 @@
     cytoscape('collection', 'collapseRecursively', function (opts) {
       var eles = this.collapsibleNodes();
       var tempOptions = setOptions(opts);
+      evalOptions(tempOptions);
 
       return eles.union(eles.descendants()).collapse(tempOptions);
     });
@@ -86,6 +109,7 @@
     cytoscape('collection', 'expand', function (opts) {
       var eles = this.expandableNodes();
       var tempOptions = setOptions(opts);
+      evalOptions(tempOptions);
 
       return expandCollapseUtilities.expandGivenNodes(eles, tempOptions);
     });
@@ -94,6 +118,7 @@
     cytoscape('collection', 'expandRecursively', function (opts) {
       var eles = this.expandableNodes();
       var tempOptions = setOptions(opts);
+      evalOptions(tempOptions);
 
       return expandCollapseUtilities.expandAllNodes(eles, tempOptions);
     });
@@ -105,6 +130,7 @@
     cytoscape('core', 'collapseAll', function (opts) {
       var cy = this;
       var tempOptions = setOptions(opts);
+      evalOptions(tempOptions);
 
       return cy.collapsibleNodes().collapseRecursively(tempOptions);
     });
@@ -113,6 +139,7 @@
     cytoscape('core', 'expandAll', function (opts) {
       var cy = this;
       var tempOptions = setOptions(opts);
+      evalOptions(tempOptions);
 
       return cy.expandableNodes().expandRecursively(tempOptions);
     });

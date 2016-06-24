@@ -66,12 +66,11 @@ Returns collapsible nodes from whole graph.
 ```javascript
     var options = {
       layoutBy: null, // for rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
-      fisheye: true, // to push nodes around currently expanding node away
-      animate: true, // animate nodes & zoom
+      fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too
+      animate: true, // whether to animate on drawing changes you can specify a function too
       ready: function () { }, // callback when expand/collapse initialized
-      undoable: true, // and if undoRedoExtension exists
-      
-      // Can only be changed by cy.expandCollapse(options)
+      undoable: true, // and if undoRedoExtension exists,
+
       cueEnabled: true, // Whether cues are enabled
       expandCollapseCuePosition: 'top-left', // default cue position is top left you can specify a function per node too
       expandCollapseCueSize: 12, // size of expand-collapse cue

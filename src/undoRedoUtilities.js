@@ -3,7 +3,8 @@ module.exports = function () {
     return;
 
   var ur = cy.undoRedo({
-    defaultActions: false
+    defaultActions: false,
+    isDebug: true
   });
 
   function getEles(_eles) {

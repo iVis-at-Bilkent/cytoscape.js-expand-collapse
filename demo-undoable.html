@@ -96,38 +96,6 @@
 				});
 
 
-				var tappedBefore;
-				var tappedTimeout;
-				// test for expand-collapse
-				cy.on('tap', function (event) {
-					var tappedNow = event.cyTarget;
-					if (tappedTimeout && tappedBefore) {
-						clearTimeout(tappedTimeout);
-					}
-					if (tappedBefore === tappedNow) {
-						tappedNow.trigger('doubleTap');
-						tappedBefore = null;
-					} else {
-						tappedTimeout = setTimeout(function () {
-							tappedBefore = null;
-						}, 300);
-						tappedBefore = tappedNow;
-					}
-				});
-
-				cy.nodes().on("doubleTap", function (e) {
-					//console.log(e.cyTarget);
-					if (e.cyTarget.isCollapsible()){
-						ur.do("collapse", {
-							nodes: e.cyTarget
-						}); //e.cyTarget.collapse();
-					} else {
-						ur.do("expand", {
-							nodes: e.cyTarget
-						}); //e.cyTarget.expand();
-					}
-				});
-
 				document.getElementById("collapseRecursively").addEventListener("click", function () {
 					ur.do("collapseRecursively", {
 						nodes: cy.$(":selected")

@@ -81,8 +81,8 @@
     });
     
     // set the option whose name is given
-    cytoscape("core", "setExpandCollapseOption", function (name, opt) {
-      options[name] = opt;
+    cytoscape("core", "setExpandCollapseOption", function (name, value) {
+      options[name] = value;
     });
 
     // Collection functions

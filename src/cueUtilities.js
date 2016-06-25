@@ -3,7 +3,7 @@ var debounce = require('./debounce');
 module.exports = function (params) {
   var fn = params;
 
-  var eMouseOver, eMouseOut, ePosition, eRemove, eTap, eZoom;
+  var eMouseOver, eMouseOut, ePosition, eRemove, eTap, eZoom, eAdd, eFree;
   var functions = {
     init: function () {
       var self = this;
@@ -228,13 +228,25 @@ module.exports = function (params) {
         cy.on('position', 'node', ePosition = function () {
           var node = this;
 
-          clearNodeDraw(node);
+          clearDraws(true);
         });
 
         cy.on('remove', 'node', eRemove = function () {
           var node = this;
           clearNodeDraw(node);
         });
+        
+        cy.on('add', 'node', eAdd = function () {
+          var node = this;
+          drawExpandCollapseCue(node);
+        });
+        
+        cy.on('free', 'node', eFree = function () {
+          var node = this;
+          
+          clearDraws(true);
+        });
+        
         var ur;
         cy.on('tap', 'node', eTap = function (event) {
           var node = this;
@@ -284,7 +296,9 @@ module.exports = function (params) {
           .off('mouseout tapdragout', 'node', eMouseOut)
           .off('position', 'node', ePosition)
           .off('remove', 'node', eRemove)
-          .off('tap', 'node', eTap);
+          .off('tap', 'node', eTap)
+          .off('add', 'node', eAdd)
+          .off('free', 'node', eFree);
 
         cy.unbind("zoom pan", eZoom);
     }

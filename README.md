@@ -51,6 +51,12 @@ Returns expandable nodes from whole graph.
 `cy.collapsibleNodes()`
 Returns collapsible nodes from whole graph.
 
+`cy.setExpandCollapseOptions(options)`
+Resets the options to the given parameter.
+
+`cy.setExpandCollapseOption(name, value)`
+Sets the value of the option given by the name to the given value.
+
 
 ## Events
 `cy.nodes().on("beforeCollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed

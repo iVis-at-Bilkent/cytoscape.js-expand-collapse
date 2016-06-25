@@ -1,0 +1,118 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'publish', '.' ]
+2 info using npm@3.9.2
+3 info using node@v0.10.25
+4 verbose node symlink /usr/bin/node
+5 verbose publish [ '.' ]
+6 silly cache add args [ '.', null ]
+7 verbose cache add spec .
+8 silly cache add parsed spec { raw: '.',
+8 silly cache add   scope: null,
+8 silly cache add   name: null,
+8 silly cache add   rawSpec: '.',
+8 silly cache add   spec: '/home/metin/Workspace/cytoscape.js-expand-collapse',
+8 silly cache add   type: 'directory' }
+9 verbose addLocalDirectory /home/metin/.npm/cytoscape-expand-collapse/1.0.1/package.tgz not in flight; packing
+10 verbose correctMkdir /home/metin/.npm correctMkdir not in flight; initializing
+11 info lifecycle cytoscape-expand-collapse@1.0.1~prepublish: cytoscape-expand-collapse@1.0.1
+12 silly lifecycle cytoscape-expand-collapse@1.0.1~prepublish: no script for prepublish, continuing
+13 verbose tar pack [ '/home/metin/.npm/cytoscape-expand-collapse/1.0.1/package.tgz',
+13 verbose tar pack   '/home/metin/Workspace/cytoscape.js-expand-collapse' ]
+14 verbose tarball /home/metin/.npm/cytoscape-expand-collapse/1.0.1/package.tgz
+15 verbose folder /home/metin/Workspace/cytoscape.js-expand-collapse
+16 verbose addLocalTarball adding from inside cache /home/metin/.npm/cytoscape-expand-collapse/1.0.1/package.tgz
+17 verbose correctMkdir /home/metin/.npm correctMkdir not in flight; initializing
+18 silly cache afterAdd cytoscape-expand-collapse@1.0.1
+19 verbose afterAdd /home/metin/.npm/cytoscape-expand-collapse/1.0.1/package/package.json not in flight; writing
+20 verbose correctMkdir /home/metin/.npm correctMkdir not in flight; initializing
+21 verbose afterAdd /home/metin/.npm/cytoscape-expand-collapse/1.0.1/package/package.json written
+22 silly publish { name: 'cytoscape-expand-collapse',
+22 silly publish   version: '1.0.1',
+22 silly publish   description: 'This extension provides an interface to expand-collapse nodes.',
+22 silly publish   main: 'cytoscape-expand-collapse.js',
+22 silly publish   spm: { main: 'cytoscape-expand-collapse.js' },
+22 silly publish   scripts: { test: 'echo "Error: no test specified" && exit 1' },
+22 silly publish   repository:
+22 silly publish    { type: 'git',
+22 silly publish      url: 'git+https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse.git' },
+22 silly publish   keywords: [ 'cytoscape', 'cyext' ],
+22 silly publish   license: 'MIT',
+22 silly publish   bugs: { url: 'https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/issues' },
+22 silly publish   homepage: 'https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse',
+22 silly publish   devDependencies:
+22 silly publish    { browserify: '^11.2.0',
+22 silly publish      gulp: '^3.9.0',
+22 silly publish      'gulp-derequire': '^2.1.0',
+22 silly publish      'gulp-jshint': '^1.11.2',
+22 silly publish      'gulp-prompt': '^0.1.2',
+22 silly publish      'gulp-replace': '^0.5.4',
+22 silly publish      'gulp-shell': '^0.5.0',
+22 silly publish      'gulp-util': '^3.0.6',
+22 silly publish      'jshint-stylish': '^2.0.1',
+22 silly publish      'node-notifier': '^4.3.1',
+22 silly publish      'run-sequence': '^1.1.4',
+22 silly publish      'vinyl-buffer': '^1.0.0',
+22 silly publish      'vinyl-source-stream': '^1.1.0' },
+22 silly publish   readme: 'cytoscape-expand-collapse\n================================================================================\n\n\n## Description\n\nThis extension provides an interface to expand/collapse nodes.\n\n## API\n\n* Note that compounds are nodes.\n\n`cy.expandCollapse(options)`\nTo initialize/set options whenever you want.\n\n* Following functions get options parameter to apply during a particular event unlike the function above.\n\n`eles.collapse(options)`\nCollapse node(s).\n\n`eles.collapseRecursively(options)`\nCollapse node(s) and their child nodes.\n\n`cy.collapseAll(options)`\nCollapse all nodes on graph (recursively).\n\n`eles.expand(options)`\nExpand node(s).\n\n`eles.expandRecursively(options)`\nExpand node(s) and their child compounds.\n\n`cy.expandAll(options)`\nExpand all nodes on graph (recursively).\n\n`ele.isExpandable()`\nGet whether node is expandable (or is collapsed)\n\n`ele.isCollapsible()`\nGet whether node is expandable (or is collapsed).\n\n`eles.expandableNodes()`\nReturns expandable nodes from given set of elements.\n\n`eles.collapsibleNodes()`\nReturns collapsible nodes from given set of elements.\n\n`cy.expandableNodes()`\nReturns expandable nodes from whole graph.\n\n`cy.collapsibleNodes()`\nReturns collapsible nodes from whole graph.\n\n`cy.setExpandCollapseOptions(options)`\nResets the options to the given parameter.\n\n`cy.setExpandCollapseOption(name, value)`\nSets the value of the option given by the name to the given value.\n\n\n## Events\n`cy.nodes().on("beforeCollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed\n\n`cy.nodes().on("afterCollapse", function(event) { var node = this; ... })` Triggered after a node is collapsed\n\n`cy.nodes().on("beforeExpand", function(event) { var node = this; ... })` Triggered before a node is expanded\n\n`cy.nodes().on("afterExpand", function(event) { var node = this; ... })`  Triggered after a node is expanded\n\n\n## Default Options\n```javascript\n    var options = {\n      layoutBy: null, // for rearrange after expand/collapse. It\'s just layout options or whole layout function. Choose your side!\n      fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too\n      animate: true, // whether to animate on drawing changes you can specify a function too\n      ready: function () { }, // callback when expand/collapse initialized\n      undoable: true, // and if undoRedoExtension exists,\n\n      cueEnabled: true, // Whether cues are enabled\n      expandCollapseCuePosition: \'top-left\', // default cue position is top left you can specify a function per node too\n      expandCollapseCueSize: 12, // size of expand-collapse cue\n      expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons\n      expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue\n      collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue\n      expandCollapseCueSensitivity: 1 // sensitivity of expand-collapse cues\n    };\n```\n\n## Default Undo/Redo Actions\n`ur.do("collapse", { nodes: eles, options: opts)` Equivalent of eles.collapse(opts)\n\n`ur.do("expand", { nodes: eles, options: opts)` Equivalent of eles.expand(opts)\n\n`ur.do("collapseRecursively", { nodes: eles, options: opts)` Equivalent of eles.collapseRecursively(opts)\n\n`ur.do("expandRecursively", { nodes: eles, options: opts)` Equivalent of eles.expandRecursively(opts)\n\n`ur.do("collapseAll", { options: opts)` Equivalent of cy.collapseAll(opts)\n\n`ur.do("expandAll", { options: opts })` Equivalent of cy.expandAll(opts)\n\n\n\n## Dependencies\n\n * Cytoscape.js ^1.7.0\n * cytoscape-undo-redo.js(optional) ^1.0.1\n * cytoscape-cose-bilkent.js(optional/suggested for layout after expand/collapse) ^1.3.6\n\n\n## Usage instructions\n\nDownload the library:\n * via npm: `npm install cytoscape-expand-collapse`,\n * via bower: `bower install cytoscape-expand-collapse`, or\n * via direct download in the repository (probably from a tag).\n\n`require()` the library as appropriate for your project:\n\nCommonJS:\n```js\nvar cytoscape = require(\'cytoscape\');\nvar expand-collapse = require(\'cytoscape-expand-collapse\');\n\nexpand-collapse( cytoscape ); // register extension\n```\n\nAMD:\n```js\nrequire([\'cytoscape\', \'cytoscape-expand-collapse\'], function( cytoscape, expand-collapse ){\n  expand-collapse( cytoscape ); // register extension\n});\n```\n\nPlain HTML/JS has the extension registered for you automatically, because no `require()` is needed.\n\n\n## Publishing instructions\n\nThis project is set up to automatically be published to npm and bower.  To publish:\n\n1. Set the version number environment variable: `export VERSION=1.2.3`\n1. Publish: `gulp publish`\n1. If publishing to bower for the first time, you\'ll need to run `bower register cytoscape-expand-collapse https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse.git`\n\n\n## Team\n\n  * [Selim Firat Yilmaz](https://github.com/mrsfy), [Metin Can Siper](https://github.com/metincansiper), [Alper Karacelik](https://github.com/alperkaracelik), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis)\n',
+22 silly publish   readmeFilename: 'README.md',
+22 silly publish   gitHead: '5f99c444fdff173c36e05e08bb97f85a83ef7248',
+22 silly publish   _id: 'cytoscape-expand-collapse@1.0.1',
+22 silly publish   _shasum: 'af1ce3f65ef027efe2476ddf1cb3fd12f1139869',
+22 silly publish   _from: '.' }
+23 verbose getPublishConfig undefined
+24 silly mapToRegistry name cytoscape-expand-collapse
+25 silly mapToRegistry using default registry
+26 silly mapToRegistry registry https://registry.npmjs.org/
+27 silly mapToRegistry data { raw: 'cytoscape-expand-collapse',
+27 silly mapToRegistry   scope: null,
+27 silly mapToRegistry   name: 'cytoscape-expand-collapse',
+27 silly mapToRegistry   rawSpec: '',
+27 silly mapToRegistry   spec: 'latest',
+27 silly mapToRegistry   type: 'tag' }
+28 silly mapToRegistry uri https://registry.npmjs.org/cytoscape-expand-collapse
+29 verbose publish registryBase https://registry.npmjs.org/
+30 silly publish uploading /home/metin/.npm/cytoscape-expand-collapse/1.0.1/package.tgz
+31 verbose request uri https://registry.npmjs.org/cytoscape-expand-collapse
+32 verbose request sending authorization for write operation
+33 info attempt registry request try #1 at 12:52:20
+34 verbose request using bearer token for auth
+35 verbose request id b93a024113e44391
+36 http request PUT https://registry.npmjs.org/cytoscape-expand-collapse
+37 http 403 https://registry.npmjs.org/cytoscape-expand-collapse
+38 verbose headers { 'content-type': 'application/json',
+38 verbose headers   'cache-control': 'max-age=300',
+38 verbose headers   'content-length': '95',
+38 verbose headers   'accept-ranges': 'bytes',
+38 verbose headers   date: 'Sat, 25 Jun 2016 09:52:22 GMT',
+38 verbose headers   via: '1.1 varnish',
+38 verbose headers   connection: 'keep-alive',
+38 verbose headers   'x-served-by': 'cache-fra1246-FRA',
+38 verbose headers   'x-cache': 'MISS',
+38 verbose headers   'x-cache-hits': '0',
+38 verbose headers   'x-timer': 'S1466848340.999528,VS0,VE1590',
+38 verbose headers   vary: 'Accept-Encoding' }
+39 verbose request invalidating /home/metin/.npm/registry.npmjs.org/cytoscape-expand-collapse on PUT
+40 error publish Failed PUT 403
+41 verbose stack Error: "You cannot publish over the previously published version 1.0.1." : cytoscape-expand-collapse
+41 verbose stack     at makeError (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+41 verbose stack     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:252:14)
+41 verbose stack     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+41 verbose stack     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:200:22)
+41 verbose stack     at Request.EventEmitter.emit (events.js:98:17)
+41 verbose stack     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1067:10)
+41 verbose stack     at Request.EventEmitter.emit (events.js:117:20)
+41 verbose stack     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:988:12)
+41 verbose stack     at IncomingMessage.EventEmitter.emit (events.js:117:20)
+41 verbose stack     at _stream_readable.js:920:16
+42 verbose statusCode 403
+43 verbose pkgid cytoscape-expand-collapse
+44 verbose cwd /home/metin/Workspace/cytoscape.js-expand-collapse
+45 error Linux 4.2.0-27-generic
+46 error argv "node" "/usr/local/bin/npm" "publish" "."
+47 error node v0.10.25
+48 error npm  v3.9.2
+49 error code E403
+50 error "You cannot publish over the previously published version 1.0.1." : cytoscape-expand-collapse
+51 error If you need help, you may report this error at:
+51 error     <https://github.com/npm/npm/issues>
+52 verbose exit [ 1, true ]

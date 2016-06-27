@@ -37,14 +37,13 @@
                 },
                 ready: function () {
 
-                },
-                defaultActions: true
+                }
             }
         };
 
         var isInitialized = false;
         // design implementation
-        cytoscape("core", "undoRedo", function (options) {
+        cytoscape("core", "undoRedo", function (options, dontInit) {
             cy = this;
             if (options) {
                 for (var key in options)
@@ -56,14 +55,14 @@
                         actions[key] = options.actions[key];
 
 
+            }
+
+            if (!isInitialized && !dontInit) {
                 if (_instance.options.keyboardShortcuts) {
                     var sh = _instance.options.keyboardShortcuts;
                     setKeyboardShortcuts(sh.ctrl_z, sh.ctrl_y, sh.ctrl_shift_z);
                 } else
                     setKeyboardShortcuts(false, false, false);
-
-            }
-            if (!isInitialized && (!options || options.defaultActions)) {
                 var defActions = defaultActions();
                 for (var key in defActions)
                     actions[key] = defActions[key];
@@ -82,10 +81,9 @@
         // Undo last action
         _instance.undo = function () {
             if (!this.isUndoStackEmpty()) {
-                _instance.options.beforeUndo();
 
                 var action = undoStack.pop();
-                cy.trigger("undo", [action.name, action.args]);
+                cy.trigger("beforeUndo", [action.name, action.args]);
 
                 var res = actions[action.name]._undo(action.args);
 
@@ -94,8 +92,7 @@
                     args: res
                 });
 
-                _instance.options.afterUndo();
-
+                cy.trigger("afterUndo", [action.name, action.args]);
                 return res;
             } else if (_instance.options.isDebug) {
                 console.log("Undoing cannot be done because undo stack is empty!");
@@ -106,11 +103,11 @@
         _instance.redo = function () {
 
             if (!this.isRedoStackEmpty()) {
-                _instance.options.beforeRedo();
-
                 var action = redoStack.pop();
 
-                cy.trigger(action.firstTime ? "do" : "redo", [action.name, action.args]);
+                cy.trigger(action.firstTime ? "beforeDo" : "beforeRedo", [action.name, action.args]);
+
+
                 if (!action.args)
                     action.args = {};
                 action.args.firstTime = action.firstTime ? true : false;
@@ -122,11 +119,10 @@
                     args: res
                 });
 
-                _instance.options.afterRedo();
-
+                cy.trigger(action.firstTime ? "afterDo" : "afterRedo", [action.name, action.args]);
                 return res;
             } else if (_instance.options.isDebug) {
-                console.log("Redoing cannot be done because undo stack is empty!");
+                console.log("Redoing cannot be done because redo stack is empty!");
             }
 
         };
@@ -232,8 +228,7 @@
                             nodes = cy.nodes(":visible").filter(":selected");
                         }
                         else {
-                            nodes = [];
-                            nodes.push(node);
+                            nodes = cy.collection([node]);
                         }
 
                         var param = {
@@ -247,10 +242,29 @@
                 }
             });
         }
-
-        function moveNodes(positionDiff, nodes) {
+        function getTopMostNodes(nodes) {
+            var nodesMap = {};
             for (var i = 0; i < nodes.length; i++) {
-                var node = nodes[i];
+                nodesMap[nodes[i].id()] = true;
+            }
+            var roots = nodes.filter(function (i, ele) {
+                var parent = ele.parent()[0];
+                while(parent != null){
+                    if(nodesMap[parent.id()]){
+                        return false;
+                    }
+                    parent = parent.parent()[0];
+                }
+                return true;
+            });
+
+            return roots;
+        }
+
+        function moveNodes(positionDiff, nodes, notCalcTopMostNodes) {
+            var topMostNodes = notCalcTopMostNodes?nodes:getTopMostNodes(nodes);
+            for (var i = 0; i < topMostNodes.length; i++) {
+                var node = topMostNodes[i];
                 var oldX = node.position("x");
                 var oldY = node.position("y");
                 node.position({
@@ -258,7 +272,7 @@
                     y: oldY + positionDiff.y
                 });
                 var children = node.children();
-                moveNodes(positionDiff, children);
+                moveNodes(positionDiff, children, true);
             }
         }
 
@@ -322,12 +336,6 @@
                 },
                 "restore": {
                     _do: restoreEles,
-                    _undo: cy.remove
-                },
-                "clone": {
-                    _do: function (_eles) {
-                        return _eles.firstTime ? getEles(_eles).clone() : restoreEles(_eles);
-                    },
                     _undo: cy.remove
                 },
                 "select": {
@@ -410,10 +418,13 @@
                     }
                 },
                 "layout": {
-                    _do: function (options) {
-                        if(options.firstTime){
+                    _do: function (args) {
+                        if (args.firstTime){
                             var nodesData = getNodesData();
-                            cy.layout(options);
+                            if(args.eles)
+                                getEles(args.eles).layout(args.options);
+                            else
+                                cy.layout(args.options);
                             return nodesData;
                         } else
                             return returnToPositionsAndSizes(options);

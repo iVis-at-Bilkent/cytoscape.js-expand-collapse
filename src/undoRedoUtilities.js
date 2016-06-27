@@ -2,10 +2,7 @@ module.exports = function () {
   if (cy.undoRedo == null)
     return;
 
-  var ur = cy.undoRedo({
-    defaultActions: false,
-    isDebug: true
-  });
+  var ur = cy.undoRedo({}, true);
 
   function getEles(_eles) {
     return (typeof _eles === "string") ? cy.$(_eles) : _eles;

@@ -73,7 +73,6 @@ module.exports = function () {
 
   for (var i = 0; i < actions.length; i++) {
     ur.action(actions[i], doIt(actions[i]), doIt(actions[(i + 3) % 6]));
-    console.log(actions[i] + "->" + actions[(i + 3) % 6]);
   }
 
 };

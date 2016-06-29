@@ -4,7 +4,9 @@ cytoscape-expand-collapse
 
 ## Description
 
-This extension provides an interface to expand/collapse nodes.
+This extension provides an interface to expand/collapse nodes for better management of complexity of Cytoscape.js compound graphs. When using this extension, please cite the following paper, on which the ideas are based on:
+
+U. Dogrusoz and B. Genc, "A Multi-Graph Approach to Complexity Management in Interactive Graph Visualization", Computers & Graphics, 30(1), pp. 86-97, 2006.
 
 ## API
 

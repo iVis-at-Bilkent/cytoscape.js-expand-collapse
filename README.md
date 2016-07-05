@@ -125,7 +125,7 @@ CommonJS:
 var cytoscape = require('cytoscape');
 var expand-collapse = require('cytoscape-expand-collapse');
 
-expand-collapse( cytoscape ); // register extension
+expand-collapse( cytoscape, jquery ); // register extension
 ```
 
 AMD:

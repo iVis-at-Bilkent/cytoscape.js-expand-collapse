@@ -2,17 +2,18 @@
 (function ($$, $) {
   'use strict';
 
-  var expandCollapseUtilities = require('./expandCollapseUtilities');
-  var undoRedoUtilities = require('./undoRedoUtilities');
-  var elementUtilities = require('./elementUtilities');
-  $.fn.cytoscapeExpandCollapse = require("./cueUtilities");
-
   // registers the extension on a cytoscape lib ref
-  var register = function (cytoscape) {
+  var register = function (cytoscape, $) {
 
     if (!cytoscape) {
       return;
     } // can't register if cytoscape unspecified
+
+    var expandCollapseUtilities = require('./expandCollapseUtilities');
+    var undoRedoUtilities = require('./undoRedoUtilities');
+    var elementUtilities = require('./elementUtilities');
+    $.fn.cytoscapeExpandCollapse = require("./cueUtilities");
+
 
     var cy;
     var options = {
@@ -59,7 +60,7 @@
 
       // All parent nodes are expanded on load
       cy.nodes(':parent').data('expanded-collapsed', 'expanded');
-      undoRedoUtilities();
+      undoRedoUtilities(cy);
       
       if(options.cueEnabled)
         $(cy.container()).cytoscapeExpandCollapse(options);
@@ -93,7 +94,7 @@
       var tempOptions = setOptions(opts);
       evalOptions(tempOptions);
 
-      return expandCollapseUtilities.collapseGivenNodes(eles, tempOptions);
+      return expandCollapseUtilities(cy).collapseGivenNodes(eles, tempOptions);
     });
 
     // eles.collapseAll(options)
@@ -111,7 +112,7 @@
       var tempOptions = setOptions(opts);
       evalOptions(tempOptions);
 
-      return expandCollapseUtilities.expandGivenNodes(eles, tempOptions);
+      return expandCollapseUtilities(cy).expandGivenNodes(eles, tempOptions);
     });
 
     // eles.expandAll(options)
@@ -120,7 +121,7 @@
       var tempOptions = setOptions(opts);
       evalOptions(tempOptions);
 
-      return expandCollapseUtilities.expandAllNodes(eles, tempOptions);
+      return expandCollapseUtilities(cy).expandAllNodes(eles, tempOptions);
     });
 
 
@@ -202,8 +203,8 @@
     });
   }
 
-  if (typeof cytoscape !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
-    register(cytoscape);
+    if (typeof cytoscape !== 'undefined' && typeof jQuery !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
+      register(cytoscape, jQuery);
   }
 
-})(cytoscape, jQuery);
+})();

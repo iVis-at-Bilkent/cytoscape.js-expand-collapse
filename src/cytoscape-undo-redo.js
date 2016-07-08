@@ -54,9 +54,9 @@
                     for (var key in options.actions)
                         actions[key] = options.actions[key];
 
-
+                
             }
-
+            
             if (!isInitialized && !dontInit) {
                 if (_instance.options.keyboardShortcuts) {
                     var sh = _instance.options.keyboardShortcuts;
@@ -109,7 +109,7 @@
 
 
                 if (!action.args)
-                    action.args = {};
+                  action.args = {};
                 action.args.firstTime = action.firstTime ? true : false;
 
                 var res = actions[action.name]._do(action.args);
@@ -130,6 +130,7 @@
         // Calls registered function with action name actionName via actionFunction(args)
         _instance.do = function (actionName, args) {
 
+            redoStack = [];
             redoStack.push({
                 name: actionName,
                 args: args,
@@ -217,7 +218,7 @@
                         y: node.position("y")
                     };
                     if (mouseUpPosition.x != lastMouseDownPosition.x ||
-                      mouseUpPosition.y != lastMouseDownPosition.y) {
+                        mouseUpPosition.y != lastMouseDownPosition.y) {
                         var positionDiff = {
                             x: mouseUpPosition.x - lastMouseDownPosition.x,
                             y: mouseUpPosition.y - lastMouseDownPosition.y
@@ -424,7 +425,7 @@
                             if(args.eles)
                                 getEles(args.eles).layout(args.options);
                             else
-                                cy.layout(args.options);
+                              cy.layout(args.options);
                             return nodesData;
                         } else
                             return returnToPositionsAndSizes(options);

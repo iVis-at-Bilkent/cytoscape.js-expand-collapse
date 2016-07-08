@@ -1,4 +1,5 @@
-var elementUtilities = {
+function elementUtilities(cy) {
+ return {
   moveNodes: function (positionDiff, nodes, notCalcTopMostNodes) {
     var topMostNodes = notCalcTopMostNodes ? nodes : this.getTopMostNodes(nodes);
     for (var i = 0; i < topMostNodes.length; i++) {
@@ -50,6 +51,7 @@ var elementUtilities = {
       y: y
     };
   }
-};
+ };
+}
 
 module.exports = elementUtilities;

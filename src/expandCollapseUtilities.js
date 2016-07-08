@@ -1,8 +1,9 @@
 var boundingBoxUtilities = require('./boundingBoxUtilities');
-var elementUtilities = require('./elementUtilities');
 
 // Expand collapse utilities
-var expandCollapseUtilities = {
+function expandCollapseUtilities(cy) {
+var elementUtilities = require('./elementUtilities')(cy);
+return {
   edgesToRepair: null,
   //the number of nodes moving animatedly after expand operation
   animatedlyMovingNodeCount: 0,
@@ -714,6 +715,7 @@ var expandCollapseUtilities = {
     }
     return true;
   }
+}
 };
 
 module.exports = expandCollapseUtilities;

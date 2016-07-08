@@ -1,4 +1,4 @@
-module.exports = function () {
+module.exports = function (cy) {
   if (cy.undoRedo == null)
     return;
 

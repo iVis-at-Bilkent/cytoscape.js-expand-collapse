@@ -95,7 +95,7 @@ return {
           edge.removeClass("meta");
         }
         else {
-          edge.addClass("meta");
+          //edge.addClass("meta");
         }
       }
       this.edgesToRepair = cy.collection();

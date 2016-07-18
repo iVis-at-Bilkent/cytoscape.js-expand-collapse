@@ -304,10 +304,7 @@ return {
       var children = node.children();
 
       node.trigger("beforeCollapse");
-      for (var i = 0; i < children.length; i++) {
-        var child = children[i];
-        this.barrowEdgesOfcollapsedChildren(node, child);
-      }
+      this.barrowEdgesOfcollapsedChildren(node);
 
       this.removeChildren(node, node);
 
@@ -544,113 +541,48 @@ return {
       }
     }
   },
-  /*
-   * This method let the root parameter to barrow the edges connected to the
-   * child node or any node inside child node if the any one the source and target
-   * is an outer node of the root node in other word it create meta edges
-   */
-  barrowEdgesOfcollapsedChildren: function (root, childNode) {//*//
-    var children = childNode.children();
-    for (var i = 0; i < children.length; i++) {
-      var child = children[i];
-      this.barrowEdgesOfcollapsedChildren(root, child);
-    }
-
-    var edges = childNode.connectedEdges();
+  isMetaEdge: function(edge) {
+    return edge.hasClass("meta");
+  },
+  barrowEdgesOfcollapsedChildren: function(node) {
+    var relatedNodes = node.descendants();
+    var edges = relatedNodes.edgesWith(cy.nodes().not(relatedNodes.union(node)));
+    
+    var relatedNodeMap = {};
+    
+    relatedNodes.each(function(i, ele) {
+      relatedNodeMap[ele.id()] = true;
+    });
+    
     for (var i = 0; i < edges.length; i++) {
       var edge = edges[i];
-      var source = edge.data("source");
-      var target = edge.data("target");
-      var sourceNode = edge.source();
-      var targetNode = edge.target();
-
-      var newEdge =  {}; //jQuery.extend(true, {}, edge.jsons()[0]);
-      for (var key in edge.jsons()[0])
-        newEdge[key] = edge.jsons()[0][key];
-
-      //Initilize the meta level of this edge if it is not initilized yet
-      if (this.edgesMetaLevels[edge.id()] == null) {
-        this.edgesMetaLevels[edge.id()] = 0;
-      }
-
-      /*If the edge is meta and has different source and targets then handle this case because if
-       * the other end of this edge is removed because of the reason that it's parent is
-       * being collapsed and this node is expanded before other end is still collapsed this causes
-       * that this edge cannot be restored as one end node of it does not exists.
-       * Create a collapsed meta edge info for this edge and add this info to collapsedMetaEdgesInfo
-       * map. This info includes createdWhileBeingCollapsed(the node which is being collapsed),
-       * otherEnd(the other end of this edge) and oldOwner(the owner of this edge which will become
-       * an old owner after collapse operation)
-       */
-      if (this.edgesMetaLevels[edge.id()] != 0 && source != target) {
-        var otherEnd = null;
-        var oldOwner = null;
-        if (source == childNode.id()) {
-          otherEnd = target;
-          oldOwner = source;
-        }
-        else if (target == childNode.id()) {
-          otherEnd = source;
-          oldOwner = target;
-        }
-        var info = {
-          createdWhileBeingCollapsed: root.id(),
-          otherEnd: otherEnd,
-          oldOwner: oldOwner
+      var source = edge.source();
+      var target = edge.target();
+      
+      if (!this.isMetaEdge(edge)) { // is original
+        var originalEndsData = {
+          source: source,
+          target: target
         };
-        if (this.collapsedMetaEdgesInfo[otherEnd] == null) {
-          this.collapsedMetaEdgesInfo[otherEnd] = {};
-        }
-        if (this.collapsedMetaEdgesInfo[root.id()] == null) {
-          this.collapsedMetaEdgesInfo[root.id()] = {};
-        }
-        //the information should be reachable by edge id and node id's
-        this.collapsedMetaEdgesInfo[root.id()][otherEnd] = info;
-        this.collapsedMetaEdgesInfo[otherEnd][root.id()] = info;
-        this.collapsedMetaEdgesInfo[edge.id()] = info;
+        
+        edge.addClass("meta");
+        edge.data('originalEnds', originalEndsData);
       }
-
-      var removedEdge = edge.remove();
-      //store the data of the original edge
-      //to restore when the node is expanded
-      if (root._private.data.edgesOfcollapsedChildren == null) {
-        root._private.data.edgesOfcollapsedChildren = removedEdge;
-      }
-      else {
-        root._private.data.edgesOfcollapsedChildren =
-          root._private.data.edgesOfcollapsedChildren.union(removedEdge);
-      }
-
-      //Do not handle the inner edges
-      if (!this.isOuterNode(sourceNode, root) && !this.isOuterNode(targetNode, root)) {
-        continue;
-      }
-
-      //If the change source and/or target of the edge in the
-      //case of they are equal to the id of the collapsed child
-      if (source == childNode.id()) {
-        source = root.id();
-      }
-      if (target == childNode.id()) {
-        target = root.id();
-      }
-
-      //prepare the new edge by changing the older source and/or target
-      newEdge.data.portsource = source;
-      newEdge.data.porttarget = target;
-      newEdge.data.source = source;
-      newEdge.data.target = target;
-      //remove the older edge and add the new one
-      cy.add(newEdge);
-      var newCyEdge = cy.edges()[cy.edges().length - 1];
-      //If this edge has not meta class properties make it meta
-      if (this.edgesMetaLevels[newCyEdge.id()] == 0) {
-        newCyEdge.addClass("meta");
-      }
-      //Increase the meta level of this edge by 1
-      this.edgesMetaLevels[newCyEdge.id()]++;
-      newCyEdge.data("collapsedNodeBeforeBecamingMeta", childNode.id());
+      
+      edge.move({
+        target: !relatedNodeMap[target.id()] ? target.id() : node.id(),
+        source: !relatedNodeMap[source.id()] ? source.id() : node.id()
+      });
     }
+  },
+  findNewEnd: function(node) {
+    var current = node;
+    
+    while( !current.inside() ) {
+      current = current.parent();
+    }
+    
+    return current;
   },
   /*
    * This method repairs the edges of the collapsed children of the given node

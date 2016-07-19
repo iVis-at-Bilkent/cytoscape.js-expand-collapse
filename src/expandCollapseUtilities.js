@@ -4,26 +4,8 @@ var boundingBoxUtilities = require('./boundingBoxUtilities');
 function expandCollapseUtilities(cy) {
 var elementUtilities = require('./elementUtilities')(cy);
 return {
-  edgesToRepair: null,
   //the number of nodes moving animatedly after expand operation
   animatedlyMovingNodeCount: 0,
-  //This is a map which keeps the information of collapsed meta edges to handle them correctly
-  collapsedMetaEdgesInfo: {},
-  //This map keeps track of the meta levels of edges by their id's
-  edgesMetaLevels: {},
-  //This method changes source or target id of the collapsed edge data kept in the data of the node
-  //with id of createdWhileBeingCollapsed
-  alterSourceOrTargetOfCollapsedEdge: function (createdWhileBeingCollapsed, edgeId, sourceOrTarget) {//*//
-    var node = cy.getElementById(createdWhileBeingCollapsed)[0];
-    var edgesOfcollapsedChildren = node._private.data.edgesOfcollapsedChildren;
-    for (var i = 0; i < edgesOfcollapsedChildren.length; i++) {
-      var collapsedEdge = edgesOfcollapsedChildren[i];
-      if (collapsedEdge._private.data.id == edgeId) {
-        collapsedEdge._private.data[sourceOrTarget] = collapsedEdge._private.data.collapsedNodeBeforeBecamingMeta;
-        break;
-      }
-    }
-  },
   //A funtion basicly expanding a node it is to be called when a node is expanded anyway
   expandNodeBaseFunction: function (node, triggerLayout, single, layoutBy) {//*//
     //check how the position of the node is changed
@@ -36,8 +18,8 @@ return {
     node.data('expanded-collapsed', 'expanded');
 
     node.trigger("beforeExpand");
-    node._private.data.collapsedChildren.nodes().restore();
-    this.repairEdgesOfCollapsedChildren(node);
+    node._private.data.collapsedChildren.restore();
+    this.repairEdges(node);
     node._private.data.collapsedChildren = null;
     node.trigger("afterExpand");
 
@@ -82,28 +64,13 @@ return {
     }
     return expandStack;
   },
-  beginOperation: function () {
-    this.edgesToRepair = cy.collection();
-  },
   endOperation: function (layoutBy) {
     var self = this;
     cy.ready(function () {
-      self.edgesToRepair.restore();
-      for (var i = 0; i < self.edgesToRepair.length; i++) {
-        var edge = self.edgesToRepair[i];
-        if (self.edgesMetaLevels[edge.id()] == null || self.edgesMetaLevels[edge.id()] == 0) {
-          edge.removeClass("meta");
-        }
-        else {
-          //edge.addClass("meta");
-        }
-      }
-      this.edgesToRepair = cy.collection();
       elementUtilities.rearrange(layoutBy);
     });
   },
   expandAllNodes: function (nodes, options) {//*//
-    this.beginOperation();
     var expandedStack = this.simpleExpandAllNodes(nodes, options.fisheye);
 
     this.endOperation(options.layoutBy);
@@ -128,7 +95,6 @@ return {
   },
   //Expand the given nodes perform incremental layout after expandation
   expandGivenNodes: function (nodes, options) {//*//
-    this.beginOperation();
     if (nodes.length === 1) {
       this.expandNode(nodes[0], options.fisheye, options.animate, options.layoutBy);
 
@@ -146,7 +112,6 @@ return {
   },
   //collapse the given nodes then make incremental layout
   collapseGivenNodes: function (nodes, options) {//*//
-    this.beginOperation();
     this.simpleCollapseGivenNodes(nodes, options);
 
     this.endOperation(options.layoutBy);
@@ -584,55 +549,30 @@ return {
     
     return current;
   },
-  /*
-   * This method repairs the edges of the collapsed children of the given node
-   * when the node is being expanded, the meta edges created while the node is
-   * being collapsed are handled in this method
-   */
-  repairEdgesOfCollapsedChildren: function (node) { //*//
-    var edgesOfcollapsedChildren = node._private.data.edgesOfcollapsedChildren;
-    if (edgesOfcollapsedChildren == null) {
-      return;
-    }
-    var collapsedMetaEdgeInfoOfNode = this.collapsedMetaEdgesInfo[node.id()];
-    for (var i = 0; i < edgesOfcollapsedChildren.length; i++) {
-      //Handle collapsed meta edge info if it is required
-      if (collapsedMetaEdgeInfoOfNode != null &&
-        this.collapsedMetaEdgesInfo[edgesOfcollapsedChildren[i]._private.data.id] != null) {
-        var info = this.collapsedMetaEdgesInfo[edgesOfcollapsedChildren[i]._private.data.id];
-        //If the meta edge is not created because of the reason that this node is collapsed
-        //handle it by changing source or target of related edge datas
-        if (info.createdWhileBeingCollapsed != node.id()) {
-          if (edgesOfcollapsedChildren[i]._private.data.source == info.oldOwner) {
-            edgesOfcollapsedChildren[i]._private.data.source = info.createdWhileBeingCollapsed;
-            this.alterSourceOrTargetOfCollapsedEdge(info.createdWhileBeingCollapsed
-              , edgesOfcollapsedChildren[i]._private.data.id, "target");
-          }
-          else if (edgesOfcollapsedChildren[i]._private.data.target == info.oldOwner) {
-            edgesOfcollapsedChildren[i]._private.data.target = info.createdWhileBeingCollapsed;
-            this.alterSourceOrTargetOfCollapsedEdge(info.createdWhileBeingCollapsed
-              , edgesOfcollapsedChildren[i]._private.data.id, "source");
-          }
-        }
-        //Delete the related collapsedMetaEdgesInfo's as they are handled
-        delete this.collapsedMetaEdgesInfo[info.createdWhileBeingCollapsed][info.otherEnd];
-        delete this.collapsedMetaEdgesInfo[info.otherEnd][info.createdWhileBeingCollapsed];
-        delete this.collapsedMetaEdgesInfo[edgesOfcollapsedChildren[i]._private.data.id];
+  repairEdges: function(node) {
+    var connectedMetaEdges = node.connectedEdges('.meta');
+    
+    for (var i = 0; i < connectedMetaEdges.length; i++) {
+      var edge = connectedMetaEdges[i];
+      var originalEnds = edge.data('originalEnds');
+      var currentSrcId = edge.data('source');
+      var currentTgtId = edge.data('target');
+      
+      if ( currentSrcId === node.id() ) {
+        edge = edge.move({
+          source: this.findNewEnd(originalEnds.source).id()
+        });
+      } else {
+        edge = edge.move({
+          target: this.findNewEnd(originalEnds.target).id()
+        });
       }
-      var oldEdge = cy.getElementById(edgesOfcollapsedChildren[i]._private.data.id);
-      //If the edge is already in the graph remove it and decrease it's meta level
-      if (oldEdge != null && oldEdge.length > 0) {
-        this.edgesMetaLevels[edgesOfcollapsedChildren[i]._private.data.id]--;
-        oldEdge.remove();
+      
+      if ( edge.data('source') === originalEnds.source.id() && edge.data('target') === originalEnds.target.id() ) {
+        edge.removeClass('meta');
+        edge.removeData('originalEnds');
       }
     }
-
-    /*edgesOfcollapsedChildren.restore();*/
-
-    //Check for meta levels of edges and handle the changes
-    this.edgesToRepair = this.edgesToRepair.union(edgesOfcollapsedChildren);
-
-    node._private.data.edgesOfcollapsedChildren = null;
   },
   /*node is an outer node of root
    if root is not it's anchestor

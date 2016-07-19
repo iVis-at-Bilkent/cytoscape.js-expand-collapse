@@ -387,6 +387,9 @@ return {
       this.fishEyeViewMoveNode(sibling, T_x, T_y, nodeToExpand, singleNotSimple, animate, layoutBy);
     }
 
+    if (siblings.length == 0) {
+      this.expandNodeBaseFunction(nodeToExpand, singleNotSimple, true, layoutBy);
+    }
 
     if (node.parent()[0] != null) {
       this.fishEyeViewExpandGivenNode(node.parent()[0], singleNotSimple, nodeToExpand, animate, layoutBy);

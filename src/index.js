@@ -14,8 +14,6 @@
     var elementUtilities = require('./elementUtilities');
     $.fn.cytoscapeExpandCollapse = require("./cueUtilities");
 
-
-    var cy;
     var options = {
       layoutBy: null, // for rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
       fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too
@@ -55,7 +53,7 @@
 
     // cy.expandCollapse()
     cytoscape("core", "expandCollapse", function (opts) {
-      cy = this;
+      var cy = this;
       options = setOptions(opts);
 
       // All parent nodes are expanded on load
@@ -94,7 +92,7 @@
       var tempOptions = setOptions(opts);
       evalOptions(tempOptions);
 
-      return expandCollapseUtilities(cy).collapseGivenNodes(eles, tempOptions);
+      return expandCollapseUtilities(this.cy()).collapseGivenNodes(eles, tempOptions);
     });
 
     // eles.collapseAll(options)
@@ -112,7 +110,7 @@
       var tempOptions = setOptions(opts);
       evalOptions(tempOptions);
 
-      return expandCollapseUtilities(cy).expandGivenNodes(eles, tempOptions);
+      return expandCollapseUtilities(this.cy()).expandGivenNodes(eles, tempOptions);
     });
 
     // eles.expandAll(options)
@@ -121,7 +119,7 @@
       var tempOptions = setOptions(opts);
       evalOptions(tempOptions);
 
-      return expandCollapseUtilities(cy).expandAllNodes(eles, tempOptions);
+      return expandCollapseUtilities(this.cy()).expandAllNodes(eles, tempOptions);
     });
 
 

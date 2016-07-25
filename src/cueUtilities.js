@@ -8,8 +8,8 @@ module.exports = function (params) {
     init: function () {
       var self = this;
       var opts = params;
-      var $container = $(this);
-      var cy;
+      var $container = this;
+      var cy = this.cytoscape('get');
       var $canvas = $('<canvas></canvas>');
 
       $container.append($canvas);
@@ -292,6 +292,7 @@ module.exports = function (params) {
       $container.data('cyexpandcollapse', data);
     },
     unbind: function () {
+        var cy = this.cytoscape('get');
         cy.off('mouseover', 'node', eMouseOver)
           .off('mouseout tapdragout', 'node', eMouseOut)
           .off('position', 'node', ePosition)

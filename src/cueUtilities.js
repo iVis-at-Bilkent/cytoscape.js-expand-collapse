@@ -1,4 +1,5 @@
 var debounce = require('./debounce');
+var elementUtilities;
 
 module.exports = function (params) {
   var fn = params;
@@ -11,6 +12,7 @@ module.exports = function (params) {
       var $container = this;
       var cy = this.cytoscape('get');
       var $canvas = $('<canvas></canvas>');
+      elementUtilities = require('./elementUtilities')(cy);
 
       $container.append($canvas);
 

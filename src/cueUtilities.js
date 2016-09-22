@@ -308,9 +308,9 @@ module.exports = function (params) {
   };
 
   if (functions[fn]) {
-    return functions[fn].apply(this, Array.prototype.slice.call(arguments, 1));
+    return functions[fn].apply($(cy.container()), Array.prototype.slice.call(arguments, 1));
   } else if (typeof fn == 'object' || !fn) {
-    return functions.init.apply(this, arguments);
+    return functions.init.apply($(cy.container()), arguments);
   } else {
     $.error('No such function `' + fn + '` for cytoscape.js-expand-collapse');
   }

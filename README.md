@@ -107,6 +107,7 @@ Sets the value of the option given by the name to the given value.
 ## Dependencies
 
  * Cytoscape.js ^1.7.0
+ * jQuery ^1.7.0 || ^2.0.0 || ^3.0.0
  * cytoscape-undo-redo.js(optional) ^1.0.1
  * cytoscape-cose-bilkent.js(optional/suggested for layout after expand/collapse) ^1.3.6
 
@@ -123,9 +124,10 @@ Download the library:
 CommonJS:
 ```js
 var cytoscape = require('cytoscape');
-var expand-collapse = require('cytoscape-expand-collapse');
+var jquery = require('jquery');
+var expandCollapse = require('cytoscape-expand-collapse');
 
-expand-collapse( cytoscape, jquery ); // register extension
+expandCollapse( cytoscape, jquery ); // register extension
 ```
 
 AMD:

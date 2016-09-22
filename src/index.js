@@ -1,5 +1,5 @@
 ;
-(function ($$, $) {
+(function () {
   'use strict';
 
   // registers the extension on a cytoscape lib ref
@@ -12,7 +12,7 @@
     var expandCollapseUtilities = require('./expandCollapseUtilities');
     var undoRedoUtilities = require('./undoRedoUtilities');
     var elementUtilities = require('./elementUtilities');
-    $.fn.cytoscapeExpandCollapse = require("./cueUtilities");
+    var cueUtilities = require("./cueUtilities");
 
     var options = {
       layoutBy: null, // for rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
@@ -61,9 +61,9 @@
       undoRedoUtilities(cy);
       
       if(options.cueEnabled)
-        $(cy.container()).cytoscapeExpandCollapse(options);
+        cueUtilities(options);
       else
-        $(cy.container()).cytoscapeExpandCollapse("unbind");
+        cueUtilities("unbind");
 
 
       options.ready();

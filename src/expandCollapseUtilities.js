@@ -124,6 +124,7 @@ return {
   },
   //collapse the nodes in bottom up order starting from the root
   collapseBottomUp: function (root) {//*//
+    cy.startBatch();
     var children = root.children();
     for (var i = 0; i < children.length; i++) {
       var node = children[i];
@@ -134,6 +135,7 @@ return {
       this.simpleCollapseNode(root);
       root.removeData("collapse");
     }
+    cy.endBatch();
   },
   //expand the nodes in top down order starting from the root
   expandTopDown: function (root, applyFishEyeViewToEachNode) {//*//
@@ -178,6 +180,10 @@ return {
    */
   simpleExpandNode: function (node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy) {//*//
     var self = this;
+    
+    if( !animate ) {
+      cy.startBatch();
+    }
 
     var commonExpandOperation = function (node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy) {
       if (applyFishEyeViewToEachNode) {
@@ -242,6 +248,10 @@ return {
       }
       else {
         commonExpandOperation(node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy);
+      }
+      
+      if( !animate ) {
+        cy.endBatch();
       }
 
       //return the node to undo the operation

@@ -38,8 +38,15 @@ return {
     var roots = elementUtilities.getTopMostNodes(nodes);
     for (var i = 0; i < roots.length; i++) {
       var root = roots[i];
+      
+      // Collapse the nodes in bottom up order
+      cy.startBatch();
       this.collapseBottomUp(root);
+      cy.endBatch();
     }
+    
+    // Update the style
+    cy.style().update();
     return nodes;
   },
   simpleExpandGivenNodes: function (nodes, applyFishEyeViewToEachNode) {//*//
@@ -124,7 +131,6 @@ return {
   },
   //collapse the nodes in bottom up order starting from the root
   collapseBottomUp: function (root) {//*//
-    cy.startBatch();
     var children = root.children();
     for (var i = 0; i < children.length; i++) {
       var node = children[i];
@@ -135,7 +141,6 @@ return {
       this.simpleCollapseNode(root);
       root.removeData("collapse");
     }
-    cy.endBatch();
   },
   //expand the nodes in top down order starting from the root
   expandTopDown: function (root, applyFishEyeViewToEachNode) {//*//

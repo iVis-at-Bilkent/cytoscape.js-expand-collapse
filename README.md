@@ -102,7 +102,10 @@ Sets the value of the option given by the name to the given value.
 
 `ur.do("expandAll", { options: opts })` Equivalent of cy.expandAll(opts)
 
+## Elements Style
 
+ * Collapsed nodes have 'cy-expand-collapse-collapsed-node' class.
+ * Meta edges have 'cy-expand-collapse-meta-edge' class.
 
 ## Dependencies
 

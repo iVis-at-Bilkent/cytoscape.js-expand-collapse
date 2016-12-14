@@ -72,31 +72,12 @@ module.exports = function (params) {
         return optCache || (optCache = $container.data('cyexpandcollapse').options);
       }
 
-      function clearDraws(keepExpandCues) {
+      function clearDraws() {
 
         var w = $container.width();
         var h = $container.height();
 
         ctx.clearRect(0, 0, w, h);
-
-        if (keepExpandCues) {
-          var collapsedNodes = cy.nodes('[expanded-collapsed="collapsed"]');
-          for (var i = 0; i < collapsedNodes.length; i++) {
-            drawExpandCollapseCue(collapsedNodes[i]);
-          }
-        }
-      }
-
-      function clearNodeDraw(node) {
-
-        var x = node._private.data.expandcollapseRenderedStartX;
-        var y = node._private.data.expandcollapseRenderedStartY;
-        var s = node._private.data.expandcollapseRenderedCueSize;
-
-        if (node.data('expanded-collapsed') === 'collapsed') {
-          drawExpandCollapseCue(node);
-        }
-        ctx.clearRect(x, y, s, s);
       }
 
       function drawExpandCollapseCue(node) {
@@ -201,52 +182,34 @@ module.exports = function (params) {
 
       $container.cytoscape(function (e) {
         cy = this;
-        clearDraws(true);
 
         cy.bind('zoom pan', eZoom = function () {
-          clearDraws(true);
+          clearDraws();
         });
 
 
         cy.on('mouseover', 'node', eMouseOver = function (e) {
-          var node = this;
-
-          // remove old handle
-          clearDraws(true);
-
-          // add new handle
+          var node = this
+          clearDraws();
           drawExpandCollapseCue(node);
-
-          var lastPosition = {};
-
         });
 
         cy.on('mouseout tapdragout', 'node', eMouseOut = function (e) {
-
-          clearDraws(true);
-
+          clearDraws();
         });
 
         cy.on('position', 'node', ePosition = function () {
-          var node = this;
-
-          clearDraws(true);
+          clearDraws();
         });
 
         cy.on('remove', 'node', eRemove = function () {
-          var node = this;
-          clearNodeDraw(node);
-        });
-        
-        cy.on('add', 'node', eAdd = function () {
-          var node = this;
-          drawExpandCollapseCue(node);
+          clearDraws();
         });
         
         cy.on('free', 'node', eFree = function () {
           var node = this;
-          
-          clearDraws(true);
+          clearDraws();
+          drawExpandCollapseCue(node);
         });
         
         var ur;

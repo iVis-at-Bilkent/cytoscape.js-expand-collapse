@@ -40,13 +40,9 @@ return {
       var root = roots[i];
       
       // Collapse the nodes in bottom up order
-      cy.startBatch();
       this.collapseBottomUp(root);
-      cy.endBatch();
     }
     
-    // Update the style
-    cy.style().update();
     return nodes;
   },
   simpleExpandGivenNodes: function (nodes, applyFishEyeViewToEachNode) {//*//
@@ -119,10 +115,14 @@ return {
   },
   //collapse the given nodes then make incremental layout
   collapseGivenNodes: function (nodes, options) {//*//
+    cy.startBatch();
     this.simpleCollapseGivenNodes(nodes, options);
+    cy.endBatch();
 
     this.endOperation(options.layoutBy);
-    //elementUtilities.rearrange(options.layoutBy);
+
+    // Update the style
+    cy.style().update();
 
     /*
      * return the nodes to undo the operation
@@ -276,10 +276,10 @@ return {
         h: node.outerHeight()
       });
 
-      node.children().unselect();
-      node.children().connectedEdges().unselect();
-
       var children = node.children();
+
+      children.unselect();
+      children.connectedEdges().unselect();
 
       node.trigger("beforeCollapse");
       

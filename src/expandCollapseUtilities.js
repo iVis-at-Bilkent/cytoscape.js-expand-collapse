@@ -15,7 +15,7 @@ return {
     };
 
     node.removeData("infoLabel");
-    node.data('expanded-collapsed', 'expanded');
+    node.removeClass('cy-expand-collapse-collapsed-node');
 
     node.trigger("beforeExpand");
     node._private.data.collapsedChildren.restore();
@@ -279,14 +279,13 @@ return {
       node.children().unselect();
       node.children().connectedEdges().unselect();
 
-      node.data('expanded-collapsed', 'collapsed');
-
       var children = node.children();
 
       node.trigger("beforeCollapse");
+      
       this.barrowEdgesOfcollapsedChildren(node);
-
       this.removeChildren(node, node);
+      node.addClass('cy-expand-collapse-collapsed-node');
 
       node.trigger("afterCollapse");
       
@@ -449,7 +448,7 @@ return {
           position: newPosition,
           complete: function () {
             self.animatedlyMovingNodeCount--;
-            if (self.animatedlyMovingNodeCount > 0 || nodeToExpand.data('expanded-collapsed') === 'expanded') {
+            if (self.animatedlyMovingNodeCount > 0 || !nodeToExpand.hasClass('cy-expand-collapse-collapsed-node')) {
 
               return;
             }
@@ -525,7 +524,7 @@ return {
     }
   },
   isMetaEdge: function(edge) {
-    return edge.hasClass("meta");
+    return edge.hasClass("cy-expand-collapse-meta-edge");
   },
   barrowEdgesOfcollapsedChildren: function(node) {
     var relatedNodes = node.descendants();
@@ -548,7 +547,7 @@ return {
           target: target
         };
         
-        edge.addClass("meta");
+        edge.addClass("cy-expand-collapse-meta-edge");
         edge.data('originalEnds', originalEndsData);
       }
       
@@ -568,7 +567,7 @@ return {
     return current;
   },
   repairEdges: function(node) {
-    var connectedMetaEdges = node.connectedEdges('.meta');
+    var connectedMetaEdges = node.connectedEdges('.cy-expand-collapse-meta-edge');
     
     for (var i = 0; i < connectedMetaEdges.length; i++) {
       var edge = connectedMetaEdges[i];
@@ -587,7 +586,7 @@ return {
       }
       
       if ( edge.data('source') === originalEnds.source.id() && edge.data('target') === originalEnds.target.id() ) {
-        edge.removeClass('meta');
+        edge.removeClass('cy-expand-collapse-meta-edge');
         edge.removeData('originalEnds');
       }
     }

@@ -85,12 +85,12 @@ module.exports = function (params) {
         var children = node.children();
         var collapsedChildren = node._private.data.collapsedChildren;
         var hasChildren = children != null && children.length > 0;
-        //check if the expand or collapse cue is to be drawn
+        // If this is a simple node with no collapsed children return directly
         if (!hasChildren && collapsedChildren == null) {
           return;
         }
 
-        var expandedOrcollapsed = node.data('expanded-collapsed');
+        var isCollapsed = node.hasClass('cy-expand-collapse-collapsed-node');
 
         //Draw expand-collapse rectangles
         var rectSize = options().expandCollapseCueSize;
@@ -132,13 +132,13 @@ module.exports = function (params) {
         expandcollapseEndY = expandcollapseStartY + rectSize;
         expandcollapseRectSize = rectSize;
 
-        // Draw expand/collapse cue if specified use image else draw it
-        if (expandedOrcollapsed === 'expanded' && options().expandCueImage) {
+        // Draw expand/collapse cue if specified use an image else render it in the default way
+        if (!isCollapsed && options().expandCueImage) {
           var img=new Image();
           img.src = options().expandCueImage;
           ctx.drawImage(img, expandcollapseCenterX, expandcollapseCenterY, rectSize, rectSize);
         }
-        else if (expandedOrcollapsed === 'collapsed' && options().collapseCueImage) {
+        else if (isCollapsed && options().collapseCueImage) {
           var img=new Image();
           img.src = options().collapseCueImage;
           ctx.drawImage(img, expandcollapseCenterX, expandcollapseCenterY, rectSize, rectSize);
@@ -162,7 +162,7 @@ module.exports = function (params) {
           ctx.moveTo(expandcollapseStartX + diff, expandcollapseStartY + rectSize / 2);
           ctx.lineTo(expandcollapseStartX + lineSize + diff, expandcollapseStartY + rectSize / 2);
 
-          if (expandedOrcollapsed == 'collapsed') {
+          if (isCollapsed) {
             ctx.moveTo(expandcollapseStartX + rectSize / 2, expandcollapseStartY + diff);
             ctx.lineTo(expandcollapseStartX + rectSize / 2, expandcollapseStartY + lineSize + diff);
           }

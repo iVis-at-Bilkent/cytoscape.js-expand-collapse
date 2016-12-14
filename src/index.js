@@ -56,8 +56,6 @@
       var cy = this;
       options = setOptions(opts);
 
-      // All parent nodes are expanded on load
-      cy.nodes(':parent').data('expanded-collapsed', 'expanded');
       undoRedoUtilities(cy);
       
       if(options.cueEnabled)
@@ -149,8 +147,8 @@
     // ele.isCollapsible()
     cytoscape('collection', 'isExpandable', function () {
       var ele = this;
-
-      return (ele.data("expanded-collapsed") === "collapsed");
+      
+      return ele.hasClass('cy-expand-collapse-collapsed-node');
     });
 
     // ele.isExpandable()

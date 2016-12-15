@@ -111,12 +111,15 @@ module.exports = function (params) {
         var expandcollapseCenterY;
 
         if (options().expandCollapseCuePosition === 'top-left') {
-          var p = node.renderedPosition();
-          var w = node.renderedOuterWidth();
-          var h = node.renderedOuterHeight();
+          var zoom = cy.zoom();
+          var pos = node.renderedPosition();
+          var w = node.renderedWidth();
+          var h = node.renderedHeight();
+          var borderWidth = parseFloat( node.css('border-width') ) * zoom;
+          var offset = 1 * zoom;
 
-          expandcollapseCenterX = p.x - w / 2 - rectSize / 4 + rectSize / 2;
-          expandcollapseCenterY = p.y - h / 2 - rectSize / 4 + rectSize / 2;
+          expandcollapseCenterX = pos.x - w / 2 - parseFloat(node.css('padding-left')) + borderWidth + rectSize / 2 + offset;
+          expandcollapseCenterY = pos.y - h / 2 - parseFloat(node.css('padding-top')) + borderWidth + rectSize / 2 + offset;
         } else {
           var option = options().expandCollapseCuePosition;
           var cueCenter = typeof option === 'function' ? option.call(this, node) : option;

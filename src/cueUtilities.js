@@ -97,10 +97,6 @@ module.exports = function (params) {
         var lineSize = options().expandCollapseCueLineSize;
         var diff;
 
-        rectSize = rectSize * cy.zoom();
-        lineSize = lineSize * cy.zoom();
-        diff = (rectSize - lineSize) / 2;
-
         var expandcollapseStartX;
         var expandcollapseStartY;
         var expandcollapseEndX;
@@ -109,25 +105,34 @@ module.exports = function (params) {
 
         var expandcollapseCenterX;
         var expandcollapseCenterY;
+        var cueCenter;
 
         if (options().expandCollapseCuePosition === 'top-left') {
-          var zoom = cy.zoom();
-          var pos = node.renderedPosition();
-          var w = node.renderedWidth();
-          var h = node.renderedHeight();
-          var borderWidth = parseFloat( node.css('border-width') ) * zoom;
-          var offset = 1 * zoom;
+          var offset = 1;
+        
+          var x = node.position('x') - node.width() / 2 - parseFloat(node.css('padding-left')) 
+                  + parseFloat(node.css('border-width')) + rectSize / 2 + offset;
+          var y = node.position('y') - node.height() / 2 - parseFloat(node.css('padding-top')) 
+                  + parseFloat(node.css('border-width')) + rectSize / 2 + offset;
 
-          expandcollapseCenterX = pos.x - w / 2 - parseFloat(node.css('padding-left')) + borderWidth + rectSize / 2 + offset;
-          expandcollapseCenterY = pos.y - h / 2 - parseFloat(node.css('padding-top')) + borderWidth + rectSize / 2 + offset;
+          cueCenter = {
+            x : x,
+            y : y
+          };
         } else {
           var option = options().expandCollapseCuePosition;
-          var cueCenter = typeof option === 'function' ? option.call(this, node) : option;
-          var expandcollapseCenter = elementUtilities.convertToRenderedPosition(cueCenter);
-
-          expandcollapseCenterX = expandcollapseCenter.x;
-          expandcollapseCenterY = expandcollapseCenter.y;
+          cueCenter = typeof option === 'function' ? option.call(this, node) : option;
         }
+        
+        var expandcollapseCenter = elementUtilities.convertToRenderedPosition(cueCenter);
+
+        // convert to rendered sizes
+        rectSize = rectSize * cy.zoom();
+        lineSize = lineSize * cy.zoom();
+        diff = (rectSize - lineSize) / 2;
+
+        expandcollapseCenterX = expandcollapseCenter.x;
+        expandcollapseCenterY = expandcollapseCenter.y;
 
         expandcollapseStartX = expandcollapseCenterX - rectSize / 2;
         expandcollapseStartY = expandcollapseCenterY - rectSize / 2;

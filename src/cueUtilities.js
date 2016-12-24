@@ -5,6 +5,8 @@ module.exports = function (params) {
   var fn = params;
 
   var eMouseOver, eMouseOut, ePosition, eRemove, eTap, eZoom, eAdd, eFree;
+  var nodeWithRenderedCue;
+  
   var functions = {
     init: function () {
       var self = this;
@@ -78,6 +80,8 @@ module.exports = function (params) {
         var h = $container.height();
 
         ctx.clearRect(0, 0, w, h);
+        
+        nodeWithRenderedCue = undefined;
       }
 
       function drawExpandCollapseCue(node) {
@@ -186,19 +190,28 @@ module.exports = function (params) {
         node._private.data.expandcollapseRenderedStartX = expandcollapseStartX;
         node._private.data.expandcollapseRenderedStartY = expandcollapseStartY;
         node._private.data.expandcollapseRenderedCueSize = expandcollapseRectSize;
+        
+        nodeWithRenderedCue = node;
       }
 
       $container.cytoscape(function (e) {
         cy = this;
 
         cy.bind('zoom pan', eZoom = function () {
-          clearDraws();
+          if ( nodeWithRenderedCue ) {
+            clearDraws();
+          }
         });
 
 
         cy.on('mouseover', 'node', eMouseOver = function (e) {
-          var node = this
-          clearDraws();
+          var node = this;
+          
+          // clear draws if any
+          if ( nodeWithRenderedCue ) {
+            clearDraws();
+          }
+          
           drawExpandCollapseCue(node);
         });
 
@@ -207,17 +220,14 @@ module.exports = function (params) {
         });
 
         cy.on('position', 'node', ePosition = function () {
-          clearDraws();
+          var node = this;
+          if ( nodeWithRenderedCue && nodeWithRenderedCue.id() === node.id() ) {
+            clearDraws();
+          }
         });
 
         cy.on('remove', 'node', eRemove = function () {
           clearDraws();
-        });
-        
-        cy.on('free', 'node', eFree = function () {
-          var node = this;
-          clearDraws();
-          drawExpandCollapseCue(node);
         });
         
         var ur;

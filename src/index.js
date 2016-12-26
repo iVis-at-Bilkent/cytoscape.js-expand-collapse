@@ -60,8 +60,6 @@
       
       if(options.cueEnabled)
         cueUtilities(options);
-      else
-        cueUtilities("unbind");
 
 
       options.ready();

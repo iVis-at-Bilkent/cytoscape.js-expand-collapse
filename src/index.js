@@ -11,7 +11,6 @@
 
     var expandCollapseUtilities = require('./expandCollapseUtilities');
     var undoRedoUtilities = require('./undoRedoUtilities');
-    var elementUtilities = require('./elementUtilities');
     var cueUtilities = require("./cueUtilities");
 
     var options = {
@@ -59,7 +58,7 @@
       undoRedoUtilities(cy);
       
       if(options.cueEnabled)
-        cueUtilities(options);
+        cueUtilities(options, cy);
 
 
       options.ready();

@@ -1,7 +1,7 @@
 var debounce = require('./debounce');
 var elementUtilities;
 
-module.exports = function (params) {
+module.exports = function (params, cy) {
   var fn = params;
 
   var eMouseOver, eMouseOut, ePosition, eRemove, eTap, eZoom, eAdd, eFree;
@@ -12,7 +12,6 @@ module.exports = function (params) {
       var self = this;
       var opts = params;
       var $container = this;
-      var cy = this.cytoscape('get');
       var $canvas = $('<canvas></canvas>');
       elementUtilities = require('./elementUtilities')(cy);
 
@@ -85,7 +84,6 @@ module.exports = function (params) {
       }
 
       function drawExpandCollapseCue(node) {
-        var cy = node.cy();
         var children = node.children();
         var collapsedChildren = node._private.data.collapsedChildren;
         var hasChildren = children != null && children.length > 0;

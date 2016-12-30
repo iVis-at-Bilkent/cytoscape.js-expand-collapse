@@ -34,14 +34,14 @@ module.exports = function (params, cy) {
       var self = this;
       var opts = params;
       var $container = this;
-      var $canvas = $('<canvas></canvas>');
+      var $canvas = $('<canvas class="expand-collapse-canvas"></canvas>');
       elementUtilities = _dereq_('./elementUtilities')(cy);
 
       $container.append($canvas);
 
       var _sizeCanvas = debounce(function () {
-        $canvas
-          .attr('height', $container.height())
+        $('.expand-collapse-canvas').each(function(){
+            $(this).attr('height', $container.height())
           .attr('width', $container.width())
           .css({
             'position': 'absolute',
@@ -50,6 +50,8 @@ module.exports = function (params, cy) {
             'z-index': '999'
           })
         ;
+        });
+
 
         setTimeout(function () {
           var canvasBb = $canvas.offset();
@@ -76,7 +78,7 @@ module.exports = function (params, cy) {
 
       sizeCanvas();
 
-      $(window).bind('resize', function () {
+      cy.bind('resize', function () {
         sizeCanvas();
       });
 
@@ -148,7 +150,7 @@ module.exports = function (params, cy) {
           cueCenter = typeof option === 'function' ? option.call(this, node) : option;
         }
         
-        var expandcollapseCenter = elementUtilities.convertToRenderedPosition(cueCenter);
+        var expandcollapseCenter = elementUtilities.convertToRenderedPosition(cueCenter,cy);
 
         // convert to rendered sizes
         rectSize = rectSize * cy.zoom();
@@ -600,7 +602,7 @@ function elementUtilities(cy) {
       cy.layout(layoutBy);
     }
   },
-  convertToRenderedPosition: function (modelPosition) {
+  convertToRenderedPosition: function (modelPosition,cy) {
     var pan = cy.pan();
     var zoom = cy.zoom();
 

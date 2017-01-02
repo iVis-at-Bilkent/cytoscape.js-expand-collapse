@@ -1261,6 +1261,7 @@ module.exports = expandCollapseUtilities;
       expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
       collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
       expandCollapseCueSensitivity: 1 // sensitivity of expand-collapse cues
+      zindex : 998
     };
 
     function setOptions(from) {

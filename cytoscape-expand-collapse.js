@@ -1135,15 +1135,18 @@ return {
     var children = node.children();
     for (var i = 0; i < children.length; i++) {
       var child = children[i];
-      this.removeChildren(child, root);
+      if(child.isParent()){
+        this.removeChildren(child, root);
+      }
       var removedChild = child.remove();
       if (root._private.data.collapsedChildren == null) {
-        root._private.data.collapsedChildren = removedChild;
+        root._private.data.collapsedChildren = removedChild.clone();
       }
       else {
-        root._private.data.collapsedChildren = root._private.data.collapsedChildren.union(removedChild);
+        root._private.data.collapsedChildren = root._private.data.collapsedChildren.union(removedChild.clone());
       }
     }
+    node._private.children = []; 
   },
   isMetaEdge: function(edge) {
     return edge.hasClass("cy-expand-collapse-meta-edge");
@@ -1260,7 +1263,7 @@ module.exports = expandCollapseUtilities;
       expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
       expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
       collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
-      expandCollapseCueSensitivity: 1 // sensitivity of expand-collapse cues
+      expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
       zindex : 998
     };
 

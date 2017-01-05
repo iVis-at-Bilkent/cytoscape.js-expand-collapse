@@ -1135,15 +1135,13 @@ return {
     var children = node.children();
     for (var i = 0; i < children.length; i++) {
       var child = children[i];
-      if(child.isParent()){
-        this.removeChildren(child, root);
-      }
+      this.removeChildren(child, root);
       var removedChild = child.remove();
       if (root._private.data.collapsedChildren == null) {
-        root._private.data.collapsedChildren = removedChild.clone();
+        root._private.data.collapsedChildren = removedChild;
       }
       else {
-        root._private.data.collapsedChildren = root._private.data.collapsedChildren.union(removedChild.clone());
+        root._private.data.collapsedChildren = root._private.data.collapsedChildren.union(removedChild);
       }
     }
     node._private.children = []; 

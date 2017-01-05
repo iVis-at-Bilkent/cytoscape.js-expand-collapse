@@ -522,6 +522,7 @@ return {
         root._private.data.collapsedChildren = root._private.data.collapsedChildren.union(removedChild);
       }
     }
+	node._private.children = []; 
   },
   isMetaEdge: function(edge) {
     return edge.hasClass("cy-expand-collapse-meta-edge");

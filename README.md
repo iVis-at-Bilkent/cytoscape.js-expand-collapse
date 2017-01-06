@@ -58,13 +58,13 @@ Sets the value of the option given by the name to the given value.
 
 
 ## Events
-`cy.nodes().on("edgebendediting.beforecollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed
+`cy.nodes().on("expandcollapse.beforecollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed
 
-`cy.nodes().on("edgebendediting.aftercollapse", function(event) { var node = this; ... })` Triggered after a node is collapsed
+`cy.nodes().on("expandcollapse.aftercollapse", function(event) { var node = this; ... })` Triggered after a node is collapsed
 
-`cy.nodes().on("edgebendediting.beforeexpand", function(event) { var node = this; ... })` Triggered before a node is expanded
+`cy.nodes().on("expandcollapse.beforeexpand", function(event) { var node = this; ... })` Triggered before a node is expanded
 
-`cy.nodes().on("edgebendediting.afterexpand", function(event) { var node = this; ... })`  Triggered after a node is expanded
+`cy.nodes().on("expandcollapse.afterexpand", function(event) { var node = this; ... })`  Triggered after a node is expanded
 
 
 ## Default Options

@@ -17,11 +17,11 @@ return {
     node.removeData("infoLabel");
     node.removeClass('cy-expand-collapse-collapsed-node');
 
-    node.trigger("beforeExpand");
+    node.trigger("expandcollapse.beforeexpand");
     node._private.data.collapsedChildren.restore();
     this.repairEdges(node);
     node._private.data.collapsedChildren = null;
-    node.trigger("afterExpand");
+    node.trigger("expandcollapse.afterexpand");
 
 
     elementUtilities.moveNodes(positionDiff, node.children());
@@ -281,13 +281,13 @@ return {
       children.unselect();
       children.connectedEdges().unselect();
 
-      node.trigger("beforeCollapse");
+      node.trigger("expandcollapse.beforecollapse");
       
       this.barrowEdgesOfcollapsedChildren(node);
       this.removeChildren(node, node);
       node.addClass('cy-expand-collapse-collapsed-node');
 
-      node.trigger("afterCollapse");
+      node.trigger("expandcollapse.aftercollapse");
       
       node.position(node.data('position-before-collapse'));
 

@@ -9,7 +9,7 @@
       return;
     } // can't register if cytoscape unspecified
 
-    var expandCollapseUtilities = require('./expandCollapseUtilities');
+    var expandCollapseUtilities;
     var undoRedoUtilities = require('./undoRedoUtilities');
     var cueUtilities = require("./cueUtilities");
 
@@ -48,143 +48,146 @@
       options.animate = animate;
       options.fisheye = fisheye;
     }
+    
+    // creates and returns the API instance for the extension
+    function createExtensionAPI(cy) {
+      var api = {}; // API to be returned
+      // set functions
+    
+      // set all options at once
+      api.setOptions = function(opts) {
+        options = opts;
+      };
+
+      // set the option whose name is given
+      api.setOption = function (name, value) {
+        options[name] = value;
+      };
+
+      // Collection functions
+
+      // collapse given eles extend options with given param
+      api.collapse = function (_eles, opts) {
+        var eles = this.collapsibleNodes(_eles);
+        var tempOptions = setOptions(opts);
+        evalOptions(tempOptions);
+
+        return expandCollapseUtilities.collapseGivenNodes(eles, tempOptions);
+      };
+
+      // collapse given eles recursively extend options with given param
+      api.collapseRecursively = function (_eles, opts) {
+        var eles = this.collapsibleNodes(_eles);
+        var tempOptions = setOptions(opts);
+        evalOptions(tempOptions);
+
+        return this.collapse(eles.union(eles.descendants()), tempOptions);
+      };
+
+      // expand given eles extend options with given param
+      api.expand = function (_eles, opts) {
+        var eles = this.expandableNodes(_eles);
+        var tempOptions = setOptions(opts);
+        evalOptions(tempOptions);
+
+        return expandCollapseUtilities.expandGivenNodes(eles, tempOptions);
+      };
+
+      // expand given eles recusively extend options with given param
+      api.expandRecursively = function (_eles, opts) {
+        var eles = this.expandableNodes(_eles);
+        var tempOptions = setOptions(opts);
+        evalOptions(tempOptions);
+
+        return expandCollapseUtilities.expandAllNodes(eles, tempOptions);
+      };
 
 
-    // cy.expandCollapse()
+      // Core functions
+
+      // collapse all collapsible nodes
+      api.collapseAll = function (opts) {
+        var tempOptions = setOptions(opts);
+        evalOptions(tempOptions);
+
+        return this.collapseRecursively(this.collapsibleNodes(), tempOptions);
+      };
+
+      // expand all expandable nodes
+      api.expandAll = function (opts) {
+        var tempOptions = setOptions(opts);
+        evalOptions(tempOptions);
+
+        return this.expandRecursively(this.expandableNodes(), tempOptions);
+      };
+
+
+      // Utility functions
+
+      // returns if the given node is expandable
+      api.isExpandable = function (node) {
+        return node.hasClass('cy-expand-collapse-collapsed-node');
+      };
+
+      // returns if the given node is collapsible
+      api.isCollapsible = function (node) {
+        return !this.isExpandable(node) && node.isParent();
+      };
+
+      // get collapsible ones inside given nodes if nodes parameter is not specified consider all nodes
+      api.collapsibleNodes = function (_nodes) {
+        var self = this;
+        var nodes = _nodes ? _nodes : cy.nodes();
+        return nodes.filter(function (i, ele) {
+          return self.isCollapsible(ele);
+        });
+      };
+
+      // get expandable ones inside given nodes if nodes parameter is not specified consider all nodes
+      api.expandableNodes = function (_nodes) {
+        var self = this;
+        var nodes = _nodes ? _nodes : cy.nodes();
+        return nodes.filter(function (i, ele) {
+          return self.isExpandable(ele);
+        });
+      };
+      
+      // This method works problematic TODO fix related bugs and expose it
+      // Unbinds cue events
+//      api.disableCue = function() {
+//        if (options.cueEnabled) {
+//          cueUtilities('unbind', cy);
+//          options.cueEnabled = false;
+//        }
+//      }
+      
+      return api; // Return the API instance
+    }
+    
+    var api; // Define the api instance
+    
+    // register the extension cy.expandCollapse()
     cytoscape("core", "expandCollapse", function (opts) {
-      var cy = this;
-      options = setOptions(opts);
+      // If opts is not 'get' that is it is a real options object then initilize the extension
+      if (opts !== 'get') {
+        var cy = this;
+        options = setOptions(opts);
+        
+        expandCollapseUtilities = require('./expandCollapseUtilities')(cy);
+        api = createExtensionAPI(cy); // creates and returns the API instance for the extension
+        undoRedoUtilities(cy, api);
 
-      undoRedoUtilities(cy);
-      
-      if(options.cueEnabled)
-        cueUtilities(options, cy);
-
-
-      options.ready();
-
-
-      return cy;
-    });
-    
-    // set functions
-    
-    // set all options at once
-    cytoscape("core", "setExpandCollapseOptions", function (opts) {
-      options = opts;
-    });
-    
-    // set the option whose name is given
-    cytoscape("core", "setExpandCollapseOption", function (name, value) {
-      options[name] = value;
-    });
-
-    // Collection functions
-
-    // eles.collapse(options)
-    cytoscape('collection', 'collapse', function (opts) {
-      var eles = this.collapsibleNodes();
-      var tempOptions = setOptions(opts);
-      evalOptions(tempOptions);
-
-      return expandCollapseUtilities(this.cy()).collapseGivenNodes(eles, tempOptions);
-    });
-
-    // eles.collapseAll(options)
-    cytoscape('collection', 'collapseRecursively', function (opts) {
-      var eles = this.collapsibleNodes();
-      var tempOptions = setOptions(opts);
-      evalOptions(tempOptions);
-
-      return eles.union(eles.descendants()).collapse(tempOptions);
-    });
-
-    // eles.expand(options)
-    cytoscape('collection', 'expand', function (opts) {
-      var eles = this.expandableNodes();
-      var tempOptions = setOptions(opts);
-      evalOptions(tempOptions);
-
-      return expandCollapseUtilities(this.cy()).expandGivenNodes(eles, tempOptions);
-    });
-
-    // eles.expandAll(options)
-    cytoscape('collection', 'expandRecursively', function (opts) {
-      var eles = this.expandableNodes();
-      var tempOptions = setOptions(opts);
-      evalOptions(tempOptions);
-
-      return expandCollapseUtilities(this.cy()).expandAllNodes(eles, tempOptions);
-    });
+        if(options.cueEnabled)
+          cueUtilities(options, cy, api);
 
 
-    // Core functions
+        options.ready();
+      }
 
-    // cy.collapseAll(options)
-    cytoscape('core', 'collapseAll', function (opts) {
-      var cy = this;
-      var tempOptions = setOptions(opts);
-      evalOptions(tempOptions);
-
-      return cy.collapsibleNodes().collapseRecursively(tempOptions);
-    });
-
-    // cy.expandAll(options)
-    cytoscape('core', 'expandAll', function (opts) {
-      var cy = this;
-      var tempOptions = setOptions(opts);
-      evalOptions(tempOptions);
-
-      return cy.expandableNodes().expandRecursively(tempOptions);
-    });
-
-
-    // Utility functions
-
-    // ele.isCollapsible()
-    cytoscape('collection', 'isExpandable', function () {
-      var ele = this;
-      
-      return ele.hasClass('cy-expand-collapse-collapsed-node');
-    });
-
-    // ele.isExpandable()
-    cytoscape('collection', 'isCollapsible', function () {
-      var ele = this;
-      return !ele.isExpandable() && ele.isParent();
-    });
-
-    // eles.collapsed()
-    cytoscape('collection', 'collapsibleNodes', function () {
-      var eles = this;
-
-      return eles.filter(function (i, ele) {
-        return ele.isCollapsible();
-      });
-    });
-
-    // eles.expanded()
-    cytoscape('collection', 'expandableNodes', function () {
-      var eles = this;
-
-      return eles.filter(function (i, ele) {
-        return ele.isExpandable();
-      });
-    });
-    // eles.collapsed()
-    cytoscape('core', 'collapsibleNodes', function () {
-      var cy = this;
-
-      return cy.nodes().collapsibleNodes();
-    });
-
-    // eles.expanded()
-    cytoscape('core', 'expandableNodes', function () {
-      var cy = this;
-
-      return cy.nodes().expandableNodes();
+      return api; // Expose the API to the users
     });
   };
+  
 
   if (typeof module !== 'undefined' && module.exports) { // expose as a commonjs module
     module.exports = register;

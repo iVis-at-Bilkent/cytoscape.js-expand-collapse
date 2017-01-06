@@ -1,4 +1,4 @@
-module.exports = function (cy) {
+module.exports = function (cy, api) {
   if (cy.undoRedo == null)
     return;
 
@@ -58,10 +58,10 @@ module.exports = function (cy) {
       var nodes = getEles(args.nodes);
       if (args.firstTime) {
         result.oldData = getNodePositionsAndSizes();
-        result.nodes = func.indexOf("All") > 0 ? cy[func](args.options) : nodes[func](args.options);
+        result.nodes = func.indexOf("All") > 0 ? api[func](args.options) : api[func](nodes, args.options);
       } else {
         result.oldData = getNodePositionsAndSizes();
-        result.nodes = func.indexOf("All") > 0 ? cy[func](secondTimeOpts) : cy.collection(nodes)[func](secondTimeOpts);
+        result.nodes = func.indexOf("All") > 0 ? api[func](secondTimeOpts) : api[func](cy.collection(nodes), secondTimeOpts);
         returnToPositionsAndSizes(args.oldData);
       }
 

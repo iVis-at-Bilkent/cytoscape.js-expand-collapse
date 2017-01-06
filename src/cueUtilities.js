@@ -1,7 +1,7 @@
 var debounce = require('./debounce');
 var elementUtilities;
 
-module.exports = function (params, cy) {
+module.exports = function (params, cy, api) {
   var fn = params;
 
   var eMouseOver, eMouseOut, ePosition, eRemove, eTap, eZoom, eAdd, eFree;
@@ -250,22 +250,22 @@ module.exports = function (params, cy) {
               ur = cy.undoRedo({
                 defaultActions: false
               });
-            if(node.isCollapsible())
+            if(api.isCollapsible(node))
               if (opts.undoable)
                 ur.do("collapse", {
                   nodes: node,
                   options: opts
                 });
               else
-                node.collapse(opts);
-            else if(node.isExpandable())
+                api.collapse(node, opts);
+            else if(api.isExpandable(node))
               if (opts.undoable)
                 ur.do("expand", {
                   nodes: node,
                   options: opts
                 });
               else
-                node.expand(opts);
+                api.expand(node, opts);
           }
         });
       });

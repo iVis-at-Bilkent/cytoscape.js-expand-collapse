@@ -27,8 +27,10 @@ return {
     elementUtilities.moveNodes(positionDiff, node.children());
     node.removeData('position-before-collapse');
 
-    if (single)
+    if (single) {
       this.endOperation(layoutBy);
+    }
+      
     // refreshPaddings();
    /* if (triggerLayout)
       elementUtilities.rearrange(layoutBy);*/
@@ -70,7 +72,10 @@ return {
   endOperation: function (layoutBy) {
     var self = this;
     cy.ready(function () {
-      elementUtilities.rearrange(layoutBy);
+      setTimeout(function() {
+        elementUtilities.rearrange(layoutBy);
+      }, 0);
+      
     });
   },
   expandAllNodes: function (nodes, options) {//*//
@@ -452,7 +457,6 @@ return {
 
               return;
             }
-
             self.expandNodeBaseFunction(nodeToExpand, singleNotSimple, true, layoutBy);
 
           }

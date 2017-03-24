@@ -536,7 +536,10 @@ return {
     
     var relatedNodeMap = {};
     
-    relatedNodes.each(function(i, ele) {
+    relatedNodes.each(function(ele, i) {
+      if(typeof ele === "number") {
+        ele = i;
+      }
       relatedNodeMap[ele.id()] = true;
     });
     

@@ -138,7 +138,10 @@
       api.collapsibleNodes = function (_nodes) {
         var self = this;
         var nodes = _nodes ? _nodes : cy.nodes();
-        return nodes.filter(function (i, ele) {
+        return nodes.filter(function (ele, i) {
+          if(typeof ele === "number") {
+            ele = i;
+          }
           return self.isCollapsible(ele);
         });
       };
@@ -147,7 +150,10 @@
       api.expandableNodes = function (_nodes) {
         var self = this;
         var nodes = _nodes ? _nodes : cy.nodes();
-        return nodes.filter(function (i, ele) {
+        return nodes.filter(function (ele, i) {
+          if(typeof ele === "number") {
+            ele = i;
+          }
           return self.isExpandable(ele);
         });
       };

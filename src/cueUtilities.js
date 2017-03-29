@@ -129,8 +129,8 @@ module.exports = function (params, cy, api) {
         var expandcollapseCenter = elementUtilities.convertToRenderedPosition(cueCenter);
 
         // convert to rendered sizes
-        rectSize = rectSize * cy.zoom();
-        lineSize = lineSize * cy.zoom();
+        rectSize = Math.max(rectSize, rectSize * cy.zoom());
+        lineSize = Math.max(lineSize, lineSize * cy.zoom());
         diff = (rectSize - lineSize) / 2;
 
         expandcollapseCenterX = expandcollapseCenter.x;
@@ -167,7 +167,7 @@ module.exports = function (params, cy, api) {
           ctx.beginPath();
 
           ctx.strokeStyle = "white";
-          ctx.lineWidth = 2.6 * cy.zoom();
+          ctx.lineWidth = Math.max(2.6, 2.6 * cy.zoom());
 
           ctx.moveTo(expandcollapseStartX + diff, expandcollapseStartY + rectSize / 2);
           ctx.lineTo(expandcollapseStartX + lineSize + diff, expandcollapseStartY + rectSize / 2);

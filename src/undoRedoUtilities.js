@@ -1,4 +1,4 @@
-module.exports = function (cy) {
+module.exports = function (cy, api) {
   if (cy.undoRedo == null)
     return;
 
@@ -8,42 +8,39 @@ module.exports = function (cy) {
     return (typeof _eles === "string") ? cy.$(_eles) : _eles;
   }
 
-  function getNodePositionsAndSizes() {
-    var positionsAndSizes = {};
+  function getNodePositions() {
+    var positions = {};
     var nodes = cy.nodes();
 
     for (var i = 0; i < nodes.length; i++) {
       var ele = nodes[i];
-      positionsAndSizes[ele.id()] = {
-        width: ele.width(),
-        height: ele.height(),
+      positions[ele.id()] = {
         x: ele.position("x"),
         y: ele.position("y")
       };
     }
 
-    return positionsAndSizes;
+    return positions;
   }
 
-  function returnToPositionsAndSizes(nodesData) {
-    var currentPositionsAndSizes = {};
-    cy.nodes().positions(function (i, ele) {
-      currentPositionsAndSizes[ele.id()] = {
-        width: ele.width(),
-        height: ele.height(),
+  function returnToPositions(positions) {
+    var currentPositions = {};
+    cy.nodes().positions(function (ele, i) {
+      if(typeof ele === "number") {
+        ele = i;
+      }
+      currentPositions[ele.id()] = {
         x: ele.position("x"),
         y: ele.position("y")
       };
-      var data = nodesData[ele.id()];
-      ele._private.data.width = data.width;
-      ele._private.data.height = data.height;
+      var pos = positions[ele.id()];
       return {
-        x: data.x,
-        y: data.y
+        x: pos.x,
+        y: pos.y
       };
     });
 
-    return currentPositionsAndSizes;
+    return currentPositions;
   }
 
   var secondTimeOpts = {
@@ -57,12 +54,12 @@ module.exports = function (cy) {
       var result = {};
       var nodes = getEles(args.nodes);
       if (args.firstTime) {
-        result.oldData = getNodePositionsAndSizes();
-        result.nodes = func.indexOf("All") > 0 ? cy[func](args.options) : nodes[func](args.options);
+        result.oldData = getNodePositions();
+        result.nodes = func.indexOf("All") > 0 ? api[func](args.options) : api[func](nodes, args.options);
       } else {
-        result.oldData = getNodePositionsAndSizes();
-        result.nodes = func.indexOf("All") > 0 ? cy[func](secondTimeOpts) : cy.collection(nodes)[func](secondTimeOpts);
-        returnToPositionsAndSizes(args.oldData);
+        result.oldData = getNodePositions();
+        result.nodes = func.indexOf("All") > 0 ? api[func](secondTimeOpts) : api[func](cy.collection(nodes), secondTimeOpts);
+        returnToPositions(args.oldData);
       }
 
       return result;

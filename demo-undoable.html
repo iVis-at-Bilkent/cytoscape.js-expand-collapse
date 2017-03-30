@@ -12,8 +12,8 @@
 
 		<!-- for testing with local version of cytoscape.js -->
 		<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
-		<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.3.6/cytoscape-cose-bilkent.js"></script>
-		<script src="src/cytoscape-undo-redo.js"></script>
+		<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.5.1/cytoscape-cose-bilkent.js"></script>
+		<script src="https://cdn.rawgit.com/ivis-at-bilkent/cytoscape.js-undo-redo/master/cytoscape-undo-redo.js"></script>
 		<script src="cytoscape-expand-collapse.js"></script>
 
 
@@ -64,7 +64,7 @@
 						},
 
 						{
-							selector: "[expanded-collapsed='collapsed']",
+							selector: "node.cy-expand-collapse-collapsed-node",
 							style: {
 								"background-color": "darkblue",
 								"shape": "rectangle"
@@ -124,7 +124,15 @@
 				document.getElementById("expandAll").addEventListener("click", function () {
 					ur.do("expandAll");
 				});
-
+                                
+                                document.addEventListener('keydown', function (e){
+					if (e.ctrlKey && e.which == '90') {
+						cy.undoRedo().undo();	     
+					}
+					else if (e.ctrlKey && e.which == '89') {
+						cy.undoRedo().redo();     
+					}
+				}, true );
 			});
 		</script>
 	</head>

@@ -15,20 +15,22 @@ return {
     };
 
     node.removeData("infoLabel");
-    node.data('expanded-collapsed', 'expanded');
+    node.removeClass('cy-expand-collapse-collapsed-node');
 
-    node.trigger("beforeExpand");
+    node.trigger("expandcollapse.beforeexpand");
     node._private.data.collapsedChildren.restore();
     this.repairEdges(node);
     node._private.data.collapsedChildren = null;
-    node.trigger("afterExpand");
+    node.trigger("expandcollapse.afterexpand");
 
 
     elementUtilities.moveNodes(positionDiff, node.children());
     node.removeData('position-before-collapse');
 
-    if (single)
+    if (single) {
       this.endOperation(layoutBy);
+    }
+      
     // refreshPaddings();
    /* if (triggerLayout)
       elementUtilities.rearrange(layoutBy);*/
@@ -38,8 +40,11 @@ return {
     var roots = elementUtilities.getTopMostNodes(nodes);
     for (var i = 0; i < roots.length; i++) {
       var root = roots[i];
+      
+      // Collapse the nodes in bottom up order
       this.collapseBottomUp(root);
     }
+    
     return nodes;
   },
   simpleExpandGivenNodes: function (nodes, applyFishEyeViewToEachNode) {//*//
@@ -67,7 +72,10 @@ return {
   endOperation: function (layoutBy) {
     var self = this;
     cy.ready(function () {
-      elementUtilities.rearrange(layoutBy);
+      setTimeout(function() {
+        elementUtilities.rearrange(layoutBy);
+      }, 0);
+      
     });
   },
   expandAllNodes: function (nodes, options) {//*//
@@ -112,10 +120,14 @@ return {
   },
   //collapse the given nodes then make incremental layout
   collapseGivenNodes: function (nodes, options) {//*//
+    cy.startBatch();
     this.simpleCollapseGivenNodes(nodes, options);
+    cy.endBatch();
 
     this.endOperation(options.layoutBy);
-    //elementUtilities.rearrange(options.layoutBy);
+
+    // Update the style
+    cy.style().update();
 
     /*
      * return the nodes to undo the operation
@@ -178,6 +190,10 @@ return {
    */
   simpleExpandNode: function (node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy) {//*//
     var self = this;
+    
+    if( !animate ) {
+      cy.startBatch();
+    }
 
     var commonExpandOperation = function (node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy) {
       if (applyFishEyeViewToEachNode) {
@@ -243,6 +259,10 @@ return {
       else {
         commonExpandOperation(node, applyFishEyeViewToEachNode, singleNotSimple, animate, layoutBy);
       }
+      
+      if( !animate ) {
+        cy.endBatch();
+      }
 
       //return the node to undo the operation
       return node;
@@ -261,19 +281,18 @@ return {
         h: node.outerHeight()
       });
 
-      node.children().unselect();
-      node.children().connectedEdges().unselect();
-
-      node.data('expanded-collapsed', 'collapsed');
-
       var children = node.children();
 
-      node.trigger("beforeCollapse");
+      children.unselect();
+      children.connectedEdges().unselect();
+
+      node.trigger("expandcollapse.beforecollapse");
+      
       this.barrowEdgesOfcollapsedChildren(node);
-
       this.removeChildren(node, node);
+      node.addClass('cy-expand-collapse-collapsed-node');
 
-      node.trigger("afterCollapse");
+      node.trigger("expandcollapse.aftercollapse");
       
       node.position(node.data('position-before-collapse'));
 
@@ -434,11 +453,10 @@ return {
           position: newPosition,
           complete: function () {
             self.animatedlyMovingNodeCount--;
-            if (self.animatedlyMovingNodeCount > 0 || nodeToExpand.data('expanded-collapsed') === 'expanded') {
+            if (self.animatedlyMovingNodeCount > 0 || !nodeToExpand.hasClass('cy-expand-collapse-collapsed-node')) {
 
               return;
             }
-
             self.expandNodeBaseFunction(nodeToExpand, singleNotSimple, true, layoutBy);
 
           }
@@ -510,7 +528,7 @@ return {
     }
   },
   isMetaEdge: function(edge) {
-    return edge.hasClass("meta");
+    return edge.hasClass("cy-expand-collapse-meta-edge");
   },
   barrowEdgesOfcollapsedChildren: function(node) {
     var relatedNodes = node.descendants();
@@ -518,7 +536,10 @@ return {
     
     var relatedNodeMap = {};
     
-    relatedNodes.each(function(i, ele) {
+    relatedNodes.each(function(ele, i) {
+      if(typeof ele === "number") {
+        ele = i;
+      }
       relatedNodeMap[ele.id()] = true;
     });
     
@@ -533,7 +554,7 @@ return {
           target: target
         };
         
-        edge.addClass("meta");
+        edge.addClass("cy-expand-collapse-meta-edge");
         edge.data('originalEnds', originalEndsData);
       }
       
@@ -553,7 +574,7 @@ return {
     return current;
   },
   repairEdges: function(node) {
-    var connectedMetaEdges = node.connectedEdges('.meta');
+    var connectedMetaEdges = node.connectedEdges('.cy-expand-collapse-meta-edge');
     
     for (var i = 0; i < connectedMetaEdges.length; i++) {
       var edge = connectedMetaEdges[i];
@@ -572,7 +593,7 @@ return {
       }
       
       if ( edge.data('source') === originalEnds.source.id() && edge.data('target') === originalEnds.target.id() ) {
-        edge.removeClass('meta');
+        edge.removeClass('cy-expand-collapse-meta-edge');
         edge.removeData('originalEnds');
       }
     }

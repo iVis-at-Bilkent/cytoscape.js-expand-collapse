@@ -4,7 +4,7 @@ cytoscape-expand-collapse
 
 ## Description
 
-This extension provides an interface to expand/collapse nodes for better management of complexity of Cytoscape.js compound graphs. When using this extension, please cite the following paper, on which the ideas are based on:
+This extension provides an interface to expand/collapse nodes for better management of complexity of Cytoscape.js compound graphs, distributed under [The MIT License](https://opensource.org/licenses/MIT). When using this extension, please cite the following paper, on which the ideas are based on:
 
 U. Dogrusoz and B. Genc, "A Multi-Graph Approach to Complexity Management in Interactive Graph Visualization", Computers & Graphics, 30(1), pp. 86-97, 2006.
 
@@ -15,59 +15,56 @@ U. Dogrusoz and B. Genc, "A Multi-Graph Approach to Complexity Management in Int
 `cy.expandCollapse(options)`
 To initialize/set options whenever you want.
 
+`var api = cy.expandCollapse('get')`
+To get the extension instance after initialization.
+
 * Following functions get options parameter to apply during a particular event unlike the function above.
 
-`eles.collapse(options)`
-Collapse node(s).
+`api.collapse(nodes, options)`
+Collapse given nodes, extend options with given param.
 
-`eles.collapseRecursively(options)`
-Collapse node(s) and their child nodes.
+`api.collapseRecursively(nodes, options)`
+Collapse given nodes recursively, extend options with given param.
 
-`cy.collapseAll(options)`
-Collapse all nodes on graph (recursively).
+`api.collapseAll(options)`
+Collapse all nodes on graph (recursively), extend options with given param.
 
-`eles.expand(options)`
-Expand node(s).
+`api.expand(nodes, options)`
+Expand given nodes, extend options with given param.
 
-`eles.expandRecursively(options)`
-Expand node(s) and their child compounds.
+`api.expandRecursively(nodes, options)`
+Expand given nodes recursively, extend options with given param.
 
-`cy.expandAll(options)`
-Expand all nodes on graph (recursively).
+`api.expandAll(options)`
+Expand all nodes on graph (recursively), extend options with given param.
 
-`ele.isExpandable()`
+`api.isExpandable(node)`
 Get whether node is expandable (or is collapsed)
 
-`ele.isCollapsible()`
-Get whether node is expandable (or is collapsed).
+`api.isCollapsible(node)`
+Get whether node is collapsible.
 
-`eles.expandableNodes()`
-Returns expandable nodes from given set of elements.
+`api.expandableNodes(nodes)`
+Get expandable ones inside given nodes if nodes parameter is not specified consider all nodes
 
-`eles.collapsibleNodes()`
-Returns collapsible nodes from given set of elements.
+`api.collapsibleNodes(nodes)`
+Get collapsible ones inside given nodes if nodes parameter is not specified consider all nodes
 
-`cy.expandableNodes()`
-Returns expandable nodes from whole graph.
-
-`cy.collapsibleNodes()`
-Returns collapsible nodes from whole graph.
-
-`cy.setExpandCollapseOptions(options)`
+`api.setOptions(options)`
 Resets the options to the given parameter.
 
-`cy.setExpandCollapseOption(name, value)`
+`api.setOption(name, value)`
 Sets the value of the option given by the name to the given value.
 
 
 ## Events
-`cy.nodes().on("beforeCollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed
+`cy.nodes().on("expandcollapse.beforecollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed
 
-`cy.nodes().on("afterCollapse", function(event) { var node = this; ... })` Triggered after a node is collapsed
+`cy.nodes().on("expandcollapse.aftercollapse", function(event) { var node = this; ... })` Triggered after a node is collapsed
 
-`cy.nodes().on("beforeExpand", function(event) { var node = this; ... })` Triggered before a node is expanded
+`cy.nodes().on("expandcollapse.beforeexpand", function(event) { var node = this; ... })` Triggered before a node is expanded
 
-`cy.nodes().on("afterExpand", function(event) { var node = this; ... })`  Triggered after a node is expanded
+`cy.nodes().on("expandcollapse.afterexpand", function(event) { var node = this; ... })`  Triggered after a node is expanded
 
 
 ## Default Options
@@ -102,11 +99,15 @@ Sets the value of the option given by the name to the given value.
 
 `ur.do("expandAll", { options: opts })` Equivalent of cy.expandAll(opts)
 
+## Elements Style
 
+ * Collapsed nodes have 'cy-expand-collapse-collapsed-node' class.
+ * Meta edges have 'cy-expand-collapse-meta-edge' class.
 
 ## Dependencies
 
  * Cytoscape.js ^1.7.0
+ * jQuery ^1.7.0 || ^2.0.0 || ^3.0.0
  * cytoscape-undo-redo.js(optional) ^1.0.1
  * cytoscape-cose-bilkent.js(optional/suggested for layout after expand/collapse) ^1.3.6
 
@@ -123,9 +124,10 @@ Download the library:
 CommonJS:
 ```js
 var cytoscape = require('cytoscape');
-var expand-collapse = require('cytoscape-expand-collapse');
+var jquery = require('jquery');
+var expandCollapse = require('cytoscape-expand-collapse');
 
-expand-collapse( cytoscape, jquery ); // register extension
+expandCollapse( cytoscape, jquery ); // register extension
 ```
 
 AMD:

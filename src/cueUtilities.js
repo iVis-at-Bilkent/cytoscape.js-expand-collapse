@@ -190,9 +190,7 @@ module.exports = function (params, cy, api, $) {
         nodeWithRenderedCue = node;
       }
 
-      $container.cytoscape(function (e) {
-        cy = this;
-
+      {
         cy.bind('zoom pan', eZoom = function () {
           if ( nodeWithRenderedCue ) {
             clearDraws();
@@ -202,7 +200,7 @@ module.exports = function (params, cy, api, $) {
 		// check if mouse is inside given node
 		var isInsideCompound = function(node, e){
 			if (node){
-				var currMousePos = e.cyPosition;
+				var currMousePos = e.position || e.cyPosition;
 				var topLeft = {
 					x: (node.position("x") - node.width() / 2 - parseFloat(node.css('padding-left'))),
 					y: (node.position("y") - node.height() / 2 - parseFloat(node.css('padding-top')))};
@@ -240,10 +238,10 @@ module.exports = function (params, cy, api, $) {
 
 		var oldMousePos = null, currMousePos = null;
 		cy.on('mousedown', function(e){
-			oldMousePos = e.cyRenderedPosition
+			oldMousePos = e.renderedPosition || e.cyRenderedPosition
 		});
 		cy.on('mouseup', function(e){
-			currMousePos = e.cyRenderedPosition
+			currMousePos = e.renderedPosition || e.cyRenderedPosition
 		});
 
 		cy.on('drag', 'node', eMouseOut = function (e) {
@@ -274,9 +272,10 @@ module.exports = function (params, cy, api, $) {
 				var expandcollapseRenderedRectSize = node._private.data.expandcollapseRenderedCueSize;
 				var expandcollapseRenderedEndX = expandcollapseRenderedStartX + expandcollapseRenderedRectSize;
 				var expandcollapseRenderedEndY = expandcollapseRenderedStartY + expandcollapseRenderedRectSize;
-
-				var cyRenderedPosX = event.cyRenderedPosition.x;
-				var cyRenderedPosY = event.cyRenderedPosition.y;
+                
+                var cyRenderedPos = event.renderedPosition || event.cyRenderedPosition;
+				var cyRenderedPosX = cyRenderedPos.x;
+				var cyRenderedPosY = cyRenderedPos.y;
 				var factor = (options().expandCollapseCueSensitivity - 1) / 2;
 
 				if ( (Math.abs(oldMousePos.x - currMousePos.x) < 5 && Math.abs(oldMousePos.y - currMousePos.y) < 5)
@@ -308,7 +307,7 @@ module.exports = function (params, cy, api, $) {
 					}
 			}
 		});
-      });
+      }
 
       $container.data('cyexpandcollapse', data);
     },

@@ -40,7 +40,10 @@ function elementUtilities(cy) {
     if (typeof layoutBy === "function") {
       layoutBy();
     } else if (layoutBy != null) {
-      cy.layout(layoutBy);
+      var layout = cy.layout(layoutBy);
+      if (layout && layout.run) {
+        layout.run();
+      }
     }
   },
   convertToRenderedPosition: function (modelPosition) {

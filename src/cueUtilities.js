@@ -192,9 +192,8 @@ module.exports = function (params, cy, api) {
         nodeWithRenderedCue = node;
       }
 
-      $container.cytoscape(function (e) {
-        cy = this;
 
+      {
         cy.bind('zoom pan', eZoom = function () {
           if ( nodeWithRenderedCue ) {
             clearDraws();
@@ -238,8 +237,9 @@ module.exports = function (params, cy, api) {
           var expandcollapseRenderedEndX = expandcollapseRenderedStartX + expandcollapseRenderedRectSize;
           var expandcollapseRenderedEndY = expandcollapseRenderedStartY + expandcollapseRenderedRectSize;
 
-          var cyRenderedPosX = event.cyRenderedPosition.x;
-          var cyRenderedPosY = event.cyRenderedPosition.y;
+          var cyRenderedPos = event.renderedPosition || event.cyRenderedPosition;
+          var cyRenderedPosX = cyRenderedPos.x;
+          var cyRenderedPosY = cyRenderedPos.y;
           var factor = (options().expandCollapseCueSensitivity - 1) / 2;
 
           if (cyRenderedPosX >= expandcollapseRenderedStartX - expandcollapseRenderedRectSize * factor
@@ -268,7 +268,7 @@ module.exports = function (params, cy, api) {
                 api.expand(node, opts);
           }
         });
-      });
+      };
 
       $container.data('cyexpandcollapse', data);
     },

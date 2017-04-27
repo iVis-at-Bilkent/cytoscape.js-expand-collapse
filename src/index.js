@@ -184,7 +184,7 @@
         undoRedoUtilities(cy, api);
 
         if(options.cueEnabled)
-          cueUtilities(options, cy, api);
+          cueUtilities(options, cy, api, $);
 
 
         options.ready();

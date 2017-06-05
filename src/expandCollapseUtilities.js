@@ -25,8 +25,8 @@ return {
 
 
     elementUtilities.moveNodes(positionDiff, node.children());
+    node.trigger("position"); // position not triggered by default when nodes are moved
     node.removeData('position-before-collapse');
-
     if (single) {
       this.endOperation(layoutBy);
     }

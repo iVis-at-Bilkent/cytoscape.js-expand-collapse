@@ -144,7 +144,11 @@ return {
     return nodes;
   },
   //collapse the given nodes then perform end operation
-  collapseGivenNodes: function (nodes, options) {//*//
+  collapseGivenNodes: function (nodes, options) {
+    /*
+     * In collapse operation there is no fisheye view to be applied so there is no animation to be destroyed here. We can do this 
+     * in a batch.
+     */ 
     cy.startBatch();
     this.simpleCollapseGivenNodes(nodes, options);
     cy.endBatch();
@@ -208,6 +212,8 @@ return {
   expandNode: function (node, applyFishEyeView, single, animate, layoutBy) {
     var self = this;
     
+    // If animate parameter is not set do these operations in a batch. Note that this parameter is unset 
+    // if more then one node to be expanded (independant of related user option)
     if( !animate ) {
       cy.startBatch();
     }

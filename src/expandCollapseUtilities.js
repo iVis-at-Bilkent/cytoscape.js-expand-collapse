@@ -12,6 +12,9 @@ return {
    * perform layout after expand.
    */
   expandNodeBaseFunction: function (node, single, layoutBy) {
+    if (!node._private.data.collapsedChildren){
+      return;
+    }
     //check how the position of the node is changed
     var positionDiff = {
       x: node.position('x') - node.data('position-before-collapse').x,

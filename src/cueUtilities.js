@@ -252,6 +252,14 @@ module.exports = function (params, cy, api, $) {
 			if (nodeWithRenderedCue)
 				clearDraws();
 		});
+        
+        // If compounds are resized position event is not triggered though the position of the node is changed.
+        // Therefore, we listen to noderesize.resizedrag event here and if the node is a compound we do what is supposed be done in position event.
+        cy.on("noderesize.resizedrag", function(e, type, node){ 
+            if (node.isParent() && nodeWithRenderedCue) {
+                clearDraws();
+            }
+        });
 
 		cy.on('remove', 'node', eRemove = function () {
 			clearDraws();

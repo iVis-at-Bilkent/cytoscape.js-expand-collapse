@@ -56,6 +56,9 @@ Resets the options to the given parameter.
 `api.setOption(name, value)`
 Sets the value of the option given by the name to the given value.
 
+`api.getCollapsedChildren(node)`
+Get the children of the given collapsed node which are removed during collapse operation
+
 
 ## Events
 `cy.nodes().on("expandcollapse.beforecollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed

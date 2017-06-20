@@ -158,6 +158,11 @@
         });
       };
       
+      // Get the children of the given collapsed node which are removed during collapse operation
+      api.getCollapsedChildren = function (node) {
+        return node.data('collapsedChildren');
+      };
+      
       // This method works problematic TODO fix related bugs and expose it
       // Unbinds cue events
 //      api.disableCue = function() {

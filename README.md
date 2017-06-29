@@ -62,7 +62,6 @@ Get the children of the given collapsed node which are removed during collapse o
 `api.clearVisualCue()`
 Forces the visual cue to be cleared. It is to be called in extreme cases.
 
-
 ## Events
 `cy.nodes().on("expandcollapse.beforecollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed
 

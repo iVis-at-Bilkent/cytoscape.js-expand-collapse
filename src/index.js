@@ -163,6 +163,7 @@
         return node.data('collapsedChildren');
       };
       
+
       // This method forces the visual cue to be cleared. It is to be called in extreme cases 
       api.clearVisualCue = function(node) {
         cy.trigger('expandcollapse.clearvisualcue');

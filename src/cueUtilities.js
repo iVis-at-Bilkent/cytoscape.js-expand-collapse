@@ -192,6 +192,7 @@ module.exports = function (params, cy, api, $) {
 
       {
         cy.on('expandcollapse.clearvisualcue', function() {
+
           if ( nodeWithRenderedCue ) {
             clearDraws();
           }

@@ -2,9 +2,9 @@
   "name": "cytoscape-expand-collapse",
   "version": "3.0.6",
   "description": "This extension provides an interface to expand-collapse nodes.",
-  "main": "cytoscape-expand-collapse.js",
+  "main": "src/index.js",
   "spm": {
-    "main": "cytoscape-expand-collapse.js"
+    "main": "src/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -38,7 +38,7 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "peerDependencies": {
-    "cytoscape": "^2.7.0",
+    "cytoscape": "^2.7.0 || ^3.0.0",
     "jquery": "^1.7.0 || ^2.0.0 || ^3.0.0"
   }
 }

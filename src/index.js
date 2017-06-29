@@ -163,6 +163,12 @@
         return node.data('collapsedChildren');
       };
       
+
+      // This method forces the visual cue to be cleared. It is to be called in extreme cases 
+      api.clearVisualCue = function(node) {
+        cy.trigger('expandcollapse.clearvisualcue');
+      };
+      
       // This method works problematic TODO fix related bugs and expose it
       // Unbinds cue events
 //      api.disableCue = function() {
@@ -189,7 +195,7 @@
         undoRedoUtilities(cy, api);
 
         if(options.cueEnabled)
-          cueUtilities(options, cy, api);
+          cueUtilities(options, cy, api, $);
 
 
         options.ready();

@@ -59,6 +59,8 @@ Sets the value of the option given by the name to the given value.
 `api.getCollapsedChildren(node)`
 Get the children of the given collapsed node which are removed during collapse operation
 
+`api.clearVisualCue()`
+Forces the visual cue to be cleared. It is to be called in extreme cases.
 
 ## Events
 `cy.nodes().on("expandcollapse.beforecollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed
@@ -73,7 +75,8 @@ Get the children of the given collapsed node which are removed during collapse o
 ## Default Options
 ```javascript
     var options = {
-      layoutBy: null, // for rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
+      layoutBy: null, // to rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
+      // recommended usage: use cose-bilkent layout with randomize: false to preserve mental map upon expand/collapse
       fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too
       animate: true, // whether to animate on drawing changes you can specify a function too
       ready: function () { }, // callback when expand/collapse initialized
@@ -154,4 +157,4 @@ This project is set up to automatically be published to npm and bower.  To publi
 
 ## Team
 
-  * [Selim Firat Yilmaz](https://github.com/mrsfy), [Metin Can Siper](https://github.com/metincansiper), [Alper Karacelik](https://github.com/alperkaracelik), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis)
+  * [Selim Firat Yilmaz](https://github.com/mrsfy), [Metin Can Siper](https://github.com/metincansiper), [Alper Karacelik](https://github.com/alperkaracelik), [Ilkin Safarli](https://github.com/kinimesi), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis)

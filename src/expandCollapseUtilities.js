@@ -156,7 +156,7 @@ return {
     this.simpleCollapseGivenNodes(nodes, options);
     cy.endBatch();
 
-    node.trigger("position"); // position not triggered by default when collapseNode is called
+    nodes.trigger("position"); // position not triggered by default when collapseNode is called
     this.endOperation(options.layoutBy);
 
     // Update the style

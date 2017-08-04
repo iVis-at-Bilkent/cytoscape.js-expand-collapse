@@ -8,6 +8,8 @@ This extension provides an interface to expand/collapse nodes for better managem
 
 U. Dogrusoz and B. Genc, "A Multi-Graph Approach to Complexity Management in Interactive Graph Visualization", Computers & Graphics, 30(1), pp. 86-97, 2006.
 
+[Click for demo](http://cdn.rawgit.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/master/demo.html)
+
 ## API
 
 * Note that compounds are nodes.
@@ -138,8 +140,8 @@ expandCollapse( cytoscape, jquery ); // register extension
 
 AMD:
 ```js
-require(['cytoscape', 'cytoscape-expand-collapse'], function( cytoscape, expand-collapse ){
-  expand-collapse( cytoscape ); // register extension
+require(['cytoscape', 'cytoscape-expand-collapse'], function( cytoscape, expandCollapse ){
+  expandCollapse( cytoscape ); // register extension
 });
 ```
 

@@ -5,7 +5,7 @@ module.exports = function (params, cy, api, $) {
   var fn = params;
 
   var eMouseOver, eMouseOut, ePosition, eRemove, eTap, eZoom, eAdd, eFree;
-  var nodeWithRenderedCue;
+  var nodeWithRenderedCue, preventDrawing = false;
   
   var functions = {
     init: function () {
@@ -227,7 +227,7 @@ module.exports = function (params, cy, api, $) {
 			if(!isInsideCompound(nodeWithRenderedCue, e)){
 				clearDraws()
 			}
-			else if(nodeWithRenderedCue){
+			else if(nodeWithRenderedCue && !preventDrawing){
 				drawExpandCollapseCue(nodeWithRenderedCue);
 			}
 		});
@@ -251,8 +251,12 @@ module.exports = function (params, cy, api, $) {
 			currMousePos = e.renderedPosition || e.cyRenderedPosition
 		});
 
-		cy.on('drag', 'node', eMouseOut = function (e) {
-			clearDraws();
+		cy.on('grab', 'node', eMouseOut = function (e) {
+			preventDrawing = true;
+		});
+
+		cy.on('free', 'node', eMouseOut = function (e) {
+			preventDrawing = false;
 		});
 
 		cy.on('position', 'node', ePosition = function () {

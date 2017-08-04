@@ -138,8 +138,8 @@ expandCollapse( cytoscape, jquery ); // register extension
 
 AMD:
 ```js
-require(['cytoscape', 'cytoscape-expand-collapse'], function( cytoscape, expand-collapse ){
-  expand-collapse( cytoscape ); // register extension
+require(['cytoscape', 'cytoscape-expand-collapse'], function( cytoscape, expandCollapse ){
+  expandCollapse( cytoscape ); // register extension
 });
 ```
 

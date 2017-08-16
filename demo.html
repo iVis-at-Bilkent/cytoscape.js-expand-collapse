@@ -6,13 +6,13 @@
 		<title>cytoscape-expand-collapse.js demo</title>
 
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-                
+
                 <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 		<script src="https://unpkg.com/cytoscape@3.1.2/dist/cytoscape.min.js"></script>
 
 		<!-- for testing with local version of cytoscape.js -->
 		<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
-		<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.6.12/cytoscape-cose-bilkent.js"></script>
+		<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/2.0.4/cytoscape-cose-bilkent.js"></script>
 		<script src="cytoscape-expand-collapse.js"></script>
 
 
@@ -93,7 +93,7 @@
 				var api = cy.expandCollapse({
 					layoutBy: {
 						name: "cose-bilkent",
-						animate: true,
+						animate: "end",
 						randomize: false,
 						fit: true
 					},

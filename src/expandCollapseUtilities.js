@@ -15,10 +15,11 @@ return {
     if (!node._private.data.collapsedChildren){
       return;
     }
+    cy.startBatch();
     //check how the position of the node is changed
     var positionDiff = {
-      x: node.position('x') - node.data('position-before-collapse').x,
-      y: node.position('y') - node.data('position-before-collapse').y
+      x: node._private.position.x - node._private.data['position-before-collapse'].x,
+      y: node._private.position.y - node._private.data['position-before-collapse'].y
     };
 
     node.removeData("infoLabel");
@@ -39,6 +40,7 @@ return {
     if (single) {
       this.endOperation(layoutBy);
     }
+    cy.endBatch();
   },
   /*
    * A helper function to collapse given nodes in a simple way (Without performing layout afterward)
@@ -216,17 +218,11 @@ return {
   expandNode: function (node, applyFishEyeView, single, animate, layoutBy) {
     var self = this;
     
-    // If animate parameter is not set do these operations in a batch. Note that this parameter is unset 
-    // if more then one node to be expanded (independant of related user option)
-    if( !animate ) {
-      cy.startBatch();
-    }
-
     var commonExpandOperation = function (node, applyFishEyeView, single, animate, layoutBy) {
       if (applyFishEyeView) {
 
-        node.data('width-before-fisheye', node.data('size-before-collapse').w);
-        node.data('height-before-fisheye', node.data('size-before-collapse').h);
+        node._private.data['width-before-fisheye'] = node._private.data['size-before-collapse'].w;
+        node._private.data['height-before-fisheye'] = node._private.data['size-before-collapse'].h;
         
         // Fisheye view expand the node.
         // The first paramter indicates the node to apply fisheye view, the third parameter indicates the node
@@ -259,10 +255,10 @@ return {
         };
 
         var nodeBB = {
-          x1: node.position('x') - node.data('size-before-collapse').w / 2 - padding,
-          x2: node.position('x') + node.data('size-before-collapse').w / 2 + padding,
-          y1: node.position('y') - node.data('size-before-collapse').h / 2 - padding,
-          y2: node.position('y') + node.data('size-before-collapse').h / 2 + padding
+          x1: node._private.position.x - node._private.data['size-before-collapse'].w / 2 - padding,
+          x2: node._private.position.x + node._private.data['size-before-collapse'].w / 2 + padding,
+          y1: node._private.position.y - node._private.data['size-before-collapse'].h / 2 - padding,
+          y2: node._private.position.y + node._private.data['size-before-collapse'].h / 2 + padding
         };
 
         var unionBB = boundingBoxUtilities.getUnion(nodeBB, bb);
@@ -296,10 +292,6 @@ return {
         commonExpandOperation(node, applyFishEyeView, single, animate, layoutBy);
       }
       
-      if( !animate ) {
-        cy.endBatch();
-      }
-
       //return the node to undo the operation
       return node;
     }
@@ -338,10 +330,10 @@ return {
   },
   storeWidthHeight: function (node) {//*//
     if (node != null) {
-      node.data('x-before-fisheye', this.xPositionInParent(node));
-      node.data('y-before-fisheye', this.yPositionInParent(node));
-      node.data('width-before-fisheye', node.outerWidth());
-      node.data('height-before-fisheye', node.outerHeight());
+      node._private.data['x-before-fisheye'] = this.xPositionInParent(node);
+      node._private.data['y-before-fisheye'] = this.yPositionInParent(node);
+      node._private.data['width-before-fisheye'] = node.outerWidth();
+      node._private.data['height-before-fisheye'] = node.outerHeight();
 
       if (node.parent()[0] != null) {
         this.storeWidthHeight(node.parent()[0]);
@@ -359,16 +351,16 @@ return {
     var x_a = this.xPositionInParent(node);
     var y_a = this.yPositionInParent(node);
 
-    var d_x_left = Math.abs((node.data('width-before-fisheye') - node.outerWidth()) / 2);
-    var d_x_right = Math.abs((node.data('width-before-fisheye') - node.outerWidth()) / 2);
-    var d_y_upper = Math.abs((node.data('height-before-fisheye') - node.outerHeight()) / 2);
-    var d_y_lower = Math.abs((node.data('height-before-fisheye') - node.outerHeight()) / 2);
+    var d_x_left = Math.abs((node._private.data['width-before-fisheye'] - node.outerWidth()) / 2);
+    var d_x_right = Math.abs((node._private.data['width-before-fisheye'] - node.outerWidth()) / 2);
+    var d_y_upper = Math.abs((node._private.data['height-before-fisheye'] - node.outerHeight()) / 2);
+    var d_y_lower = Math.abs((node._private.data['height-before-fisheye'] - node.outerHeight()) / 2);
 
-    var abs_diff_on_x = Math.abs(node.data('x-before-fisheye') - x_a);
-    var abs_diff_on_y = Math.abs(node.data('y-before-fisheye') - y_a);
+    var abs_diff_on_x = Math.abs(node._private.data['x-before-fisheye'] - x_a);
+    var abs_diff_on_y = Math.abs(node._private.data['y-before-fisheye'] - y_a);
 
     // Center went to LEFT
-    if (node.data('x-before-fisheye') > x_a) {
+    if (node._private.data['x-before-fisheye'] > x_a) {
       d_x_left = d_x_left + abs_diff_on_x;
       d_x_right = d_x_right - abs_diff_on_x;
     }
@@ -379,7 +371,7 @@ return {
     }
 
     // Center went to UP
-    if (node.data('y-before-fisheye') > y_a) {
+    if (node._private.data['y-before-fisheye'] > y_a) {
       d_y_upper = d_y_upper + abs_diff_on_y;
       d_y_lower = d_y_lower - abs_diff_on_y;
     }
@@ -489,9 +481,10 @@ return {
      * If the node is simple move itself directly else move it by moving its children by a self recursive call
      */
     if (childrenList.length == 0) {
-      var newPosition = {x: node.position('x') + T_x, y: node.position('y') + T_y};
+      var newPosition = {x: node._private.position.x + T_x, y: node._private.position.y + T_y};
       if (!single || !animate) {
-        node.position(newPosition);
+        node._private.position.x = newPosition.x;
+        node._private.position.y = newPosition.y;
       }
       else {
         this.animatedlyMovingNodeCount++;

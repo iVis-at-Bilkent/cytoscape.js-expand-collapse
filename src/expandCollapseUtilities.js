@@ -456,7 +456,7 @@ return {
 
     if (node.parent()[0] == null) {
       siblings = cy.collection();
-      var orphans = cy.nodes().orphans();
+      var orphans = cy.nodes(":visible").orphans();
 
       for (var i = 0; i < orphans.length; i++) {
         if (orphans[i] != node) {
@@ -464,7 +464,7 @@ return {
         }
       }
     } else {
-      siblings = node.siblings();
+      siblings = node.siblings(":visible");
     }
 
     return siblings;
@@ -474,7 +474,7 @@ return {
    * Moves the node by moving its descandents. Movement is animated if both single and animate flags are truthy.
    */
   fishEyeViewMoveNode: function (node, T_x, T_y, nodeToExpand, single, animate, layoutBy) {
-    var childrenList = node.children();
+    var childrenList = node.children(":visible");
     var self = this;
     
     /*

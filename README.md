@@ -63,6 +63,12 @@ Sets the value of the option given by the name to the given value.
 `api.getCollapsedChildren(node)`
 Get the children of the given collapsed node which are removed during collapse operation
 
+`api.getCollapsedChildrenRecursively(node)`
+Get collapsed children recursively including nested collapsed children. Returned value includes edges and nodes, use selector to get edges or nodes.
+
+`api.getAllCollapsedChildrenRecursively(node)`
+Get collapsed children of all collapsed nodes recursively. Returned value includes edges and nodes, use selector to get edges or nodes.
+
 `api.clearVisualCue()`
 Forces the visual cue to be cleared. It is to be called in extreme cases.
 

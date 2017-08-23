@@ -162,8 +162,30 @@
       api.getCollapsedChildren = function (node) {
         return node.data('collapsedChildren');
       };
-      
 
+      /** Get collapsed children recursively including nested collapsed children
+       * Returned value includes edges and nodes, use selector to get edges or nodes
+       * @param node : a collapsed node
+       * @return all collapsed children
+       */
+      api.getCollapsedChildrenRecursively = function(node) {
+        var collapsedChildren = cy.collection();
+        return expandCollapseUtilities.getCollapsedChildrenRecursively(node, collapsedChildren);
+      };
+
+      /** Get collapsed children of all collapsed nodes recursively including nested collapsed children
+       * Returned value includes edges and nodes, use selector to get edges or nodes
+       * @return all collapsed children
+       */
+      api.getAllCollapsedChildrenRecursively = function(){
+        var collapsedChildren = cy.collection();
+        var collapsedNodes = cy.nodes(".cy-expand-collapse-collapsed-node");
+        var j;
+        for (j=0; j < collapsedNodes.length; j++){
+            collapsedChildren = collapsedChildren.union(this.getCollapsedChildrenRecursively(collapsedNodes[j]));
+        }
+        return collapsedChildren;
+      };
       // This method forces the visual cue to be cleared. It is to be called in extreme cases 
       api.clearVisualCue = function(node) {
         cy.trigger('expandcollapse.clearvisualcue');

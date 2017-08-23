@@ -31,16 +31,17 @@ return {
     node._private.data.collapsedChildren = null;
     node.trigger("expandcollapse.afterexpand");
 
-
     elementUtilities.moveNodes(positionDiff, node.children());
-    node.trigger("position"); // position not triggered by default when nodes are moved
     node.removeData('position-before-collapse');
+
+    cy.endBatch();
     
+    node.trigger("position"); // position not triggered by default when nodes are moved
+
     // If expand is called just for one node then call end operation to perform layout
     if (single) {
       this.endOperation(layoutBy);
     }
-    cy.endBatch();
   },
   /*
    * A helper function to collapse given nodes in a simple way (Without performing layout afterward)
@@ -650,6 +651,23 @@ return {
       temp = temp.parent()[0];
     }
     return true;
+  },
+  /**
+   * Get all collapsed children - including nested ones
+   * @param node : a collapsed node
+   * @param collapsedChildren : a collection to store the result
+   * @return : collapsed children
+   */
+  getCollapsedChildrenRecursively: function(node, collapsedChildren){
+    var children = node.data('collapsedChildren');
+    var i;
+    for (i=0; i < children.length; i++){
+      if (children[i].data('collapsedChildren')){
+        collapsedChildren = collapsedChildren.union(this.getCollapsedChildrenRecursively(children[i], collapsedChildren));
+      }
+      collapsedChildren = collapsedChildren.union(children[i]);
+    }
+    return collapsedChildren;
   }
 }
 };

@@ -1,0 +1,154 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/node', '/usr/bin/npm', 'link' ]
+2 info using npm@2.15.11
+3 info using node@v4.7.3
+4 verbose linkPkg /home/safarli/Documents/cytoscape.js-expand-collapse
+5 silly gentlyRm /usr/local/lib/node_modules/cytoscape-expand-collapse is being purged
+6 verbose gentlyRm don't care about contents; nuking /usr/local/lib/node_modules/cytoscape-expand-collapse
+7 silly vacuum-fs purging /usr/local/lib/node_modules/cytoscape-expand-collapse
+8 silly vacuum-fs quitting because other entries in /usr/local/lib/node_modules
+9 verbose link build target /usr/local/lib/node_modules/cytoscape-expand-collapse
+10 verbose install where, what [ '/home/safarli/Documents/cytoscape.js-expand-collapse', [] ]
+11 verbose readDependencies loading dependencies from /home/safarli/Documents/cytoscape.js-expand-collapse/package.json
+12 verbose install where, deps [ '/home/safarli/Documents/cytoscape.js-expand-collapse',
+12 verbose install   [ 'browserify',
+12 verbose install     'gulp',
+12 verbose install     'gulp-derequire',
+12 verbose install     'gulp-jshint',
+12 verbose install     'gulp-prompt',
+12 verbose install     'gulp-replace',
+12 verbose install     'gulp-shell',
+12 verbose install     'gulp-util',
+12 verbose install     'jshint-stylish',
+12 verbose install     'node-notifier',
+12 verbose install     'run-sequence',
+12 verbose install     'vinyl-buffer',
+12 verbose install     'vinyl-source-stream' ] ]
+13 verbose install peerDependency cytoscape wasn't going to be installed; adding
+14 warn peerDependencies The peer dependency cytoscape included from cytoscape-expand-collapse will no
+15 warn peerDependencies longer be automatically installed to fulfill the peerDependency
+16 warn peerDependencies in npm 3+. Your application will need to depend on it explicitly.
+17 verbose install peerDependency jquery wasn't going to be installed; adding
+18 warn peerDependencies The peer dependency jquery included from cytoscape-expand-collapse will no
+19 warn peerDependencies longer be automatically installed to fulfill the peerDependency
+20 warn peerDependencies in npm 3+. Your application will need to depend on it explicitly.
+21 verbose install where, peers [ '/home/safarli/Documents/cytoscape.js-expand-collapse',
+21 verbose install   [ 'cytoscape', 'jquery' ] ]
+22 verbose installManyTop reading for lifecycle /home/safarli/Documents/cytoscape.js-expand-collapse/package.json
+23 info preinstall cytoscape-expand-collapse@1.2.0
+24 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/browserify/package.json
+25 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/cytoscape/package.json
+26 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp/package.json
+27 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-derequire/package.json
+28 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-jshint/package.json
+29 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-prompt/package.json
+30 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-replace/package.json
+31 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-shell/package.json
+32 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-util/package.json
+33 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/jquery/package.json
+34 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/jshint-stylish/package.json
+35 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/node-notifier/package.json
+36 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/run-sequence/package.json
+37 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/vinyl-buffer/package.json
+38 verbose installManyTop reading scoped package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/vinyl-source-stream/package.json
+39 info package.json gulp-derequire@2.1.0 license should be a valid SPDX license expression
+40 verbose readDependencies loading dependencies from /home/safarli/Documents/cytoscape.js-expand-collapse/package.json
+41 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/browserify/package.json
+42 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/cytoscape/package.json
+43 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp/package.json
+44 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-derequire/package.json
+45 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-jshint/package.json
+46 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-prompt/package.json
+47 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-replace/package.json
+48 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-shell/package.json
+49 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/gulp-util/package.json
+50 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/jquery/package.json
+51 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/jshint-stylish/package.json
+52 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/node-notifier/package.json
+53 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/run-sequence/package.json
+54 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/vinyl-buffer/package.json
+55 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/vinyl-source-stream/package.json
+56 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/.bin/browserify/package.json
+57 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/.bin/gulp/package.json
+58 verbose targetResolver reading package data from /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/.bin/notify/package.json
+59 verbose already installed skipping run-sequence@^1.1.4 /home/safarli/Documents/cytoscape.js-expand-collapse
+60 verbose already installed skipping vinyl-buffer@^1.0.0 /home/safarli/Documents/cytoscape.js-expand-collapse
+61 verbose already installed skipping vinyl-source-stream@^1.1.0 /home/safarli/Documents/cytoscape.js-expand-collapse
+62 verbose already installed skipping cytoscape@^2.7.0 /home/safarli/Documents/cytoscape.js-expand-collapse
+63 verbose already installed skipping jquery@^1.7.0 || ^2.0.0 || ^3.0.0 /home/safarli/Documents/cytoscape.js-expand-collapse
+64 verbose already installed skipping browserify@^11.2.0 /home/safarli/Documents/cytoscape.js-expand-collapse
+65 verbose already installed skipping gulp@^3.9.0 /home/safarli/Documents/cytoscape.js-expand-collapse
+66 verbose already installed skipping gulp-derequire@^2.1.0 /home/safarli/Documents/cytoscape.js-expand-collapse
+67 verbose already installed skipping gulp-jshint@^1.11.2 /home/safarli/Documents/cytoscape.js-expand-collapse
+68 verbose already installed skipping gulp-prompt@^0.1.2 /home/safarli/Documents/cytoscape.js-expand-collapse
+69 verbose already installed skipping gulp-replace@^0.5.4 /home/safarli/Documents/cytoscape.js-expand-collapse
+70 verbose already installed skipping gulp-shell@^0.5.0 /home/safarli/Documents/cytoscape.js-expand-collapse
+71 verbose already installed skipping gulp-util@^3.0.6 /home/safarli/Documents/cytoscape.js-expand-collapse
+72 verbose already installed skipping jshint-stylish@^2.0.1 /home/safarli/Documents/cytoscape.js-expand-collapse
+73 verbose already installed skipping node-notifier@^4.3.1 /home/safarli/Documents/cytoscape.js-expand-collapse
+74 silly install resolved []
+75 info build /home/safarli/Documents/cytoscape.js-expand-collapse
+76 info linkStuff cytoscape-expand-collapse@1.2.0
+77 silly linkStuff cytoscape-expand-collapse@1.2.0 has /home/safarli/Documents as its parent node_modules
+78 verbose linkBins cytoscape-expand-collapse@1.2.0
+79 verbose linkMans cytoscape-expand-collapse@1.2.0
+80 verbose rebuildBundles cytoscape-expand-collapse@1.2.0
+81 verbose rebuildBundles [ '.bin',
+81 verbose rebuildBundles   'browserify',
+81 verbose rebuildBundles   'cytoscape',
+81 verbose rebuildBundles   'gulp',
+81 verbose rebuildBundles   'gulp-derequire',
+81 verbose rebuildBundles   'gulp-jshint',
+81 verbose rebuildBundles   'gulp-prompt',
+81 verbose rebuildBundles   'gulp-replace',
+81 verbose rebuildBundles   'gulp-shell',
+81 verbose rebuildBundles   'gulp-util',
+81 verbose rebuildBundles   'jquery',
+81 verbose rebuildBundles   'jshint-stylish',
+81 verbose rebuildBundles   'node-notifier',
+81 verbose rebuildBundles   'run-sequence',
+81 verbose rebuildBundles   'vinyl-buffer',
+81 verbose rebuildBundles   'vinyl-source-stream' ]
+82 verbose rebuild bundle /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/cytoscape
+83 info build /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/cytoscape
+84 info preinstall cytoscape@3.1.2
+85 info linkStuff cytoscape@3.1.2
+86 silly linkStuff cytoscape@3.1.2 has /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules as its parent node_modules
+87 verbose linkBins cytoscape@3.1.2
+88 verbose linkMans cytoscape@3.1.2
+89 verbose rebuildBundles cytoscape@3.1.2
+90 info install cytoscape@3.1.2
+91 info postinstall cytoscape@3.1.2
+92 verbose rebuild bundle /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/jquery
+93 info build /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules/jquery
+94 info preinstall jquery@3.2.1
+95 info linkStuff jquery@3.2.1
+96 silly linkStuff jquery@3.2.1 has /home/safarli/Documents/cytoscape.js-expand-collapse/node_modules as its parent node_modules
+97 verbose linkBins jquery@3.2.1
+98 verbose linkMans jquery@3.2.1
+99 verbose rebuildBundles jquery@3.2.1
+100 info install jquery@3.2.1
+101 info postinstall jquery@3.2.1
+102 info install cytoscape-expand-collapse@1.2.0
+103 info postinstall cytoscape-expand-collapse@1.2.0
+104 info prepublish cytoscape-expand-collapse@1.2.0
+105 verbose validateInstall loading /home/safarli/Documents/cytoscape.js-expand-collapse/package.json for validation
+106 verbose stack Error: The package cytoscape@3.1.2 does not satisfy its siblings' peerDependencies requirements!
+106 verbose stack     at /usr/lib64/node_modules/npm/lib/install.js:125:32
+106 verbose stack     at /usr/lib64/node_modules/npm/lib/install.js:268:7
+106 verbose stack     at /usr/lib64/node_modules/npm/node_modules/read-installed/read-installed.js:142:5
+106 verbose stack     at /usr/lib64/node_modules/npm/node_modules/read-installed/read-installed.js:263:14
+106 verbose stack     at cb (/usr/lib64/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+106 verbose stack     at /usr/lib64/node_modules/npm/node_modules/read-installed/read-installed.js:263:14
+106 verbose stack     at cb (/usr/lib64/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+106 verbose stack     at /usr/lib64/node_modules/npm/node_modules/read-installed/read-installed.js:263:14
+106 verbose stack     at cb (/usr/lib64/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+106 verbose stack     at /usr/lib64/node_modules/npm/node_modules/read-installed/read-installed.js:263:14
+107 verbose cwd /home/safarli/Documents/cytoscape.js-expand-collapse
+108 error Linux 4.4.79-18.23-default
+109 error argv "/usr/bin/node" "/usr/bin/npm" "link"
+110 error node v4.7.3
+111 error npm  v2.15.11
+112 error code EPEERINVALID
+113 error peerinvalid The package cytoscape@3.1.2 does not satisfy its siblings' peerDependencies requirements!
+114 verbose exit [ 1, true ]

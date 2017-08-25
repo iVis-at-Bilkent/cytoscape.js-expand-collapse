@@ -15,7 +15,7 @@ return {
     if (!node._private.data.collapsedChildren){
       return;
     }
-    cy.startBatch();
+
     //check how the position of the node is changed
     var positionDiff = {
       x: node._private.position.x - node._private.data['position-before-collapse'].x,
@@ -34,8 +34,6 @@ return {
     elementUtilities.moveNodes(positionDiff, node.children());
     node.removeData('position-before-collapse');
 
-    cy.endBatch();
-    
     node.trigger("position"); // position not triggered by default when nodes are moved
 
     // If expand is called just for one node then call end operation to perform layout

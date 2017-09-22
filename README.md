@@ -8,7 +8,7 @@ This extension provides an interface to expand/collapse nodes for better managem
 
 ![](https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/blob/master/expand-collapse-extension-demo.gif)
 
-Until a more direct publication on this is available, please cite the following paper when using this extension:
+Until a publication on this is available, please cite the following paper when using this extension:
 
 U. Dogrusoz and B. Genc, "A Multi-Graph Approach to Complexity Management in Interactive Graph Visualization", Computers & Graphics, 30(1), pp. 86-97, 2006.
 

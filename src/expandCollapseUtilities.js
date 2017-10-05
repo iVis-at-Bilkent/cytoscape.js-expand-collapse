@@ -29,12 +29,12 @@ return {
     node._private.data.collapsedChildren.restore();
     this.repairEdges(node);
     node._private.data.collapsedChildren = null;
-    node.trigger("expandcollapse.afterexpand");
 
     elementUtilities.moveNodes(positionDiff, node.children());
     node.removeData('position-before-collapse');
 
     node.trigger("position"); // position not triggered by default when nodes are moved
+    node.trigger("expandcollapse.afterexpand");
 
     // If expand is called just for one node then call end operation to perform layout
     if (single) {

@@ -77,6 +77,8 @@ Get collapsed children of all collapsed nodes recursively. Returned value includ
 Forces the visual cue to be cleared. It is to be called in extreme cases.
 
 ## Events
+Notice that following events are performed for *each* node that is collapsed/expanded. Also, notice that any post-processing layout is performed *after* the event.
+
 `cy.nodes().on("expandcollapse.beforecollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed
 
 `cy.nodes().on("expandcollapse.aftercollapse", function(event) { var node = this; ... })` Triggered after a node is collapsed

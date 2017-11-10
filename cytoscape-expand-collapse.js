@@ -34,22 +34,24 @@ module.exports = function (params, cy, api, $) {
       var self = this;
       var opts = params;
       var $container = this;
-      var $canvas = $('<canvas></canvas>');
+      var $canvas = $('<canvas class="expand-collapse-canvas"></canvas>');
       elementUtilities = _dereq_('./elementUtilities')(cy);
 
       $container.append($canvas);
 
       var _sizeCanvas = debounce(function () {
-        $canvas
-          .attr('height', $container.height())
+        $('.expand-collapse-canvas').each(function(){
+            $(this).attr('height', $container.height())
           .attr('width', $container.width())
           .css({
             'position': 'absolute',
             'top': 0,
             'left': 0,
-            'z-index': '999'
+            'z-index': params.zindex
           })
         ;
+        });
+
 
         setTimeout(function () {
           var canvasBb = $canvas.offset();
@@ -76,7 +78,7 @@ module.exports = function (params, cy, api, $) {
 
       sizeCanvas();
 
-      $(window).bind('resize', function () {
+      cy.bind('resize', function () {
         sizeCanvas();
       });
 
@@ -146,7 +148,7 @@ module.exports = function (params, cy, api, $) {
           cueCenter = typeof option === 'function' ? option.call(this, node) : option;
         }
         
-        var expandcollapseCenter = elementUtilities.convertToRenderedPosition(cueCenter);
+        var expandcollapseCenter = elementUtilities.convertToRenderedPosition(cueCenter,cy);
 
         // convert to rendered sizes
         rectSize = Math.max(rectSize, rectSize * cy.zoom());
@@ -657,7 +659,7 @@ function elementUtilities(cy) {
       }
     }
   },
-  convertToRenderedPosition: function (modelPosition) {
+  convertToRenderedPosition: function (modelPosition,cy) {
     var pan = cy.pan();
     var zoom = cy.zoom();
 
@@ -1242,6 +1244,7 @@ return {
         root._private.data.collapsedChildren = root._private.data.collapsedChildren.union(removedChild);
       }
     }
+    node._private.children = []; 
   },
   isMetaEdge: function(edge) {
     return edge.hasClass("cy-expand-collapse-meta-edge");
@@ -1378,7 +1381,8 @@ module.exports = expandCollapseUtilities;
       expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
       expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
       collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
-      expandCollapseCueSensitivity: 1 // sensitivity of expand-collapse cues
+      expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
+      zindex : 998
     };
 
     function setOptions(from) {

@@ -454,14 +454,8 @@ return {
     var siblings;
 
     if (node.parent()[0] == null) {
-      siblings = cy.collection();
       var orphans = cy.nodes(":visible").orphans();
-
-      for (var i = 0; i < orphans.length; i++) {
-        if (orphans[i] != node) {
-          siblings = siblings.add(orphans[i]);
-        }
-      }
+      siblings = orphans.difference(node);
     } else {
       siblings = node.siblings(":visible");
     }

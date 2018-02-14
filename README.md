@@ -14,7 +14,7 @@ U. Dogrusoz and B. Genc, "A Multi-Graph Approach to Complexity Management in Int
 
 ## Demo
 
-Click [here](https://rawgit.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/master/demo.html) (no undo) or [here](https://rawgit.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/master/demo-undoable.html) (undoable) for a demo
+Click [here](https://rawgit.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/master/demo.html) (no undo) or [here](https://rawgit.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/master/demo-undoable.html) (undoable) or [here](https://rawgit.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/master/demo-compounds-collapsed.html) (compounds initially collapsed) for a demo.
 
 ## API
 

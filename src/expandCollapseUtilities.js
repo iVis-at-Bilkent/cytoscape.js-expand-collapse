@@ -467,7 +467,10 @@ return {
    * Moves the node by moving its descandents. Movement is animated if both single and animate flags are truthy.
    */
   fishEyeViewMoveNode: function (node, T_x, T_y, nodeToExpand, single, animate, layoutBy) {
-    var childrenList = node.children(":visible");
+    var childrenList = cy.collection();
+    if(node.isParent()){
+       childrenList = node.children(":visible");
+    }
     var self = this;
     
     /*

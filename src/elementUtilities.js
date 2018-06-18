@@ -2,14 +2,14 @@ function elementUtilities(cy) {
  return {
   moveNodes: function (positionDiff, nodes, notCalcTopMostNodes) {
     var topMostNodes = notCalcTopMostNodes ? nodes : this.getTopMostNodes(nodes);
+    topMostNodes.positions(function(ele, i){
+      return {
+        x: topMostNodes[i].position("x") + positionDiff.x,
+        y: topMostNodes[i].position("y") + positionDiff.y
+      };
+    });
     for (var i = 0; i < topMostNodes.length; i++) {
       var node = topMostNodes[i];
-      var oldX = node.position("x");
-      var oldY = node.position("y");
-      node.position({
-        x: oldX + positionDiff.x,
-        y: oldY + positionDiff.y
-      });
       var children = node.children();
       this.moveNodes(positionDiff, children, true);
     }

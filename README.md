@@ -70,7 +70,7 @@ Get the children of the given collapsed node which are removed during collapse o
 `api.getCollapsedChildrenRecursively(node)`
 Get collapsed children recursively including nested collapsed children. Returned value includes edges and nodes, use selector to get edges or nodes.
 
-`api.getAllCollapsedChildrenRecursively(node)`
+`api.getAllCollapsedChildrenRecursively()`
 Get collapsed children of all collapsed nodes recursively. Returned value includes edges and nodes, use selector to get edges or nodes.
 
 `api.clearVisualCue()`

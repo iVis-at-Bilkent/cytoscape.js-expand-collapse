@@ -953,7 +953,7 @@ return {
                 commonExpandOperation(node, applyFishEyeView, single, animate, layoutBy);
               }
             }, {
-              duration: 1000
+              duration: animate > 1 ? animate : 1000
             });
           }
           else {
@@ -1175,7 +1175,7 @@ return {
 
           }
         }, {
-          duration: 1000
+          duration: animate > 1 ? animate : 1000
         });
       }
     }

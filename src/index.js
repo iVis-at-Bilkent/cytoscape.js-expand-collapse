@@ -39,7 +39,7 @@
     
       // set all options at once
       api.setOptions = function(opts) {
-        setScratch(cy, 'options', options);
+        setScratch(cy, 'options', opts);
       };
 
       // set the option whose name is given

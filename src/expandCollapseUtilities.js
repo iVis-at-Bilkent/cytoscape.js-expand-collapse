@@ -654,7 +654,7 @@ return {
    * @return : collapsed children
    */
   getCollapsedChildrenRecursively: function(node, collapsedChildren){
-    var children = node.data('collapsedChildren');
+    var children = node.data('collapsedChildren') || [];
     var i;
     for (i=0; i < children.length; i++){
       if (children[i].data('collapsedChildren')){

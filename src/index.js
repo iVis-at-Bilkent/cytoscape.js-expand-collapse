@@ -36,14 +36,35 @@
     function createExtensionAPI(cy, expandCollapseUtilities) {
       var api = {}; // API to be returned
       // set functions
-    
+
+      function handleNewOptions( opts ) {
+        var currentOpts = getScratch(cy, 'options');
+        if ( opts.cueEnabled && !currentOpts.cueEnabled ) {
+          api.enableCue();
+        }
+        else if ( !opts.cueEnabled && currentOpts.cueEnabled ) {
+          api.disableCue();
+        }
+      }
+
       // set all options at once
       api.setOptions = function(opts) {
-        setScratch(cy, 'options', options);
+        handleNewOptions(opts);
+        setScratch(cy, 'options', opts);
       };
+
+      api.extendOptions = function(opts) {
+        handleNewOptions(opts);
+        var options = getScratch(cy, 'options');
+        extendOptions( options, opts );
+      }
 
       // set the option whose name is given
       api.setOption = function (name, value) {
+        var nameToVal = {};
+        nameToVal[ name ] = value;
+
+        handleNewOptions(nameToVal);
         getScratch(cy, 'options')[name] = value;
       };
 
@@ -175,20 +196,27 @@
         }
         return collapsedChildren;
       };
-      // This method forces the visual cue to be cleared. It is to be called in extreme cases 
+      // This method forces the visual cue to be cleared. It is to be called in extreme cases
       api.clearVisualCue = function(node) {
         cy.trigger('expandcollapse.clearvisualcue');
       };
-      
-      // This method works problematic TODO fix related bugs and expose it
-      // Unbinds cue events
-//      api.disableCue = function() {
-//        if (options.cueEnabled) {
-//          cueUtilities('unbind', cy);
-//          options.cueEnabled = false;
-//        }
-//      }
-      
+
+      api.disableCue = function() {
+        var options = getScratch(cy, 'options');
+        if (options.cueEnabled) {
+          cueUtilities('unbind', cy, api, $);
+          options.cueEnabled = false;
+        }
+      };
+
+      api.enableCue = function() {
+        var options = getScratch(cy, 'options');
+        if (!options.cueEnabled) {
+          cueUtilities('rebind', cy, api, $);
+          options.cueEnabled = true;
+        }
+      };
+
       return api; // Return the API instance
     }
 
@@ -239,11 +267,16 @@
 
         undoRedoUtilities(cy, api);
 
-        if(options.cueEnabled)
-          cueUtilities(options, cy, api, $);
+        cueUtilities(options, cy, api, $);
 
+        // if the cue is not enabled unbind cue events
+        if(!options.cueEnabled) {
+          cueUtilities('unbind', cy, api, $);
+        }
 
-        options.ready();
+        if ( options.ready ) {
+          options.ready();
+        }
 
         setScratch(cy, 'options', options);
       }

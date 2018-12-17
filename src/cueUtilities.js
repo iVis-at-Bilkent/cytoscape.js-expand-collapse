@@ -4,7 +4,6 @@ module.exports = function (params, cy, api, $) {
   var elementUtilities;
   var fn = params;
 
-  var eMouseOver, eMouseOut, ePosition, eRemove, eTap, eZoom, eAdd, eFree;
   var nodeWithRenderedCue, preventDrawing = false;
   
   var functions = {
@@ -54,18 +53,25 @@ module.exports = function (params, cy, api, $) {
 
       sizeCanvas();
 
-      $(window).bind('resize', function () {
-        sizeCanvas();
-      });
-
       var ctx = $canvas[0].getContext('2d');
 
       // write options to data
       var data = $container.data('cyexpandcollapse');
       if (data == null) {
         data = {};
+        // $container.data('cyexpandcollapse', data);
       }
       data.options = opts;
+
+      // if there are events field in data unbind them here
+      // to prevent binding the same event multiple times
+      // if (!data.hasEventFields) {
+      //   functions['unbind'].apply( $container );
+      // }
+
+      $(window).bind('resize', data.eWindowResize = function () {
+        sizeCanvas();
+      });
 
       var optCache;
 
@@ -197,8 +203,8 @@ module.exports = function (params, cy, api, $) {
             clearDraws();
           }
         });
-        
-        cy.bind('zoom pan', eZoom = function () {
+
+        cy.bind('zoom pan', data.eZoom = function () {
           if ( nodeWithRenderedCue ) {
             clearDraws();
           }
@@ -223,7 +229,7 @@ module.exports = function (params, cy, api, $) {
 			return false;
 		};
 
-		cy.on('mousemove', function(e){
+		cy.on('mousemove', data.eMouseMove= function(e){
 			if(!isInsideCompound(nodeWithRenderedCue, e)){
 				clearDraws()
 			}
@@ -232,7 +238,7 @@ module.exports = function (params, cy, api, $) {
 			}
 		});
 
-		cy.on('mouseover', 'node', eMouseOver = function (e) {
+		cy.on('mouseover', 'node', data.eMouseOver = function (e) {
 			var node = this;
 			// clear draws if any
 			if (api.isCollapsible(node) || api.isExpandable(node)){
@@ -244,38 +250,38 @@ module.exports = function (params, cy, api, $) {
 		});
 
 		var oldMousePos = null, currMousePos = null;
-		cy.on('mousedown', function(e){
+		cy.on('mousedown', data.eMouseDown = function(e){
 			oldMousePos = e.renderedPosition || e.cyRenderedPosition
 		});
-		cy.on('mouseup', function(e){
+		cy.on('mouseup', data.eMouseUp = function(e){
 			currMousePos = e.renderedPosition || e.cyRenderedPosition
 		});
 
-		cy.on('grab', 'node', eMouseOut = function (e) {
+		cy.on('grab', 'node', data.eGrab = function (e) {
 			preventDrawing = true;
 		});
 
-		cy.on('free', 'node', eMouseOut = function (e) {
+		cy.on('free', 'node', data.eFree = function (e) {
 			preventDrawing = false;
 		});
 
-		cy.on('position', 'node', ePosition = function () {
+		cy.on('position', 'node', data.ePosition = function () {
 			if (nodeWithRenderedCue)
 				clearDraws();
 		});
 
-		cy.on('remove', 'node', eRemove = function () {
+		cy.on('remove', 'node', data.eRemove = function () {
 			clearDraws();
 			nodeWithRenderedCue = null;
 		});
 
 		var ur;
-		cy.on('select', 'node', function(){
+		cy.on('select', 'node', data.eSelect = function(){
 			if (this.length > cy.nodes(":selected").length)
 				this.unselect();
 		});
 
-		cy.on('tap', Tap = function (event) {
+		cy.on('tap', data.eTap = function (event) {
 			var node = nodeWithRenderedCue;
 			if (node){
 				var expandcollapseRenderedStartX = node._private.data.expandcollapseRenderedStartX;
@@ -320,19 +326,60 @@ module.exports = function (params, cy, api, $) {
 		});
       }
 
+      data.hasEventFields = true;
       $container.data('cyexpandcollapse', data);
     },
     unbind: function () {
-        var cy = this.cytoscape('get');
-        cy.off('mouseover', 'node', eMouseOver)
-          .off('mouseout tapdragout', 'node', eMouseOut)
-          .off('position', 'node', ePosition)
-          .off('remove', 'node', eRemove)
-          .off('tap', 'node', eTap)
-          .off('add', 'node', eAdd)
-          .off('free', 'node', eFree);
+        var $container = this;
+        var data = $container.data('cyexpandcollapse');
 
-        cy.unbind("zoom pan", eZoom);
+        if (!data.hasEventFields) {
+          console.log( 'events to unbind does not exist' );
+          return;
+        }
+
+        cy.trigger('expandcollapse.clearvisualcue');
+
+        cy.off('mouseover', 'node', data.eMouseOver)
+          .off('mousemove', 'node', data.eMouseMove)
+          .off('mousedown', 'node', data.eMouseDown)
+          .off('mouseup', 'node', data.eMouseUp)
+          .off('free', 'node', data.eFree)
+          .off('grab', 'node', data.eGrab)
+          .off('position', 'node', data.ePosition)
+          .off('remove', 'node', data.eRemove)
+          .off('tap', 'node', data.eTap)
+          .off('add', 'node', data.eAdd)
+          .off('select', 'node', data.eSelect)
+          .off('free', 'node', data.eFree)
+          .off('zoom pan', data.eZoom);
+
+      $(window).off('resize', data.eWindowResize);
+    },
+    rebind: function () {
+      var $container = this;
+      var data = $container.data('cyexpandcollapse');
+
+      if (!data.hasEventFields) {
+        console.log( 'events to rebind does not exist' );
+        return;
+      }
+
+      cy.on('mouseover', 'node', data.eMouseOver)
+        .on('mousemove', 'node', data.eMouseMove)
+        .on('mousedown', 'node', data.eMouseDown)
+        .on('mouseup', 'node', data.eMouseUp)
+        .on('free', 'node', data.eFree)
+        .on('grab', 'node', data.eGrab)
+        .on('position', 'node', data.ePosition)
+        .on('remove', 'node', data.eRemove)
+        .on('tap', 'node', data.eTap)
+        .on('add', 'node', data.eAdd)
+        .on('select', 'node', data.eSelect)
+        .on('free', 'node', data.eFree)
+        .on('zoom pan', data.eZoom);
+
+      $(window).on('resize', data.eWindowResize);
     }
   };
 

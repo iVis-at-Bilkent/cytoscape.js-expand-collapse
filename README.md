@@ -21,7 +21,7 @@ Click [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo.
 * Note that compounds are nodes.
 
 `cy.expandCollapse(options)`
-To initialize/set options whenever you want.
+To initialize the extension with given options.
 
 `var api = cy.expandCollapse('get')`
 To get the extension instance after initialization.
@@ -75,6 +75,12 @@ Get collapsed children of all collapsed nodes recursively. Returned value includ
 
 `api.clearVisualCue()`
 Forces the visual cue to be cleared. It is to be called in extreme cases.
+
+`api.enableCue()`
+Enable rendering of visual cue.
+
+`api.disableCue()`
+Disable rendering of visual cue.
 
 ## Events
 Notice that following events are performed for *each* node that is collapsed/expanded. Also, notice that any post-processing layout is performed *after* the event.

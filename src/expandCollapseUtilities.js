@@ -604,7 +604,7 @@ return {
     var current = node;
     
     while( !current.inside() ) {
-      current = current.parent();
+      current = cy.getElementById(current.data('parent'));
     }
     
     return current;

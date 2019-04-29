@@ -1,6 +1,6 @@
 var debounce = require('./debounce');
 
-module.exports = function (params, cy, api, $) {
+module.exports = function (params, cy, api) {
   var elementUtilities;
   var fn = params;
 
@@ -11,34 +11,35 @@ module.exports = function (params, cy, api, $) {
     init: function () {
       var self = this;
       var opts = params;
-      var $container = this;
-      var $canvas = $('<canvas></canvas>');
-      elementUtilities = require('./elementUtilities')(cy);
-
+      var $canvas = document.createElement('canvas');
+      var $container = cy.container();
+      var ctx = $canvas.getContext( '2d' );
       $container.append($canvas);
 
+      elementUtilities = require('./elementUtilities')(cy);
+
+      var offset = function(elt) {
+          var rect = elt.getBoundingClientRect();
+
+          return {
+            top: rect.top + document.documentElement.scrollTop,
+            left: rect.left + document.documentElement.scrollLeft
+          }
+      }
+
       var _sizeCanvas = debounce(function () {
-        $canvas
-          .attr('height', $container.height())
-          .attr('width', $container.width())
-          .css({
-            'position': 'absolute',
-            'top': 0,
-            'left': 0,
-            'z-index': '999'
-          })
-        ;
+        $canvas.height = cy.height();
+        $canvas.width = cy.width();
+        $canvas.style.position = 'absolute';
+        $canvas.style.top = 0;
+        $canvas.style.left = 0;
+        $canvas.style.zIndex = 999;
 
         setTimeout(function () {
-          var canvasBb = $canvas.offset();
-          var containerBb = $container.offset();
-
-          $canvas
-            .css({
-              'top': -(canvasBb.top - containerBb.top),
-              'left': -(canvasBb.left - containerBb.left)
-            })
-          ;
+          var canvasBb = offset($canvas);
+          var containerBb = offset($container);
+          $canvas.style.top = -(canvasBb.top - containerBb.top);
+          $canvas.style.left = -(canvasBb.left - containerBb.left);
 
           // refresh the cues on canvas resize
           if(cy){
@@ -54,14 +55,10 @@ module.exports = function (params, cy, api, $) {
 
       sizeCanvas();
 
-      $(window).bind('resize', function () {
-        sizeCanvas();
-      });
-
-      var ctx = $canvas[0].getContext('2d');
+      window.addEventListener('resize', sizeCanvas);
 
       // write options to data
-      var data = $container.data('cyexpandcollapse');
+      var data = cy.scratch('cyexpandcollapse');
       if (data == null) {
         data = {};
       }
@@ -70,12 +67,12 @@ module.exports = function (params, cy, api, $) {
       var optCache;
 
       function options() {
-        return optCache || (optCache = $container.data('cyexpandcollapse').options);
+        return optCache || (optCache = cy.scratch('cyexpandcollapse').options);
       }
 
       function clearDraws() {
-        var w = $container.width();
-        var h = $container.height();
+        var w = cy.width();
+        var h = cy.height();
 
         ctx.clearRect(0, 0, w, h);
       }
@@ -320,7 +317,7 @@ module.exports = function (params, cy, api, $) {
 		});
       }
 
-      $container.data('cyexpandcollapse', data);
+      cy.scratch('cyexpandcollapse', data);
     },
     unbind: function () {
         var cy = this.cytoscape('get');
@@ -337,12 +334,12 @@ module.exports = function (params, cy, api, $) {
   };
 
   if (functions[fn]) {
-    return functions[fn].apply($(cy.container()), Array.prototype.slice.call(arguments, 1));
+    return functions[fn].apply(cy.container(), Array.prototype.slice.call(arguments, 1));
   } else if (typeof fn == 'object' || !fn) {
-    return functions.init.apply($(cy.container()), arguments);
+    return functions.init.apply(cy.container(), arguments);
   } else {
-    $.error('No such function `' + fn + '` for cytoscape.js-expand-collapse');
+    throw new Error('No such function `' + fn + '` for cytoscape.js-expand-collapse');
   }
 
-  return $(this);
+  return this;
 };

@@ -4,7 +4,7 @@ module.exports = function (params, cy, api) {
   var elementUtilities;
   var fn = params;
 
-  var eMouseOver, eMouseOut, ePosition, eRemove, eTap, eZoom, eAdd, eFree;
+  var eMouseOver, eMouseOut, ePosition, eRemove, eTap, eZoom;
   var nodeWithRenderedCue, preventDrawing = false;
   
   var functions = {
@@ -272,7 +272,7 @@ module.exports = function (params, cy, api) {
 				this.unselect();
 		});
 
-		cy.on('tap', Tap = function (event) {
+		cy.on('tap', eTap = function (event) {
 			var node = nodeWithRenderedCue;
 			if (node){
 				var expandcollapseRenderedStartX = node._private.data.expandcollapseRenderedStartX;
@@ -322,12 +322,11 @@ module.exports = function (params, cy, api) {
     unbind: function () {
         var cy = this.cytoscape('get');
         cy.off('mouseover', 'node', eMouseOver)
-          .off('mouseout tapdragout', 'node', eMouseOut)
+          .off('grap', 'node', eMouseOut)
+          .off('free', 'node', eMouseOut)
           .off('position', 'node', ePosition)
           .off('remove', 'node', eRemove)
-          .off('tap', 'node', eTap)
-          .off('add', 'node', eAdd)
-          .off('free', 'node', eFree);
+          .off('tap', 'node', eTap);
 
         cy.unbind("zoom pan", eZoom);
     }

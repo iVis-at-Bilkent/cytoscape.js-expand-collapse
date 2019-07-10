@@ -602,8 +602,8 @@ return {
   },
   findNewEnd: function(node) {
     var current = node;
-    
-    while( !current.inside() ) {
+
+    while(current.data("parent") === node.data("id")) {
       current = current.parent();
     }
     

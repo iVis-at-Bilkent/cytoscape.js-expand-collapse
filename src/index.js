@@ -242,10 +242,16 @@
         if(options.cueEnabled)
           cueUtilities(options, cy, api);
 
-
         options.ready();
 
         setScratch(cy, 'options', options);
+        
+        var parentData = {};
+        for(var i = 0; i < cy.nodes().length; i++){
+          var node = cy.nodes()[i];
+          parentData[node.id()] = node.parent().id();
+        }
+        setScratch(cy, 'parentData', parentData); 
       }
 
       return getScratch(cy, 'api'); // Expose the API to the users

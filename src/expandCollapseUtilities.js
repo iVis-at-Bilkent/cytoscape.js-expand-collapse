@@ -602,9 +602,12 @@ return {
   },
   findNewEnd: function(node) {
     var current = node;
+    var parentData = cy.scratch('_cyExpandCollapse').parentData;
+    var parent = parentData[current.id()];
     
     while( !current.inside() ) {
-      current = cy.getElementById(current.data('parent'));
+      current = cy.getElementById(parent);
+      parent = parentData[parent];
     }
     
     return current;

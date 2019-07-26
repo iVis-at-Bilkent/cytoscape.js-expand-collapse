@@ -606,8 +606,8 @@ return {
     var parent = parentData[current.id()];
     
     while( !current.inside() ) {
-      current = cy.getElementById(parent);
-      parent = parentData[parent];
+      current = parent;
+      parent = parentData[parent.id()];
     }
     
     return current;

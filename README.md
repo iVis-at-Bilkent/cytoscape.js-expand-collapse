@@ -76,6 +76,9 @@ Get collapsed children of all collapsed nodes recursively. Returned value includ
 `api.clearVisualCue()`
 Forces the visual cue to be cleared. It is to be called in extreme cases.
 
+`api.getParent(nodeId)`
+Get the parent of a node given its node id. Useful to reach parent of a node removed because of collapse operation.
+
 ## Events
 Notice that following events are performed for *each* node that is collapsed/expanded. Also, notice that any post-processing layout is performed *after* the event.
 

@@ -180,6 +180,11 @@
         cy.trigger('expandcollapse.clearvisualcue');
       };
       
+      api.getParent = function(nodeId) {
+        var parentData = getScratch(cy, 'parentData');
+        return parentData[nodeId];
+      };
+      
       // This method works problematic TODO fix related bugs and expose it
       // Unbinds cue events
 //      api.disableCue = function() {
@@ -247,9 +252,10 @@
         setScratch(cy, 'options', options);
         
         var parentData = {};
-        for(var i = 0; i < cy.nodes().length; i++){
-          var node = cy.nodes()[i];
-          parentData[node.id()] = node.parent().id();
+        var children = cy.nodes(':child');
+        for(var i = 0; i < children.length; i++){
+          var node = children[i];
+          parentData[node.id()] = node.parent();
         }
         setScratch(cy, 'parentData', parentData); 
       }

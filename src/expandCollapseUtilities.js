@@ -26,7 +26,13 @@ return {
     node.removeClass('cy-expand-collapse-collapsed-node');
 
     node.trigger("expandcollapse.beforeexpand");
-    node._private.data.collapsedChildren.restore();
+    var restoredNodes = node._private.data.collapsedChildren;
+    restoredNodes.restore();
+    var parentData = cy.scratch('_cyExpandCollapse').parentData;
+    for(var i = 0; i < restoredNodes.length; i++){
+      delete parentData[restoredNodes[i].id()];
+    }
+    cy.scratch('_cyExpandCollapse').parentData = parentData;
     this.repairEdges(node);
     node._private.data.collapsedChildren = null;
 
@@ -554,6 +560,9 @@ return {
     for (var i = 0; i < children.length; i++) {
       var child = children[i];
       this.removeChildren(child, root);
+      var parentData = cy.scratch('_cyExpandCollapse').parentData;
+      parentData[child.id()] = child.parent();
+      cy.scratch('_cyExpandCollapse').parentData = parentData;
       var removedChild = child.remove();
       if (root._private.data.collapsedChildren == null) {
         root._private.data.collapsedChildren = removedChild;

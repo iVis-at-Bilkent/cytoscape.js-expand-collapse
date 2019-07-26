@@ -181,8 +181,13 @@
       };
       
       api.getParent = function(nodeId) {
-        var parentData = getScratch(cy, 'parentData');
-        return parentData[nodeId];
+        if(cy.getElementById(nodeId)[0] === undefined){
+          var parentData = getScratch(cy, 'parentData');
+          return parentData[nodeId];
+        }
+        else{
+          return cy.getElementById(nodeId).parent();
+        }
       };
       
       // This method works problematic TODO fix related bugs and expose it
@@ -252,11 +257,6 @@
         setScratch(cy, 'options', options);
         
         var parentData = {};
-        var children = cy.nodes(':child');
-        for(var i = 0; i < children.length; i++){
-          var node = children[i];
-          parentData[node.id()] = node.parent();
-        }
         setScratch(cy, 'parentData', parentData); 
       }
 

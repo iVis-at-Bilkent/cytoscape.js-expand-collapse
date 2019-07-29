@@ -95,6 +95,7 @@ Notice that following events are performed for *each* node that is collapsed/exp
       // recommended usage: use cose-bilkent layout with randomize: false to preserve mental map upon expand/collapse
       fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too
       animate: true, // whether to animate on drawing changes you can specify a function too
+      animationDuration: 1000, // when animate is true, the duration in milliseconds of the animation
       ready: function () { }, // callback when expand/collapse initialized
       undoable: true, // and if undoRedoExtension exists,
 

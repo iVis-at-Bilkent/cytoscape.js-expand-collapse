@@ -64,7 +64,7 @@ module.exports = function (params, cy, api, $) {
 
           // refresh the cues on canvas resize
           if(cy){
-            clearDraws(true);
+            clearDraws();
           }
         }, 0);
 
@@ -831,7 +831,7 @@ return {
      * in a batch.
      */ 
     cy.startBatch();
-    this.simpleCollapseGivenNodes(nodes, options);
+    this.simpleCollapseGivenNodes(nodes/*, options*/);
     cy.endBatch();
 
     nodes.trigger("position"); // position not triggered by default when collapseNode is called
@@ -1388,7 +1388,7 @@ module.exports = expandCollapseUtilities;
     
       // set all options at once
       api.setOptions = function(opts) {
-        setScratch(cy, 'options', options);
+        setScratch(cy, 'options', opts);
       };
 
       // set the option whose name is given

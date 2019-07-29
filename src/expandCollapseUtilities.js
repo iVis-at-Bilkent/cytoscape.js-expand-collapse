@@ -154,7 +154,7 @@ return {
      * in a batch.
      */ 
     cy.startBatch();
-    this.simpleCollapseGivenNodes(nodes, options);
+    this.simpleCollapseGivenNodes(nodes/*, options*/);
     cy.endBatch();
 
     nodes.trigger("position"); // position not triggered by default when collapseNode is called

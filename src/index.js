@@ -39,7 +39,7 @@
     
       // set all options at once
       api.setOptions = function(opts) {
-        setScratch(cy, 'options', options);
+        setScratch(cy, 'options', opts);
       };
 
       // set the option whose name is given
@@ -226,6 +226,7 @@
         layoutBy: null, // for rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
         fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too
         animate: true, // whether to animate on drawing changes you can specify a function too
+        animationDuration: 1000, // when animate is true, the duration in milliseconds of the animation
         ready: function () { }, // callback when expand/collapse initialized
         undoable: true, // and if undoRedoExtension exists,
 

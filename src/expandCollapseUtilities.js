@@ -139,7 +139,7 @@ return {
       var node = nodes[0];
       if (node._private.data.collapsedChildren != null) {
         // Expand the given node the third parameter indicates that the node is simple which ensures that fisheye parameter will be considered
-        this.expandNode(node, options.fisheye, true, options.animate, options.animationDuration, options.layoutBy);
+        this.expandNode(node, options.fisheye, true, options.animate, options.layoutBy, options.animationDuration);
       }
     } 
     else {

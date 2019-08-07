@@ -54,18 +54,22 @@
       };
 
       api.extendOptions = function(opts) {
-        handleNewOptions(opts);
         var options = getScratch(cy, 'options');
-        extendOptions( options, opts );
+        let newOptions = extendOptions( options, opts );
+        handleNewOptions(newOptions);
+        setScratch(cy, 'options', newOptions);
       }
 
       // set the option whose name is given
       api.setOption = function (name, value) {
-        var nameToVal = {};
-        nameToVal[ name ] = value;
+        var opts = {};
+        opts[ name ] = value;
 
-        handleNewOptions(nameToVal);
-        getScratch(cy, 'options')[name] = value;
+        var options = getScratch(cy, 'options');
+        let newOptions = extendOptions( options, opts );
+
+        handleNewOptions(newOptions);
+        setScratch(cy, 'options', newOptions);
       };
 
       // Collection functions

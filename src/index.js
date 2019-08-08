@@ -36,15 +36,40 @@
     function createExtensionAPI(cy, expandCollapseUtilities) {
       var api = {}; // API to be returned
       // set functions
-    
+
+      function handleNewOptions( opts ) {
+        var currentOpts = getScratch(cy, 'options');
+        if ( opts.cueEnabled && !currentOpts.cueEnabled ) {
+          api.enableCue();
+        }
+        else if ( !opts.cueEnabled && currentOpts.cueEnabled ) {
+          api.disableCue();
+        }
+      }
+
       // set all options at once
       api.setOptions = function(opts) {
+        handleNewOptions(opts);
         setScratch(cy, 'options', opts);
       };
 
+      api.extendOptions = function(opts) {
+        var options = getScratch(cy, 'options');
+        let newOptions = extendOptions( options, opts );
+        handleNewOptions(newOptions);
+        setScratch(cy, 'options', newOptions);
+      }
+
       // set the option whose name is given
       api.setOption = function (name, value) {
-        getScratch(cy, 'options')[name] = value;
+        var opts = {};
+        opts[ name ] = value;
+
+        var options = getScratch(cy, 'options');
+        let newOptions = extendOptions( options, opts );
+
+        handleNewOptions(newOptions);
+        setScratch(cy, 'options', newOptions);
       };
 
       // Collection functions
@@ -175,11 +200,27 @@
         }
         return collapsedChildren;
       };
-      // This method forces the visual cue to be cleared. It is to be called in extreme cases 
+      // This method forces the visual cue to be cleared. It is to be called in extreme cases
       api.clearVisualCue = function(node) {
         cy.trigger('expandcollapse.clearvisualcue');
       };
-      
+
+      api.disableCue = function() {
+        var options = getScratch(cy, 'options');
+        if (options.cueEnabled) {
+          cueUtilities('unbind', cy, api);
+          options.cueEnabled = false;
+        }
+      };
+
+      api.enableCue = function() {
+        var options = getScratch(cy, 'options');
+        if (!options.cueEnabled) {
+          cueUtilities('rebind', cy, api);
+          options.cueEnabled = true;
+        }
+      };
+
       api.getParent = function(nodeId) {
         if(cy.getElementById(nodeId)[0] === undefined){
           var parentData = getScratch(cy, 'parentData');
@@ -189,16 +230,7 @@
           return cy.getElementById(nodeId).parent();
         }
       };
-      
-      // This method works problematic TODO fix related bugs and expose it
-      // Unbinds cue events
-//      api.disableCue = function() {
-//        if (options.cueEnabled) {
-//          cueUtilities('unbind', cy);
-//          options.cueEnabled = false;
-//        }
-//      }
-      
+
       return api; // Return the API instance
     }
 
@@ -250,15 +282,21 @@
 
         undoRedoUtilities(cy, api);
 
-        if(options.cueEnabled)
-          cueUtilities(options, cy, api);
+        cueUtilities(options, cy, api);
 
-        options.ready();
+        // if the cue is not enabled unbind cue events
+        if(!options.cueEnabled) {
+          cueUtilities('unbind', cy, api);
+        }
+
+        if ( options.ready ) {
+          options.ready();
+        }
 
         setScratch(cy, 'options', options);
-        
+
         var parentData = {};
-        setScratch(cy, 'parentData', parentData); 
+        setScratch(cy, 'parentData', parentData);
       }
 
       return getScratch(cy, 'api'); // Expose the API to the users

@@ -4,7 +4,7 @@ cytoscape-expand-collapse
 
 ## Description
 
-This extension provides an interface to expand/collapse nodes for better management of complexity of Cytoscape.js compound graphs, distributed under [The MIT License](https://opensource.org/licenses/MIT). 
+This extension provides an interface to expand/collapse nodes for better management of complexity of Cytoscape.js compound graphs, distributed under [The MIT License](https://opensource.org/licenses/MIT).
 
 ![](https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/blob/master/expand-collapse-extension-demo.gif)
 
@@ -21,7 +21,7 @@ Click [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo.
 * Note that compounds are nodes.
 
 `cy.expandCollapse(options)`
-To initialize/set options whenever you want.
+To initialize the extension with given options.
 
 `var api = cy.expandCollapse('get')`
 To get the extension instance after initialization.
@@ -64,6 +64,9 @@ Resets the options to the given parameter.
 `api.setOption(name, value)`
 Sets the value of the option given by the name to the given value.
 
+`api.extendOptions(options)`
+Extend the current options with the given options.
+
 `api.getCollapsedChildren(node)`
 Get the children of the given collapsed node which are removed during collapse operation
 
@@ -75,6 +78,12 @@ Get collapsed children of all collapsed nodes recursively. Returned value includ
 
 `api.clearVisualCue()`
 Forces the visual cue to be cleared. It is to be called in extreme cases.
+
+`api.enableCue()`
+Enable rendering of visual cue.
+
+`api.disableCue()`
+Disable rendering of visual cue.
 
 `api.getParent(nodeId)`
 Get the parent of a node given its node id. Useful to reach parent of a node removed because of collapse operation.
@@ -177,7 +186,7 @@ This project is set up to automatically be published to npm and bower.  To publi
 ## Team
 
   * [Metin Can Siper](https://github.com/metincansiper), [Alper Karacelik](https://github.com/alperkaracelik), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis)
-  
+
 ## Alumni
 
   * [Ilkin Safarli](https://github.com/kinimesi), [Selim Firat Yilmaz](https://github.com/mrsfy)

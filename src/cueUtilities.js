@@ -95,7 +95,6 @@ module.exports = function (params, cy, api) {
       }
 
       function drawExpandCollapseCue(node) {
-        console.log( 'draw cue for', node.id() );
         var children = node.children();
         var collapsedChildren = node._private.data.collapsedChildren;
         var hasChildren = children != null && children.length > 0;

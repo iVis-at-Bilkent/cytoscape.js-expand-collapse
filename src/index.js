@@ -208,7 +208,7 @@
       api.disableCue = function() {
         var options = getScratch(cy, 'options');
         if (options.cueEnabled) {
-          cueUtilities('unbind', cy, api, $);
+          cueUtilities('unbind', cy, api);
           options.cueEnabled = false;
         }
       };
@@ -216,7 +216,7 @@
       api.enableCue = function() {
         var options = getScratch(cy, 'options');
         if (!options.cueEnabled) {
-          cueUtilities('rebind', cy, api, $);
+          cueUtilities('rebind', cy, api);
           options.cueEnabled = true;
         }
       };

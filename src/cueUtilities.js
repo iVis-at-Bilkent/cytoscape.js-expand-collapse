@@ -24,7 +24,6 @@ module.exports = function (params, cy, api) {
   var functions = {
     init: function () {
       var self = this;
-      var opts = params;
       var $canvas = document.createElement('canvas');
       var $container = cy.container();
       var ctx = $canvas.getContext( '2d' );
@@ -70,7 +69,6 @@ module.exports = function (params, cy, api) {
       sizeCanvas();
 
       let data = {};
-      data.options = opts;
 
       // if there are events field in data unbind them here
       // to prevent binding the same event multiple times
@@ -81,10 +79,8 @@ module.exports = function (params, cy, api) {
         sizeCanvas();
       });
 
-      var optCache;
-
       function options() {
-        return optCache || (optCache = cy.scratch('_cyExpandCollapse').options);
+        return cy.scratch('_cyExpandCollapse').options;
       }
 
       function clearDraws() {
@@ -291,6 +287,7 @@ module.exports = function (params, cy, api) {
 
 		cy.on('tap', 'node', data.eTap = function (event) {
 			var node = nodeWithRenderedCue;
+      var opts = options();
 			if (node){
 				var expandcollapseRenderedStartX = node._private.data.expandcollapseRenderedStartX;
 				var expandcollapseRenderedStartY = node._private.data.expandcollapseRenderedStartY;
@@ -301,7 +298,7 @@ module.exports = function (params, cy, api) {
                 var cyRenderedPos = event.renderedPosition || event.cyRenderedPosition;
 				var cyRenderedPosX = cyRenderedPos.x;
 				var cyRenderedPosY = cyRenderedPos.y;
-				var factor = (options().expandCollapseCueSensitivity - 1) / 2;
+				var factor = (opts.expandCollapseCueSensitivity - 1) / 2;
 
 				if ( (Math.abs(oldMousePos.x - currMousePos.x) < 5 && Math.abs(oldMousePos.y - currMousePos.y) < 5)
 					&& cyRenderedPosX >= expandcollapseRenderedStartX - expandcollapseRenderedRectSize * factor

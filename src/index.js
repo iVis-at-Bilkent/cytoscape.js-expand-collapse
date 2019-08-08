@@ -3,7 +3,7 @@
   'use strict';
 
   // registers the extension on a cytoscape lib ref
-  var register = function (cytoscape, $) {
+  var register = function (cytoscape) {
 
     if (!cytoscape) {
       return;
@@ -221,6 +221,16 @@
         }
       };
 
+      api.getParent = function(nodeId) {
+        if(cy.getElementById(nodeId)[0] === undefined){
+          var parentData = getScratch(cy, 'parentData');
+          return parentData[nodeId];
+        }
+        else{
+          return cy.getElementById(nodeId).parent();
+        }
+      };
+
       return api; // Return the API instance
     }
 
@@ -248,6 +258,7 @@
         layoutBy: null, // for rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
         fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too
         animate: true, // whether to animate on drawing changes you can specify a function too
+        animationDuration: 1000, // when animate is true, the duration in milliseconds of the animation
         ready: function () { }, // callback when expand/collapse initialized
         undoable: true, // and if undoRedoExtension exists,
 
@@ -271,11 +282,11 @@
 
         undoRedoUtilities(cy, api);
 
-        cueUtilities(options, cy, api, $);
+        cueUtilities(options, cy, api);
 
         // if the cue is not enabled unbind cue events
         if(!options.cueEnabled) {
-          cueUtilities('unbind', cy, api, $);
+          cueUtilities('unbind', cy, api);
         }
 
         if ( options.ready ) {
@@ -283,6 +294,9 @@
         }
 
         setScratch(cy, 'options', options);
+
+        var parentData = {};
+        setScratch(cy, 'parentData', parentData);
       }
 
       return getScratch(cy, 'api'); // Expose the API to the users
@@ -300,8 +314,8 @@
     });
   }
 
-    if (typeof cytoscape !== 'undefined' && typeof jQuery !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
-      register(cytoscape, jQuery);
+    if (typeof cytoscape !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
+      register(cytoscape);
   }
 
 })();

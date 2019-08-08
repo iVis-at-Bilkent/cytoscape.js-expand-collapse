@@ -1,43 +1,59 @@
 var debounce = require('./debounce');
 
-module.exports = function (params, cy, api, $) {
+module.exports = function (params, cy, api) {
   var elementUtilities;
   var fn = params;
 
   var nodeWithRenderedCue, preventDrawing = false;
-  
+
+  const getData = function(){
+    let scratch = cy.scratch('_cyExpandCollapse');
+    return scratch && scratch.cueUtilities;
+  };
+
+  const setData = function( data ){
+    var scratch = cy.scratch('_cyExpandCollapse');
+    if (scratch == null) {
+      scratch = {};
+    }
+
+    scratch.cueUtilities = data;
+    cy.scratch('_cyExpandCollapse', scratch);
+  };
+
   var functions = {
     init: function () {
       var self = this;
       var opts = params;
-      var $container = this;
-      var $canvas = $('<canvas></canvas>');
-      elementUtilities = require('./elementUtilities')(cy);
-
+      var $canvas = document.createElement('canvas');
+      var $container = cy.container();
+      var ctx = $canvas.getContext( '2d' );
       $container.append($canvas);
 
+      elementUtilities = require('./elementUtilities')(cy);
+
+      var offset = function(elt) {
+          var rect = elt.getBoundingClientRect();
+
+          return {
+            top: rect.top + document.documentElement.scrollTop,
+            left: rect.left + document.documentElement.scrollLeft
+          }
+      }
+
       var _sizeCanvas = debounce(function () {
-        $canvas
-          .attr('height', $container.height())
-          .attr('width', $container.width())
-          .css({
-            'position': 'absolute',
-            'top': 0,
-            'left': 0,
-            'z-index': '999'
-          })
-        ;
+        $canvas.height = cy.height();
+        $canvas.width = cy.width();
+        $canvas.style.position = 'absolute';
+        $canvas.style.top = 0;
+        $canvas.style.left = 0;
+        $canvas.style.zIndex = 999;
 
         setTimeout(function () {
-          var canvasBb = $canvas.offset();
-          var containerBb = $container.offset();
-
-          $canvas
-            .css({
-              'top': -(canvasBb.top - containerBb.top),
-              'left': -(canvasBb.left - containerBb.left)
-            })
-          ;
+          var canvasBb = offset($canvas);
+          var containerBb = offset($container);
+          $canvas.style.top = -(canvasBb.top - containerBb.top);
+          $canvas.style.left = -(canvasBb.left - containerBb.left);
 
           // refresh the cues on canvas resize
           if(cy){
@@ -53,14 +69,7 @@ module.exports = function (params, cy, api, $) {
 
       sizeCanvas();
 
-      var ctx = $canvas[0].getContext('2d');
-
-      // write options to data
-      var data = $container.data('cyexpandcollapse');
-      if (data == null) {
-        data = {};
-        // $container.data('cyexpandcollapse', data);
-      }
+      let data = {};
       data.options = opts;
 
       // if there are events field in data unbind them here
@@ -68,25 +77,25 @@ module.exports = function (params, cy, api, $) {
       // if (!data.hasEventFields) {
       //   functions['unbind'].apply( $container );
       // }
-
-      $(window).bind('resize', data.eWindowResize = function () {
+      window.addEventListener('resize', data.eWindowResize = function () {
         sizeCanvas();
       });
 
       var optCache;
 
       function options() {
-        return optCache || (optCache = $container.data('cyexpandcollapse').options);
+        return optCache || (optCache = cy.scratch('_cyExpandCollapse').options);
       }
 
       function clearDraws() {
-        var w = $container.width();
-        var h = $container.height();
+        var w = cy.width();
+        var h = cy.height();
 
         ctx.clearRect(0, 0, w, h);
       }
 
       function drawExpandCollapseCue(node) {
+        console.log( 'draw cue for', node.id() );
         var children = node.children();
         var collapsedChildren = node._private.data.collapsedChildren;
         var hasChildren = children != null && children.length > 0;
@@ -116,9 +125,9 @@ module.exports = function (params, cy, api, $) {
           var offset = 1;
           var size = cy.zoom() < 1 ? rectSize / (2*cy.zoom()) : rectSize / 2;
 
-          var x = node.position('x') - node.width() / 2 - parseFloat(node.css('padding-left')) 
+          var x = node.position('x') - node.width() / 2 - parseFloat(node.css('padding-left'))
                   + parseFloat(node.css('border-width')) + size + offset;
-          var y = node.position('y') - node.height() / 2 - parseFloat(node.css('padding-top')) 
+          var y = node.position('y') - node.height() / 2 - parseFloat(node.css('padding-top'))
                   + parseFloat(node.css('border-width')) + size + offset;
 
           cueCenter = {
@@ -129,7 +138,7 @@ module.exports = function (params, cy, api, $) {
           var option = options().expandCollapseCuePosition;
           cueCenter = typeof option === 'function' ? option.call(this, node) : option;
         }
-        
+
         var expandcollapseCenter = elementUtilities.convertToRenderedPosition(cueCenter);
 
         // convert to rendered sizes
@@ -229,7 +238,7 @@ module.exports = function (params, cy, api, $) {
 			return false;
 		};
 
-		cy.on('mousemove', data.eMouseMove= function(e){
+		cy.on('mousemove', 'node', data.eMouseMove= function(e){
 			if(!isInsideCompound(nodeWithRenderedCue, e)){
 				clearDraws()
 			}
@@ -250,10 +259,10 @@ module.exports = function (params, cy, api, $) {
 		});
 
 		var oldMousePos = null, currMousePos = null;
-		cy.on('mousedown', data.eMouseDown = function(e){
+		cy.on('mousedown', 'node', data.eMouseDown = function(e){
 			oldMousePos = e.renderedPosition || e.cyRenderedPosition
 		});
-		cy.on('mouseup', data.eMouseUp = function(e){
+		cy.on('mouseup', 'node', data.eMouseUp = function(e){
 			currMousePos = e.renderedPosition || e.cyRenderedPosition
 		});
 
@@ -281,7 +290,7 @@ module.exports = function (params, cy, api, $) {
 				this.unselect();
 		});
 
-		cy.on('tap', data.eTap = function (event) {
+		cy.on('tap', 'node', data.eTap = function (event) {
 			var node = nodeWithRenderedCue;
 			if (node){
 				var expandcollapseRenderedStartX = node._private.data.expandcollapseRenderedStartX;
@@ -326,12 +335,13 @@ module.exports = function (params, cy, api, $) {
 		});
       }
 
+      // write options to data
       data.hasEventFields = true;
-      $container.data('cyexpandcollapse', data);
+      setData( data );
     },
     unbind: function () {
-        var $container = this;
-        var data = $container.data('cyexpandcollapse');
+        // var $container = this;
+        var data = getData();
 
         if (!data.hasEventFields) {
           console.log( 'events to unbind does not exist' );
@@ -354,11 +364,10 @@ module.exports = function (params, cy, api, $) {
           .off('free', 'node', data.eFree)
           .off('zoom pan', data.eZoom);
 
-      $(window).off('resize', data.eWindowResize);
+      window.removeEventListener('resize', data.eWindowResize);
     },
     rebind: function () {
-      var $container = this;
-      var data = $container.data('cyexpandcollapse');
+      var data = getData();
 
       if (!data.hasEventFields) {
         console.log( 'events to rebind does not exist' );
@@ -379,17 +388,17 @@ module.exports = function (params, cy, api, $) {
         .on('free', 'node', data.eFree)
         .on('zoom pan', data.eZoom);
 
-      $(window).on('resize', data.eWindowResize);
+      window.addEventListener('resize', data.eWindowResize);
     }
   };
 
   if (functions[fn]) {
-    return functions[fn].apply($(cy.container()), Array.prototype.slice.call(arguments, 1));
+    return functions[fn].apply(cy.container(), Array.prototype.slice.call(arguments, 1));
   } else if (typeof fn == 'object' || !fn) {
-    return functions.init.apply($(cy.container()), arguments);
+    return functions.init.apply(cy.container(), arguments);
   } else {
-    $.error('No such function `' + fn + '` for cytoscape.js-expand-collapse');
+    throw new Error('No such function `' + fn + '` for cytoscape.js-expand-collapse');
   }
 
-  return $(this);
+  return this;
 };

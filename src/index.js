@@ -55,7 +55,7 @@
 
       api.extendOptions = function(opts) {
         var options = getScratch(cy, 'options');
-        let newOptions = extendOptions( options, opts );
+        var newOptions = extendOptions( options, opts );
         handleNewOptions(newOptions);
         setScratch(cy, 'options', newOptions);
       }
@@ -66,7 +66,7 @@
         opts[ name ] = value;
 
         var options = getScratch(cy, 'options');
-        let newOptions = extendOptions( options, opts );
+        var newOptions = extendOptions( options, opts );
 
         handleNewOptions(newOptions);
         setScratch(cy, 'options', newOptions);

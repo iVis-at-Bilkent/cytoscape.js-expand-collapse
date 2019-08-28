@@ -7,7 +7,7 @@ module.exports = function (params, cy, api) {
   var nodeWithRenderedCue, preventDrawing = false;
 
   const getData = function(){
-    let scratch = cy.scratch('_cyExpandCollapse');
+    var scratch = cy.scratch('_cyExpandCollapse');
     return scratch && scratch.cueUtilities;
   };
 
@@ -68,7 +68,7 @@ module.exports = function (params, cy, api) {
 
       sizeCanvas();
 
-      let data = {};
+      var data = {};
 
       // if there are events field in data unbind them here
       // to prevent binding the same event multiple times

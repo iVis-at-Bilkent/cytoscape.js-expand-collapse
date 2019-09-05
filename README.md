@@ -14,7 +14,7 @@ U. Dogrusoz , A. Karacelik, I. Safarli, H. Balci, L. Dervishi, and M.C. Siper, "
 
 ## Demo
 
-Click [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo.html) (no undo) or [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo-undoable.html) (undoable) or [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo-compounds-collapsed.html) (compounds initially collapsed) for a demo.
+Click [here](https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo.html) (no undo and with custom cue image) or [here](https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo-undoable.html) (undoable) or [here](https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo-compounds-collapsed.html) (compounds initially collapsed) for a demo.
 
 ## API
 

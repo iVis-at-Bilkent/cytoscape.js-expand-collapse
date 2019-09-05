@@ -151,15 +151,15 @@ module.exports = function (params, cy, api) {
         expandcollapseRectSize = rectSize;
 
         // Draw expand/collapse cue if specified use an image else render it in the default way
-        if (!isCollapsed && options().expandCueImage) {
+        if (isCollapsed && options().expandCueImage) {
           var img=new Image();
           img.src = options().expandCueImage;
-          ctx.drawImage(img, expandcollapseCenterX, expandcollapseCenterY, rectSize, rectSize);
+          ctx.drawImage(img, expandcollapseStartX,  expandcollapseStartY, rectSize, rectSize);
         }
-        else if (isCollapsed && options().collapseCueImage) {
+        else if (!isCollapsed && options().collapseCueImage) {
           var img=new Image();
           img.src = options().collapseCueImage;
-          ctx.drawImage(img, expandcollapseCenterX, expandcollapseCenterY, rectSize, rectSize);
+          ctx.drawImage(img, expandcollapseStartX,  expandcollapseStartY, rectSize, rectSize);
         }
         else {
           var oldFillStyle = ctx.fillStyle;

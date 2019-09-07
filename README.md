@@ -117,10 +117,10 @@ Notice that following events are performed for *each* node that is collapsed/exp
       expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
       expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
       collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
-      expandCollapseCueSensitivity: 1 // sensitivity of expand-collapse cues
+      expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
+      zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
     };
 ```
-*Note that this extension creates a new canvas on the viewport with z-index value '999' to render the visual cue. If your application uses any other canvas, please arrange its z-index value accordingly.*
 
 ## Default Undo/Redo Actions
 `ur.do("collapse", { nodes: eles, options: opts)` Equivalent of eles.collapse(opts)

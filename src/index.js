@@ -268,7 +268,8 @@
         expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
         expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
         collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
-        expandCollapseCueSensitivity: 1 // sensitivity of expand-collapse cues
+        expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
+        zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
       };
 
       // If opts is not 'get' that is it is a real options object then initilize the extension

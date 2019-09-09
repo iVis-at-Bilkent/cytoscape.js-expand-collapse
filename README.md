@@ -144,7 +144,7 @@ Notice that following events are performed for *each* node that is collapsed/exp
 
  * Cytoscape.js ^3.3.0
  * cytoscape-undo-redo.js(optional) ^1.0.1
- * cytoscape-cose-bilkent.js(optional/suggested for layout after expand/collapse) ^1.3.6
+ * cytoscape-cose-bilkent.js(optional/suggested for layout after expand/collapse) ^4.0.0
 
 
 ## Usage instructions

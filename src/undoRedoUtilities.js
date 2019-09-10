@@ -69,7 +69,12 @@ module.exports = function (cy, api) {
   var actions = ["collapse", "collapseRecursively", "collapseAll", "expand", "expandRecursively", "expandAll"];
 
   for (var i = 0; i < actions.length; i++) {
-    ur.action(actions[i], doIt(actions[i]), doIt(actions[(i + 3) % 6]));
+    if(i == 2)
+      ur.action("collapseAll", doIt("collapseAll"), doIt("expandRecursively"));
+    else if(i == 5)
+      ur.action("expandAll", doIt("expandAll"), doIt("collapseRecursively"));
+    else
+      ur.action(actions[i], doIt(actions[i]), doIt(actions[(i + 3) % 6]));
   }
 
 };

@@ -254,10 +254,10 @@ module.exports = function (params, cy, api) {
 		});
 
 		var oldMousePos = null, currMousePos = null;
-		cy.on('mousedown', 'node', data.eMouseDown = function(e){
+		cy.on('mousedown', data.eMouseDown = function(e){
 			oldMousePos = e.renderedPosition || e.cyRenderedPosition
 		});
-		cy.on('mouseup', 'node', data.eMouseUp = function(e){
+		cy.on('mouseup', data.eMouseUp = function(e){
 			currMousePos = e.renderedPosition || e.cyRenderedPosition
 		});
 
@@ -285,7 +285,7 @@ module.exports = function (params, cy, api) {
 				this.unselect();
 		});
 
-		cy.on('tap', 'node', data.eTap = function (event) {
+		cy.on('tap', data.eTap = function (event) {
 			var node = nodeWithRenderedCue;
       var opts = options();
 			if (node){

@@ -3,7 +3,7 @@
   'use strict';
 
   // registers the extension on a cytoscape lib ref
-  var register = function (cytoscape, $) {
+  var register = function (cytoscape) {
 
     if (!cytoscape) {
       return;
@@ -36,15 +36,40 @@
     function createExtensionAPI(cy, expandCollapseUtilities) {
       var api = {}; // API to be returned
       // set functions
-    
+
+      function handleNewOptions( opts ) {
+        var currentOpts = getScratch(cy, 'options');
+        if ( opts.cueEnabled && !currentOpts.cueEnabled ) {
+          api.enableCue();
+        }
+        else if ( !opts.cueEnabled && currentOpts.cueEnabled ) {
+          api.disableCue();
+        }
+      }
+
       // set all options at once
       api.setOptions = function(opts) {
-        setScratch(cy, 'options', options);
+        handleNewOptions(opts);
+        setScratch(cy, 'options', opts);
       };
+
+      api.extendOptions = function(opts) {
+        var options = getScratch(cy, 'options');
+        var newOptions = extendOptions( options, opts );
+        handleNewOptions(newOptions);
+        setScratch(cy, 'options', newOptions);
+      }
 
       // set the option whose name is given
       api.setOption = function (name, value) {
-        getScratch(cy, 'options')[name] = value;
+        var opts = {};
+        opts[ name ] = value;
+
+        var options = getScratch(cy, 'options');
+        var newOptions = extendOptions( options, opts );
+
+        handleNewOptions(newOptions);
+        setScratch(cy, 'options', newOptions);
       };
 
       // Collection functions
@@ -175,20 +200,37 @@
         }
         return collapsedChildren;
       };
-      // This method forces the visual cue to be cleared. It is to be called in extreme cases 
+      // This method forces the visual cue to be cleared. It is to be called in extreme cases
       api.clearVisualCue = function(node) {
         cy.trigger('expandcollapse.clearvisualcue');
       };
-      
-      // This method works problematic TODO fix related bugs and expose it
-      // Unbinds cue events
-//      api.disableCue = function() {
-//        if (options.cueEnabled) {
-//          cueUtilities('unbind', cy);
-//          options.cueEnabled = false;
-//        }
-//      }
-      
+
+      api.disableCue = function() {
+        var options = getScratch(cy, 'options');
+        if (options.cueEnabled) {
+          cueUtilities('unbind', cy, api);
+          options.cueEnabled = false;
+        }
+      };
+
+      api.enableCue = function() {
+        var options = getScratch(cy, 'options');
+        if (!options.cueEnabled) {
+          cueUtilities('rebind', cy, api);
+          options.cueEnabled = true;
+        }
+      };
+
+      api.getParent = function(nodeId) {
+        if(cy.getElementById(nodeId)[0] === undefined){
+          var parentData = getScratch(cy, 'parentData');
+          return parentData[nodeId];
+        }
+        else{
+          return cy.getElementById(nodeId).parent();
+        }
+      };
+
       return api; // Return the API instance
     }
 
@@ -216,6 +258,7 @@
         layoutBy: null, // for rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
         fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too
         animate: true, // whether to animate on drawing changes you can specify a function too
+        animationDuration: 1000, // when animate is true, the duration in milliseconds of the animation
         ready: function () { }, // callback when expand/collapse initialized
         undoable: true, // and if undoRedoExtension exists,
 
@@ -225,7 +268,8 @@
         expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
         expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
         collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
-        expandCollapseCueSensitivity: 1 // sensitivity of expand-collapse cues
+        expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
+        zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
       };
 
       // If opts is not 'get' that is it is a real options object then initilize the extension
@@ -239,13 +283,21 @@
 
         undoRedoUtilities(cy, api);
 
-        if(options.cueEnabled)
-          cueUtilities(options, cy, api, $);
+        cueUtilities(options, cy, api);
 
+        // if the cue is not enabled unbind cue events
+        if(!options.cueEnabled) {
+          cueUtilities('unbind', cy, api);
+        }
 
-        options.ready();
+        if ( options.ready ) {
+          options.ready();
+        }
 
         setScratch(cy, 'options', options);
+
+        var parentData = {};
+        setScratch(cy, 'parentData', parentData);
       }
 
       return getScratch(cy, 'api'); // Expose the API to the users
@@ -263,8 +315,8 @@
     });
   }
 
-    if (typeof cytoscape !== 'undefined' && typeof jQuery !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
-      register(cytoscape, jQuery);
+    if (typeof cytoscape !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
+      register(cytoscape);
   }
 
 })();

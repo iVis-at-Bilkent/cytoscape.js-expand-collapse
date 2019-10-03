@@ -38,7 +38,6 @@
     "vinyl-source-stream": "^1.1.2"
   },
   "peerDependencies": {
-    "cytoscape": "^2.7.0 || ^3.0.0",
-    "jquery": "^1.7.0 || ^2.0.0 || ^3.0.0"
+    "cytoscape": "^3.3.0"
   }
 }

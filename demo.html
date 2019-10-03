@@ -5,14 +5,16 @@
 	<head>
 		<title>cytoscape-expand-collapse.js demo</title>
 
+		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 
-                <script src="https://code.jquery.com/jquery-2.0.3.min.js"></script>
-		<script src="https://unpkg.com/cytoscape@3.1.0/dist/cytoscape.min.js"></script>
+		<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
 
 		<!-- for testing with local version of cytoscape.js -->
 		<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
-		<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/2.0.4/cytoscape-cose-bilkent.js"></script>
+    <script src="https://unpkg.com/layout-base/layout-base.js"></script>
+    <script src="https://unpkg.com/cose-base/cose-base.js"></script>
+    <script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
 		<script src="cytoscape-expand-collapse.js"></script>
 
 
@@ -73,7 +75,8 @@
 							selector: 'edge',
 							style: {
 								'width': 3,
-								'line-color': '#ad1a66'
+								'line-color': '#ad1a66',
+								'curve-style': 'straight'
 							}
 						},
 
@@ -106,7 +109,9 @@
 					},
 					fisheye: true,
 					animate: true,
-					undoable: false
+					undoable: false,
+					expandCueImage :"icon-plus.png",
+					collapseCueImage:"icon-minus.png"
 				});
 
 

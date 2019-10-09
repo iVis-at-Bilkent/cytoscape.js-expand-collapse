@@ -25,6 +25,7 @@ module.exports = function (params, cy, api) {
     init: function () {
       var self = this;
       var $canvas = document.createElement('canvas');
+      $canvas.classList.add("expand-collapse-canvas");
       var $container = cy.container();
       var ctx = $canvas.getContext( '2d' );
       $container.append($canvas);
@@ -41,8 +42,8 @@ module.exports = function (params, cy, api) {
       }
 
       var _sizeCanvas = debounce(function () {
-        $canvas.height = cy.height();
-        $canvas.width = cy.width();
+        $canvas.height = cy.height() < 20 ? 10000: cy.height();
+        $canvas.width = cy.width() <20 ? 10000: cy.width();
         $canvas.style.position = 'absolute';
         $canvas.style.top = 0;
         $canvas.style.left = 0;

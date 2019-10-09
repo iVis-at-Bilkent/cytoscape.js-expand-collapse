@@ -42,8 +42,8 @@ module.exports = function (params, cy, api) {
       }
 
       var _sizeCanvas = debounce(function () {
-        $canvas.height = cy.height() < 20 ? 10000: cy.height();
-        $canvas.width = cy.width() <20 ? 10000: cy.width();
+        $canvas.height = cy.container().offsetHeight;
+        $canvas.width = cy.container().offsetWidth;
         $canvas.style.position = 'absolute';
         $canvas.style.top = 0;
         $canvas.style.left = 0;

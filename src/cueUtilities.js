@@ -76,9 +76,6 @@ module.exports = function (params, cy, api) {
       // if (!data.hasEventFields) {
       //   functions['unbind'].apply( $container );
       // }
-      window.addEventListener('resize', data.eWindowResize = function () {
-        sizeCanvas();
-      });
 
       function options() {
         return cy.scratch('_cyExpandCollapse').options;
@@ -202,6 +199,10 @@ module.exports = function (params, cy, api) {
       }
 
       {
+        cy.on('resize', data.eCyResize = function () {
+          sizeCanvas();
+        });
+
         cy.on('expandcollapse.clearvisualcue', function() {
 
           if ( nodeWithRenderedCue ) {
@@ -359,9 +360,8 @@ module.exports = function (params, cy, api) {
           .off('add', 'node', data.eAdd)
           .off('select', 'node', data.eSelect)
           .off('free', 'node', data.eFree)
-          .off('zoom pan', data.eZoom);
-
-      window.removeEventListener('resize', data.eWindowResize);
+          .off('zoom pan', data.eZoom)
+          .off('resize', data.eCyResize);
     },
     rebind: function () {
       var data = getData();
@@ -383,9 +383,8 @@ module.exports = function (params, cy, api) {
         .on('add', 'node', data.eAdd)
         .on('select', 'node', data.eSelect)
         .on('free', 'node', data.eFree)
-        .on('zoom pan', data.eZoom);
-
-      window.addEventListener('resize', data.eWindowResize);
+        .on('zoom pan', data.eZoom)
+        .on('resize', data.eCyResize);
     }
   };
 

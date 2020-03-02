@@ -753,6 +753,7 @@ return {
 
     node.removeData("infoLabel");
     node.removeClass('cy-expand-collapse-collapsed-node');
+    node.addClass('cy-expand-collapse-expanded-node');
 
     node.trigger("expandcollapse.beforeexpand");
     var restoredNodes = node._private.data.collapsedChildren;
@@ -1052,6 +1053,7 @@ return {
       
       this.barrowEdgesOfcollapsedChildren(node);
       this.removeChildren(node, node);
+      node.removeClass('cy-expand-collapse-expanded-node');
       node.addClass('cy-expand-collapse-collapsed-node');
 
       node.trigger("expandcollapse.aftercollapse");

@@ -137,6 +137,7 @@ Notice that following events are performed for *each* node that is collapsed/exp
 ## Elements Style
 
  * Collapsed nodes have 'cy-expand-collapse-collapsed-node' class.
+ * Expanded nodes have 'cy-expand-collapse-expanded-node' class.
  * Meta edges have 'cy-expand-collapse-meta-edge' class.
 
 ## Dependencies

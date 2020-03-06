@@ -25,7 +25,7 @@ module.exports = function (cy, api) {
 
   function returnToPositions(positions) {
     var currentPositions = {};
-    cy.nodes().positions(function (ele, i) {
+    cy.nodes().not(":parent").positions(function (ele, i) {
       if(typeof ele === "number") {
         ele = i;
       }

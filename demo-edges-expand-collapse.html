@@ -1,0 +1,304 @@
+<!DOCTYPE>
+
+<html>
+
+	<head>
+		<title>cytoscape-expand-collapse.js demo</title>
+
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+		<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+
+		<!-- for testing with local version of cytoscape.js -->
+		<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
+    <script src="https://unpkg.com/layout-base/layout-base.js"></script>
+    <script src="https://unpkg.com/cose-base/cose-base.js"></script>
+    <script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
+		<script src="cytoscape-expand-collapse.js"></script>
+
+		<style>
+			body {
+				font-family: helvetica neue, helvetica, liberation sans, arial, sans-serif;
+				font-size: 14px;
+			}
+
+
+			#cy {
+				z-index: 999;
+				 width: 100%;
+				height: 80%;
+				float: center; 
+			}
+
+			h1 {
+				opacity: 0.5;
+				font-size: 1em;
+				font-weight: bold;
+			}
+		</style>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function(){
+				
+				var cy = window.cy = cytoscape({
+					container: document.getElementById('cy'),
+					
+					layout: {
+						name: 'cose-bilkent',
+						
+					},
+				
+					style: [
+						{
+							selector: 'node',
+							style: {
+								'background-color': '#dedede',
+								//'label': 'data(id)'
+							}
+						},
+
+						{
+							selector: ':parent',
+							style: {
+								'background-opacity': 0.333
+							}
+						},
+
+					
+
+						{
+							selector: 'edge[edgeType="type1"]',
+							style: {
+								'width':1,
+								'line-color': '#00FF00',
+								'curve-style': 'bezier',
+								'target-arrow-shape': 'triangle',
+								'target-arrow-color': '#00FF00',
+
+							
+							}
+						},
+						{
+							selector: 'edge[edgeType="type2"]',
+							style: {
+								'width': 1,
+								'line-color': '#0000FF',
+								'curve-style': 'bezier',
+								'target-arrow-shape': 'triangle',
+								'target-arrow-color': '#0000FF',
+
+							
+							}
+						},
+						{
+							selector: 'edge[edgeType="type3"]',
+							style: {
+								'width': 1,
+								'line-color': '#FF0000',
+								'curve-style': 'bezier',
+								'target-arrow-shape': 'triangle',
+								'target-arrow-color': '#FF0000',
+
+							
+							}
+						},
+
+						
+						 {
+							selector: 'edge.collapsedEdge',
+							style: {
+								'width': 1,
+								'line-color': '#000000',	
+								'line-style' :'dotted'		,					
+								'target-arrow-shape' : "chevron",
+								'source-arrow-shape' : "chevron",
+								'curve-style': 'bezier',
+								'target-arrow-color': '#000000',
+								'source-arrow-color': '#000000',
+								'arrow-scale' : 0.5
+							}
+						}, 
+
+						{
+							selector: 'node:selected',
+							style: {
+							  "border-width": 1,
+								"border-color": '#000000'
+							}
+						},
+						{
+							selector: 'edge:selected',
+							style: {
+							  "width": 2,
+							  "line-color":'#660099',
+							  "target-arrow-color":'#660099',
+							  "source-arrow-color":'#660099'
+								
+							}
+						}
+					],
+
+					elements:  {
+			            nodes: [{
+			                data: {
+			                  id: 'n0',
+			                  name: 'n0'
+			                }
+			  
+			              },
+			              {
+			                data: {
+			                  id: 'n1',
+			                  name: 'n1'
+			                }
+			              },
+			              {
+			                data: {
+			                  id: 'n2',
+			                  name: 'n2'
+			                }
+			              }, 
+			              {
+			                data: {
+			                  id: 'n3',
+			                  name: 'n3'
+			                }
+						  },   
+						  {
+			                data: {
+			                  id: 'n4',
+			                  name: 'n4'
+			                }
+						  },    
+						  {
+			                data: {
+			                  id: 'n5',
+			                  name: 'n5'
+			                }
+			              },               
+			            ],
+			            edges: [{
+			           		data: {id: 'e0', source: 'n0', target: 'n1',edgeType: "type1" },selectable:true,unselectable:false     
+			            },
+			            {
+			           		data: { id: 'e1', source: 'n0', target: 'n1',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+			            },
+			            {
+			           		data: { id: 'e3', source: 'n1', target: 'n0',edgeType: "type1" } ,selectable:true  ,unselectable:false   
+						},
+						
+			            {
+			           		data: { id: 'e4', source: 'n2', target: 'n3',edgeType: "type2" } ,selectable:true  ,unselectable:false   
+						},
+						
+			            {
+			           		data: { id: 'e5', source: 'n3', target: 'n2',edgeType: "type2" } ,selectable:true  ,unselectable:false   
+			            },
+						
+			            {
+			           		data: { id: 'e6', source: 'n0', target: 'n3',edgeType: "type2" } ,selectable:true  ,unselectable:false   
+						},
+						{
+			           		data: { id: 'e7', source: 'n0', target: 'n1',edgeType: "type2" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e8', source: 'n1', target: 'n0',edgeType: "type2" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e9', source: 'n1', target: 'n0',edgeType: "type2" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e10', source: 'n3', target: 'n4',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e11', source: 'n3', target: 'n4',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e12', source: 'n4', target: 'n3',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e13', source: 'n2', target: 'n5',edgeType: "type2" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e14', source: 'n2', target: 'n5',edgeType: "type2" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e15', source: 'n5', target: 'n1',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e16', source: 'n1', target: 'n5',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+			            },
+			            ]
+			          },
+				});
+				
+			
+				var api = cy.expandCollapse({
+					/* layoutBy: {
+						name: "cose-bilkent",
+						animate: "end",
+						randomize: false,
+						fit: true
+					}, */
+					//fisheye: true,
+					//animate: true,
+					undoable: false,
+					expandCueImage :"icon-plus.png",
+					collapseCueImage:"icon-minus.png"
+				});
+
+
+				document.getElementById("collapseSelectedEdges").addEventListener("click", function () {
+					api.collapseEdges(cy.edges(":selected"),{GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked});
+				});
+
+				document.getElementById("expandSelectedEdges").addEventListener("click", function () {
+					api.expandEdges(cy.edges(":selected"),{GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked});
+				});
+
+				document.getElementById("collapseAll").addEventListener("click", function () {
+					//api.collapseAll();
+					api.collapseAllEdges({GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
+				});
+				document.getElementById("collapseEdgesBetweenNodes").addEventListener("click", function () {
+					//api.collapseAll();
+					api.collapseEdgesBetweenNodes(cy.nodes(":selected"),{GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
+				});
+
+				document.getElementById("expandAll").addEventListener("click", function () {
+					api.expandAllEdges();
+				});
+
+			});
+		</script>
+	</head>
+
+	<body>
+		
+		
+		<h1>cytoscape-expand-collapse edge demo</h1>
+
+		
+				<span id="collapseAll" style="cursor: pointer;color: darkred">Collapse all Edges</span> <br/> <span id="expandAll" style="cursor: pointer; color: darkslateblue">Expand all edges</span> <br/>
+				<span id="collapseSelectedEdges" style="cursor: pointer; color: darksalmon">Collapse selected edges</span> <br/> <span id="expandSelectedEdges" style="cursor: pointer; color: darkmagenta">Expand selected Edges</span><br/>
+				<span id="collapseEdgesBetweenNodes" style="cursor: pointer; color: darkmagenta">Collapse edges between the selected nodes</span><br/>
+				<span>options</span><br/>
+				<input id="groupEdges" type="checkbox" /><span> Group edges of similar type</span>
+			
+		
+			
+				<div  id="cy"></div>
+			
+			
+		
+
+		
+	
+
+
+
+	
+	</body>
+
+</html>

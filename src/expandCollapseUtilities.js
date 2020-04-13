@@ -675,8 +675,110 @@ return {
       collapsedChildren = collapsedChildren.union(children[i]);
     }
     return collapsedChildren;
+  },
+  /*********** start section edge expand collapse  */
+  collapseGivenEdges :  function(edges, options){
+    var nodes = this.isValidEdgesForCollapse(edges);
+    if(!nodes){
+      return;
+    }
+    var edgesToCollapse = {};
+   
+    //group edges by type if this option is set to true
+    if(options.GroupEdgesOfSameTypeOnCollapse){      
+      edges.forEach(function(edge){
+        var edgeType = options.edgeTypeInfo instanceof Function ? options.edgeTypeInfo.call(edge) : edge.data()[options.edgeTypeInfo];
+        if(edgesToCollapse.hasOwnProperty(edgeType)){
+          edgesToCollapse[edgeType].push(edge);
+        }else{
+          edgesToCollapse[edgeType] = [].concat([edge]); 
+        }
+      });
+    }else{
+      edgesToCollapse["unknown"] = edges;
+    }
+
+    var newEdges = [];
+    for(const edgeGroupType in edgesToCollapse){
+      var newEdge = {};
+      newEdge.data = {};
+      newEdge.data.source = nodes[0].id();
+      newEdge.data.target = nodes[1].id();
+      newEdge.data.id = "collapsedEdge_"+nodes[0].id() + "_"+nodes[1].id()+"_"+edgeGroupType;
+
+      newEdge.data.collapsedEdges = [];
+      edgesToCollapse[edgeGroupType].forEach(function(edge){
+        newEdge.data.collapsedEdges.push({data: edge.data(),classes:edge.classes()});
+      });
+     
+      var edgesTypeField = options.edgeTypeInfo instanceof Function ? "edgeType" : options.edgeTypeInfo;
+      newEdge.data[edgesTypeField] = edgeGroupType;
+      newEdge.classes = "collapsedEdge";
+     
+      newEdges.push(newEdge);
+    }
+   
+    cy.remove(edges);
+    cy.add(newEdges);
+    
+    return newEdges;
+  },
+
+  expandEdge : function(edge){
+    var edges = edge.data().collapsedEdges;        
+        if(edges != undefined && edges.length > 0){
+          cy.remove(edge);
+          var restoredEdges = [];
+          edges.forEach(function(restoredEdge){
+            restoredEdge.group = "edges";
+            restoredEdges.push(restoredEdge);
+          });
+          cy.add(restoredEdges);
+        }
+  },
+
+  //if the edges are only between two nodes (valid for collpasing) returns the two nodes else it returns false
+  isValidEdgesForCollapse : function(edges){
+    var endPoints = this.getEdgesDistinctEndPoints(edges);
+    if(endPoints.length != 2){
+      return false;
+    }else{
+      return endPoints;
+    }
+  },
+
+  //returns a list of distinct endpoints of a set of edges.
+  getEdgesDistinctEndPoints : function(edges){
+    var endPoints = [];
+    edges.forEach(function(edge){
+      if(!this.containsElement(endPoints,edge.source())){
+        endPoints.push(edge.source());
+      }
+      
+      if(!this.containsElement(endPoints,edge.target())){
+        endPoints.push(edge.target());
+      }
+      
+    }.bind(this));
+
+    return endPoints;
+
+  },
+
+  //function to check if a list of elements contains the given element by looking at id()
+  containsElement : function(elements, element){
+    var exists = false;
+    for(var i = 0 ; i<elements.length ; i++){
+      if(elements[i].id() == element.id()){
+        exists = true;
+        break;
+      }
+    }
+    return exists;
   }
+  /***********end section edge expand collapse */
 }
+
 };
 
 module.exports = expandCollapseUtilities;

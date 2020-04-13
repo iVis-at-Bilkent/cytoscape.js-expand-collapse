@@ -231,6 +231,81 @@
         }
       };
 
+      api.collapseEdges = function(edges,opts){        
+        if(edges.length < 2) return;
+        var options = getScratch(cy, 'options');
+        var tempOptions = extendOptions(options, opts);       
+     
+
+        return expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
+      };
+      api.collapseEdgesBetweenNodes = function(nodes, opts){
+     
+        function pairwise(list) {
+          var pairs = [];
+          list
+            .slice(0, list.length - 1)
+            .forEach(function (first, n) {
+              var tail = list.slice(n + 1, list.length);
+              tail.forEach(function (item) {
+                pairs.push([first, item])
+              });
+            })
+          return pairs;
+        }
+        var nodesPairs = pairwise(nodes);
+        nodesPairs.forEach(function(nodePair){
+          var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');         
+          this.collapseEdges(edges, opts);
+        }.bind(this));       
+     
+      
+
+      };
+
+      api.collapseAllEdges = function(options){
+
+        function pairwise(list) {
+          var pairs = [];
+          list
+            .slice(0, list.length - 1)
+            .forEach(function (first, n) {
+              var tail = list.slice(n + 1, list.length);
+              tail.forEach(function (item) {
+                pairs.push([first, item])
+              });
+            })
+          return pairs;
+        }        
+        var nodesPairs = pairwise(cy.edges().connectedNodes());
+        nodesPairs.forEach(function(nodePair){
+          var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');         
+          this.collapseEdges(edges, options);
+        }.bind(this));
+
+      };
+
+      api.expandEdge = function(edge){        
+
+        return expandCollapseUtilities.expandEdge(edge);
+      };
+
+      api.expandEdges = function(edges){        
+
+        edges.forEach(function(edge){
+          expandCollapseUtilities.expandEdge(edge);
+        })
+      };
+
+      api.expandAllEdges = function(){
+        var edges = cy.edges(".collapsedEdge");
+       edges.forEach(function(edge){
+         this.expandEdge(edge);
+       }.bind(this));
+
+       
+      };
+     
       return api; // Return the API instance
     }
 
@@ -269,6 +344,9 @@
         expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
         collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
         expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
+       
+        edgeTypeInfo : 'edgeType', //the name of the field that has the edge type, retrieved from edge.data(), can be a function
+        GroupEdgesOfSameTypeOnCollapse : false,
         zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
       };
 

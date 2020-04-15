@@ -307,10 +307,6 @@ module.exports = function (params, cy, api) {
 					&& cyRenderedPosX <= expandcollapseRenderedEndX + expandcollapseRenderedRectSize * factor
 					&& cyRenderedPosY >= expandcollapseRenderedStartY - expandcollapseRenderedRectSize * factor
 					&& cyRenderedPosY <= expandcollapseRenderedEndY + expandcollapseRenderedRectSize * factor) {
-          if(node.selectable()){
-            node.unselectify();
-            cy.scratch('_cyExpandCollapse').selectableChanged = true;
-          }
 					if(opts.undoable && !ur)
 						ur = cy.undoRedo({
 							defaultActions: false
@@ -332,6 +328,11 @@ module.exports = function (params, cy, api) {
 						});
 					else
 						api.expand(node, opts);
+          
+            if(node.selectable()){
+              node.unselectify();
+              cy.scratch('_cyExpandCollapse').selectableChanged = true;
+            }          
 					}
 			}
 		});

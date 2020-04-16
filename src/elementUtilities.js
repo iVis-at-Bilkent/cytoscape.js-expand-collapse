@@ -2,10 +2,12 @@ function elementUtilities(cy) {
  return {
   moveNodes: function (positionDiff, nodes, notCalcTopMostNodes) {
     var topMostNodes = notCalcTopMostNodes ? nodes : this.getTopMostNodes(nodes);
-    topMostNodes.positions(function(ele, i){
+    nonParents = topMostNodes.not(":parent"); 
+    // moving parents spoils positioning, so move only nonparents
+    nonParents.positions(function(ele, i){
       return {
-        x: topMostNodes[i].position("x") + positionDiff.x,
-        y: topMostNodes[i].position("y") + positionDiff.y
+        x: nonParents[i].position("x") + positionDiff.x,
+        y: nonParents[i].position("y") + positionDiff.y
       };
     });
     for (var i = 0; i < topMostNodes.length; i++) {

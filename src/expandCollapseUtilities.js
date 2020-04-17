@@ -44,7 +44,7 @@ return {
 
     // If expand is called just for one node then call end operation to perform layout
     if (single) {
-      this.endOperation(layoutBy);
+      this.endOperation(layoutBy, node);
     }
   },
   /*
@@ -95,11 +95,15 @@ return {
   /*
    * The operation to be performed after expand/collapse. It rearrange nodes by layoutBy parameter.
    */
-  endOperation: function (layoutBy) {
+  endOperation: function (layoutBy, nodes) {
     var self = this;
     cy.ready(function () {
       setTimeout(function() {
         elementUtilities.rearrange(layoutBy);
+        if(cy.scratch('_cyExpandCollapse').selectableChanged){
+          nodes.selectify();
+          cy.scratch('_cyExpandCollapse').selectableChanged = false;
+        }
       }, 0);
       
     });
@@ -110,7 +114,7 @@ return {
   expandAllNodes: function (nodes, options) {//*//
     var expandedStack = this.simpleExpandAllNodes(nodes, options.fisheye);
 
-    this.endOperation(options.layoutBy);
+    this.endOperation(options.layoutBy, nodes);
 
     /*
      * return the nodes to undo the operation
@@ -145,7 +149,7 @@ return {
     else {
       // First expand given nodes and then perform layout according to the layoutBy parameter
       this.simpleExpandGivenNodes(nodes, options.fisheye);
-      this.endOperation(options.layoutBy);
+      this.endOperation(options.layoutBy, nodes);
     }
 
     /*
@@ -164,7 +168,7 @@ return {
     cy.endBatch();
 
     nodes.trigger("position"); // position not triggered by default when collapseNode is called
-    this.endOperation(options.layoutBy);
+    this.endOperation(options.layoutBy, nodes);
 
     // Update the style
     cy.style().update();

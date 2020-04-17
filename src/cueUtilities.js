@@ -288,7 +288,7 @@ module.exports = function (params, cy, api) {
 		});
 
 		cy.on('tap', data.eTap = function (event) {
-			var node = nodeWithRenderedCue;
+			var node = nodeWithRenderedCue;      
       var opts = options();
 			if (node){
 				var expandcollapseRenderedStartX = node._private.data.expandcollapseRenderedStartX;
@@ -328,6 +328,11 @@ module.exports = function (params, cy, api) {
 						});
 					else
 						api.expand(node, opts);
+          
+            if(node.selectable()){
+              node.unselectify();
+              cy.scratch('_cyExpandCollapse').selectableChanged = true;
+            }          
 					}
 			}
 		});

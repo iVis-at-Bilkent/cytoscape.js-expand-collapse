@@ -77,4 +77,74 @@ module.exports = function (cy, api) {
       ur.action(actions[i], doIt(actions[i]), doIt(actions[(i + 3) % 6]));
   }
 
+  function doItEdge(func) {
+    return function (args) {
+      var result = {};
+      var nodes = getEles(args.nodes);
+      if (args.firstTime) {
+        result.oldData = getNodePositions();
+        result.nodes = func.indexOf("All") > 0 ? api[func](args.options) : api[func](nodes, args.options);
+      } else {
+        result.oldData = getNodePositions();
+        result.nodes = func.indexOf("All") > 0 ? api[func](secondTimeOpts) : api[func](cy.collection(nodes), secondTimeOpts);
+        returnToPositions(args.oldData);
+      }
+
+      return result;
+    };
+  }
+  
+  function collapseEdges(args){
+    var options = args.options;
+    var edges = args.edges;
+    var result = {};
+    result.options = options;
+    if(args.firstTime){
+      result.edges = cy.collection();
+      var newEdges = api.collapseEdges(edges,options);
+      result.edges = result.edges.add(newEdges); 
+      result.oldEdges = edges;    
+      result.firstTime = false;
+    }else{
+      var oldEdges = args.oldEdges;
+
+    }
+
+    return result;
+  }
+  function collapseEdgesBetweenNodes(args){
+   var options = args.options;
+   var nodes = args.nodes;
+
+ }
+ function collapseAllEdges(args){
+   var options = args.options;
+ }
+ function expandEdges(args){
+   var options = args.options;
+ }
+ function expandEdgesBetweenNodes(args){
+   var options = args.options;
+   var nodes = args.nodes;
+ }
+ function expandAllEdges(args){
+   var options = args.options;
+ }
+ 
+ 
+  ur.action("collapseEdges", collapseEdges, expandEdges);
+  ur.action("expandEdges", expandEdges, collapseEdges);
+
+  ur.action("collapseEdgesBetweenNodes", collapseEdgesBetweenNodes, expandEdgesBetweenNodes);
+  ur.action("expandEdgesBetweenNodes", expandEdgesBetweenNodes, collapseEdgesBetweenNodes);
+
+  ur.action("collapseAllEdges", collapseAllEdges, expandAllEdges);
+  ur.action("expandAllEdges", expandAllEdges, collapseAllEdges);
+
+ 
+
+
+  
+
+
 };

@@ -678,42 +678,59 @@ return {
   },
   /*********** start section edge expand collapse  */
   collapseGivenEdges :  function(edges, options){
-    var nodes = this.isValidEdgesForCollapse(edges);
-    if(!nodes){
-      return;
-    }
+    
+    var nodes = edges.connectedNodes();   
     var edgesToCollapse = {};
    
     //group edges by type if this option is set to true
     if(options.GroupEdgesOfSameTypeOnCollapse){      
       edges.forEach(function(edge){
-        var edgeType = options.edgeTypeInfo instanceof Function ? options.edgeTypeInfo.call(edge) : edge.data()[options.edgeTypeInfo];
+        var edgeType = "unknown";
+        if(options.edgeTypeInfo !== undefined){
+          edgeType = options.edgeTypeInfo instanceof Function ? options.edgeTypeInfo.call(edge) : edge.data()[options.edgeTypeInfo];
+        }
         if(edgesToCollapse.hasOwnProperty(edgeType)){
-          edgesToCollapse[edgeType].push(edge);
+
+          edgesToCollapse[edgeType].edges.push(edge);
+
+          if(edgesToCollapse[edgeType].directionType == "unidirection" && (edgesToCollapse[edgeType].source != edge.source().id() || edgesToCollapse[edgeType].target != edge.target().id())){
+            edgesToCollapse[edgeType].directionType = "bidirection";  
+          }         
         }else{
-          edgesToCollapse[edgeType] = [].concat([edge]); 
+          edgesToCollapse[edgeType] = {edges : [].concat([edge]) , directionType : "unidirection", source: edge.source().id(), target : edge.target().id() }
+          
         }
       });
     }else{
-      edgesToCollapse["unknown"] = edges;
+      edgesToCollapse["unknown"] =  {edges : edges , directionType : "unidirection", source: edges[0].source().id(), target : edges[0].target().id() }
+      for(var i = 0 ; i < edges.length ; i++){
+        if(edgesToCollapse["unknown"].directionType == "unidirection" && (edgesToCollapse["unknown"].source != edges[i].source().id() || edgesToCollapse["unknown"].target != edges[i].target().id())){
+          edgesToCollapse["unknown"].directionType = "bidirection";  
+          break;
+        }  
+      }     
     }
 
     var newEdges = [];
     for(const edgeGroupType in edgesToCollapse){
       var newEdge = {};
       newEdge.data = {};
-      newEdge.data.source = nodes[0].id();
-      newEdge.data.target = nodes[1].id();
-      newEdge.data.id = "collapsedEdge_"+nodes[0].id() + "_"+nodes[1].id()+"_"+edgeGroupType;
+      newEdge.data.source = edgesToCollapse[edgeGroupType].source;
+      newEdge.data.target = edgesToCollapse[edgeGroupType].target;
+      newEdge.data.id = "collapsedEdge_"+nodes[0].id() + "_"+nodes[1].id()+"_"+edgeGroupType+ "_"+ Math.floor(Math.random() * Date.now());
 
       newEdge.data.collapsedEdges = [];
-      edgesToCollapse[edgeGroupType].forEach(function(edge){
+      edgesToCollapse[edgeGroupType].edges.forEach(function(edge){
         newEdge.data.collapsedEdges.push({data: edge.data(),classes:edge.classes()});
       });
      
-      var edgesTypeField = options.edgeTypeInfo instanceof Function ? "edgeType" : options.edgeTypeInfo;
+      var edgesTypeField = "edgeType";
+        if(options.edgeTypeInfo !== undefined){
+          edgesTypeField = options.edgeTypeInfo instanceof Function ? edgeTypeField : options.edgeTypeInfo;
+        }
       newEdge.data[edgesTypeField] = edgeGroupType;
-      newEdge.classes = "collapsedEdge";
+      newEdge.data["directionType"] = edgesToCollapse[edgeGroupType].directionType;
+      newEdge.classes = "cy-expand-collapse-collapsed-edge";
      
       newEdges.push(newEdge);
     }
@@ -722,11 +739,12 @@ return {
     cy.add(newEdges);
     
     return newEdges;
+    
   },
 
   expandEdge : function(edge){
     var edges = edge.data().collapsedEdges;        
-        if(edges != undefined && edges.length > 0){
+        if(edges !== undefined && edges.length > 0){
           cy.remove(edge);
           var restoredEdges = [];
           edges.forEach(function(restoredEdge){
@@ -739,6 +757,8 @@ return {
 
   //if the edges are only between two nodes (valid for collpasing) returns the two nodes else it returns false
   isValidEdgesForCollapse : function(edges){
+   
+
     var endPoints = this.getEdgesDistinctEndPoints(edges);
     if(endPoints.length != 2){
       return false;
@@ -753,10 +773,12 @@ return {
     edges.forEach(function(edge){
       if(!this.containsElement(endPoints,edge.source())){
         endPoints.push(edge.source());
+        
       }
       
       if(!this.containsElement(endPoints,edge.target())){
         endPoints.push(edge.target());
+        
       }
       
     }.bind(this));

@@ -232,15 +232,15 @@
       };
 
       api.collapseEdges = function(edges,opts){        
-        if(edges.length < 2) return;
+        if(edges.length < 2) return [];
+        if(edges.connectedNodes().length > 2) return;
         var options = getScratch(cy, 'options');
-        var tempOptions = extendOptions(options, opts);       
-     
-
+        var tempOptions = extendOptions(options, opts); 
         return expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
       };
       api.collapseEdgesBetweenNodes = function(nodes, opts){
-     
+        var options = getScratch(cy, 'options');
+        var tempOptions = extendOptions(options, opts); 
         function pairwise(list) {
           var pairs = [];
           list
@@ -255,16 +255,20 @@
         }
         var nodesPairs = pairwise(nodes);
         nodesPairs.forEach(function(nodePair){
-          var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');         
-          this.collapseEdges(edges, opts);
+          var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');     
+          if(edges.length >= 2){
+             expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
+          }    
+         
         }.bind(this));       
      
       
 
       };
 
-      api.collapseAllEdges = function(options){
-
+      api.collapseAllEdges = function(opts){
+        var options = getScratch(cy, 'options');
+        var tempOptions = extendOptions(options, opts); 
         function pairwise(list) {
           var pairs = [];
           list
@@ -280,30 +284,55 @@
         var nodesPairs = pairwise(cy.edges().connectedNodes());
         nodesPairs.forEach(function(nodePair){
           var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');         
-          this.collapseEdges(edges, options);
+          if(edges.length >=2){
+            expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
+          }
+          
         }.bind(this));
 
-      };
-
-      api.expandEdge = function(edge){        
-
-        return expandCollapseUtilities.expandEdge(edge);
-      };
-
+      };    
       api.expandEdges = function(edges){        
+        if(edges === undefined) return;
 
-        edges.forEach(function(edge){
-          expandCollapseUtilities.expandEdge(edge);
-        })
+        if(typeof edges[Symbol.iterator] === 'function'){
+          edges.forEach(function(edge){
+            expandCollapseUtilities.expandEdge(edge);
+          });
+        }else{
+          expandCollapseUtilities.expand(edge);
+        }
+       
       };
 
       api.expandAllEdges = function(){
-        var edges = cy.edges(".collapsedEdge");
-       edges.forEach(function(edge){
-         this.expandEdge(edge);
-       }.bind(this));
+        var edges = cy.edges(".cy-expand-collapse-collapsed-edge");
+        this.expandEdges(edges);   
+      };
 
-       
+      api.expandEdgesBetweenNodes = function(nodes){
+        if(nodes.length <= 1) return;
+        var edgesToExpand = cy.collection();
+        function pairwise(list) {
+          var pairs = [];
+          list
+            .slice(0, list.length - 1)
+            .forEach(function (first, n) {
+              var tail = list.slice(n + 1, list.length);
+              tail.forEach(function (item) {
+                pairs.push([first, item])
+              });
+            })
+          return pairs;
+        }        
+        var nodesPairs = pairwise(nodes);
+        nodesPairs.forEach(function(nodePair){
+          var edges = nodePair[0].connectedEdges('.cy-expand-collapse-collapsed-edge[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');  
+          edgesToExpand = edgesToExpand.union(edges);
+          
+          
+        }.bind(this));
+      
+        this.expandEdges(edgesToExpand);
       };
      
       return api; // Return the API instance
@@ -345,7 +374,7 @@
         collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
         expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
        
-        edgeTypeInfo : 'edgeType', //the name of the field that has the edge type, retrieved from edge.data(), can be a function
+        edgeTypeInfo : "edgeType", //the name of the field that has the edge type, retrieved from edge.data(), can be a function
         GroupEdgesOfSameTypeOnCollapse : false,
         zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
       };

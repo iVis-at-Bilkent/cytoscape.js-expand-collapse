@@ -77,58 +77,114 @@ module.exports = function (cy, api) {
       ur.action(actions[i], doIt(actions[i]), doIt(actions[(i + 3) % 6]));
   }
 
-  function doItEdge(func) {
-    return function (args) {
-      var result = {};
-      var nodes = getEles(args.nodes);
-      if (args.firstTime) {
-        result.oldData = getNodePositions();
-        result.nodes = func.indexOf("All") > 0 ? api[func](args.options) : api[func](nodes, args.options);
-      } else {
-        result.oldData = getNodePositions();
-        result.nodes = func.indexOf("All") > 0 ? api[func](secondTimeOpts) : api[func](cy.collection(nodes), secondTimeOpts);
-        returnToPositions(args.oldData);
-      }
-
-      return result;
-    };
-  }
-  
-  function collapseEdges(args){
+  function collapseEdges(args){    
     var options = args.options;
     var edges = args.edges;
     var result = {};
+    result.oldEdges = edges;
     result.options = options;
     if(args.firstTime){
-      result.edges = cy.collection();
-      var newEdges = api.collapseEdges(edges,options);
-      result.edges = result.edges.add(newEdges); 
-      result.oldEdges = edges;    
+      result.edges = api.collapseEdges(edges,options);
+     
       result.firstTime = false;
     }else{
-      var oldEdges = args.oldEdges;
-
+      result.edges = args.oldEdges;
+      cy.remove(args.edges);
+      cy.add(args.oldEdges);
+     
     }
 
     return result;
   }
   function collapseEdgesBetweenNodes(args){
-   var options = args.options;
-   var nodes = args.nodes;
+    var options = args.options;
+    var result = {};
+    result.options = options;
+    if(args.firstTime){
+     var collapseAllResult = api.collapseEdgesBetweenNodes(args.nodes, options);
+     result.edges = collapseAllResult.edges;
+     result.oldEdges = collapseAllResult.oldEdges;
+     result.firstTime = false;
+    }else{
+     result.edges = args.oldEdges;
+     result.oldEdges = args.edges;
+     cy.remove(args.edges);
+     cy.add(args.oldEdges);
+    }
+ 
+    return result;
 
  }
  function collapseAllEdges(args){
    var options = args.options;
+   var result = {};
+   result.options = options;
+   if(args.firstTime){
+    var collapseAllResult = api.collapseAllEdges(options);
+    result.edges = collapseAllResult.edges;
+    result.oldEdges = collapseAllResult.oldEdges;
+    result.firstTime = false;
+   }else{
+    result.edges = args.oldEdges;
+    result.oldEdges = args.edges;
+    cy.remove(args.edges);
+    cy.add(args.oldEdges);
+   }
+
+   return result;
  }
- function expandEdges(args){
+ function expandEdges(args){   
    var options = args.options;
+   var result ={};
+   result.oldEdges = args.edges;
+   result.options = options;
+   if(args.firstTime){
+    result.edges = api.expandEdges(args.edges);
+    result.firstTime = false;
+    
+   }else{
+    result.edges = args.oldEdges;
+    cy.remove(args.edges);
+    cy.add(args.oldEdges);
+   }
+
+   return result;
  }
  function expandEdgesBetweenNodes(args){
-   var options = args.options;
-   var nodes = args.nodes;
+  var options = args.options;
+  var result = {};
+  result.options = options;
+  if(args.firstTime){
+   var collapseAllResult = api.expandEdgesBetweenNodes(args.nodes,options);
+   result.edges = collapseAllResult.edges;
+   result.oldEdges = collapseAllResult.oldEdges;
+   result.firstTime = false;
+  }else{
+   result.edges = args.oldEdges;
+   result.oldEdges = args.edges;
+   cy.remove(args.edges);
+   cy.add(args.oldEdges);
+  }
+
+  return result;
  }
  function expandAllEdges(args){
-   var options = args.options;
+  var options = args.options;
+  var result = {};
+  result.options = options;
+  if(args.firstTime){
+   var expandResult = api.expandAllEdges(options);
+   result.edges = expandResult.edges;
+   result.oldEdges = expandResult.oldEdges;
+   result.firstTime = false;
+  }else{
+   result.edges = args.oldEdges;
+   result.oldEdges = args.edges;
+   cy.remove(args.edges);
+   cy.add(args.oldEdges);
+  }
+
+  return result;
  }
  
  

@@ -718,6 +718,7 @@ return {
     var newEdges = [];
     for(const edgeGroupType in edgesToCollapse){
       var newEdge = {};
+      newEdge.group = "edges";
       newEdge.data = {};
       newEdge.data.source = edgesToCollapse[edgeGroupType].source;
       newEdge.data.target = edgesToCollapse[edgeGroupType].target;
@@ -740,9 +741,9 @@ return {
     }
    
     cy.remove(edges);
-    cy.add(newEdges);
+     var result = cy.add(newEdges);
     
-    return newEdges;
+    return result;
     
   },
 
@@ -755,8 +756,10 @@ return {
             restoredEdge.group = "edges";
             restoredEdges.push(restoredEdge);
           });
-          cy.add(restoredEdges);
+          return cy.add(restoredEdges);
+
         }
+      
   },
 
   //if the edges are only between two nodes (valid for collpasing) returns the two nodes else it returns false

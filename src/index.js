@@ -232,11 +232,27 @@
       };
 
       api.collapseEdges = function(edges,opts){        
-        if(edges.length < 2) return [];
-        if(edges.connectedNodes().length > 2) return;
+        if(edges.length < 2) return cy.collection();
+        if(edges.connectedNodes().length > 2) return cy.collection();
         var options = getScratch(cy, 'options');
         var tempOptions = extendOptions(options, opts); 
         return expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
+      };
+      api.expandEdges = function(edges , opts){        
+        if(edges === undefined) return;
+        var options = getScratch(cy, 'options');
+        var tempOptions = extendOptions(options, opts); 
+        var result = cy.collection();
+        if(typeof edges[Symbol.iterator] === 'function'){
+          edges.forEach(function(edge){
+            result = result.add(expandCollapseUtilities.expandEdge(edge));
+          });
+        }else{
+          result = result.add(expandCollapseUtilities.expandEdge(edge));;
+        }
+
+        return result;
+       
       };
       api.collapseEdgesBetweenNodes = function(nodes, opts){
         var options = getScratch(cy, 'options');
@@ -254,18 +270,45 @@
           return pairs;
         }
         var nodesPairs = pairwise(nodes);
+        var result = {edges: cy.collection(), oldEdges: cy.collection()};
         nodesPairs.forEach(function(nodePair){
           var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');     
+          
           if(edges.length >= 2){
-             expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
+            result.oldEdges = result.oldEdges.add(edges);
+            result.edges = result.edges.add(expandCollapseUtilities.collapseGivenEdges(edges, tempOptions));
           }    
          
         }.bind(this));       
      
-      
+        return result;
 
       };
-
+      api.expandEdgesBetweenNodes = function(nodes){
+        if(nodes.length <= 1) cy.collection();
+        var edgesToExpand = cy.collection();
+        function pairwise(list) {
+          var pairs = [];
+          list
+            .slice(0, list.length - 1)
+            .forEach(function (first, n) {
+              var tail = list.slice(n + 1, list.length);
+              tail.forEach(function (item) {
+                pairs.push([first, item])
+              });
+            })
+          return pairs;
+        }
+        var result = {edges: cy.collection(), oldEdges: cy.collection()}   ;     
+        var nodesPairs = pairwise(nodes);
+        nodesPairs.forEach(function(nodePair){
+          var edges = nodePair[0].connectedEdges('.cy-expand-collapse-collapsed-edge[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');  
+          edgesToExpand = edgesToExpand.union(edges);         
+          
+        }.bind(this));
+        result.oldEdges = result.oldEdges.add(edgesToExpand);
+        result.edges = result.edges.add(this.expandEdges(edgesToExpand));
+      };
       api.collapseAllEdges = function(opts){
         var options = getScratch(cy, 'options');
         var tempOptions = extendOptions(options, opts); 
@@ -280,60 +323,29 @@
               });
             })
           return pairs;
-        }        
-        var nodesPairs = pairwise(cy.edges().connectedNodes());
+        } 
+        
+        return this.collapseEdgesBetweenNodes(cy.edges().connectedNodes(),opts);
+       /*  var nodesPairs = pairwise(cy.edges().connectedNodes());
         nodesPairs.forEach(function(nodePair){
           var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');         
           if(edges.length >=2){
             expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
           }
           
-        }.bind(this));
+        }.bind(this)); */
 
-      };    
-      api.expandEdges = function(edges){        
-        if(edges === undefined) return;
-
-        if(typeof edges[Symbol.iterator] === 'function'){
-          edges.forEach(function(edge){
-            expandCollapseUtilities.expandEdge(edge);
-          });
-        }else{
-          expandCollapseUtilities.expand(edge);
-        }
-       
-      };
-
-      api.expandAllEdges = function(){
+      }; 
+      api.expandAllEdges = function(opts){
+        var options = getScratch(cy, 'options');
+        var tempOptions = extendOptions(options, opts);
         var edges = cy.edges(".cy-expand-collapse-collapsed-edge");
-        this.expandEdges(edges);   
+        var result = {edges:cy.collection(), oldEdges : cy.collection()};
+        result.oldEdges = result.oldEdges.add(edges);
+        result.edges = result.edges.add(this.expandEdges(edges));   
       };
 
-      api.expandEdgesBetweenNodes = function(nodes){
-        if(nodes.length <= 1) return;
-        var edgesToExpand = cy.collection();
-        function pairwise(list) {
-          var pairs = [];
-          list
-            .slice(0, list.length - 1)
-            .forEach(function (first, n) {
-              var tail = list.slice(n + 1, list.length);
-              tail.forEach(function (item) {
-                pairs.push([first, item])
-              });
-            })
-          return pairs;
-        }        
-        var nodesPairs = pairwise(nodes);
-        nodesPairs.forEach(function(nodePair){
-          var edges = nodePair[0].connectedEdges('.cy-expand-collapse-collapsed-edge[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');  
-          edgesToExpand = edgesToExpand.union(edges);
-          
-          
-        }.bind(this));
-      
-        this.expandEdges(edgesToExpand);
-      };
+     
      
       return api; // Return the API instance
     }

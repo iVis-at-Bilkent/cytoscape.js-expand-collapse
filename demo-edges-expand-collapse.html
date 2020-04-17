@@ -270,31 +270,49 @@
 
 
 				document.getElementById("collapseSelectedEdges").addEventListener("click", function () {
-					//ur.do("collapseEdges", {
-					//	edges: cy.edges(":selected"),
-					//	options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
-					//});
-					api.collapseEdges(cy.edges(":selected"),{GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked});
+					ur.do("collapseEdges", {
+						edges: cy.edges(":selected"),
+						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+					});
+					//api.collapseEdges(cy.edges(":selected"),{GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked});
 				});
 
 				document.getElementById("expandSelectedEdges").addEventListener("click", function () {
-					api.expandEdges(cy.edges(":selected"),{GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked});
+					ur.do("expandEdges", {
+						edges: cy.edges(":selected"),
+						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+					});
+					//api.expandEdges(cy.edges(":selected"),{GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked});
 				});
 
 				document.getElementById("collapseAll").addEventListener("click", function () {
-					//api.collapseAll();
-					api.collapseAllEdges({GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
+					
+					ur.do("collapseAllEdges", {						
+						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+					});
+					//api.collapseAllEdges({GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
 				});
 				document.getElementById("collapseEdgesBetweenNodes").addEventListener("click", function () {
-					//api.collapseAll();
-					api.collapseEdgesBetweenNodes(cy.nodes(":selected"),{GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
+				
+					ur.do("collapseEdgesBetweenNodes", {
+						nodes: cy.nodes(":selected"),
+						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+					});
+					//api.collapseEdgesBetweenNodes(cy.nodes(":selected"),{GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
 				});
 				document.getElementById("expandEdgesBetweenNodes").addEventListener("click", function () {
-					//api.collapseAll();
-					api.expandEdgesBetweenNodes(cy.nodes(":selected"),{GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
+				
+					ur.do("expandEdgesBetweenNodes", {
+						nodes: cy.nodes(":selected"),
+						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+					});
+					//api.expandEdgesBetweenNodes(cy.nodes(":selected"),{GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
 				});
 				document.getElementById("expandAll").addEventListener("click", function () {
-					api.expandAllEdges();
+					ur.do("expandAllEdges", {						
+						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+					});
+					//api.expandAllEdges();
 				});
 				document.addEventListener('keydown', function (e){
 					if (e.ctrlKey && e.which == '90') {
@@ -312,8 +330,8 @@
 	<body>
 		
 		
-		<h1>cytoscape-expand-collapse edge demo</h1>
-
+		<h1>cytoscape-expand-collapse edge undoable demo </h1>
+		<b>CTRL+Z</b> to undo, <b>CTRL+Y</b> to redo<br/>
 				<br/>
 				<span class="list-item" id="collapseAll" style="cursor: pointer;color: darkslateblue">Collapse all Edges</span>
 				<br/>

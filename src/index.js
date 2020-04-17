@@ -308,6 +308,7 @@
         }.bind(this));
         result.oldEdges = result.oldEdges.add(edgesToExpand);
         result.edges = result.edges.add(this.expandEdges(edgesToExpand));
+        return result;
       };
       api.collapseAllEdges = function(opts){
         var options = getScratch(cy, 'options');
@@ -343,6 +344,7 @@
         var result = {edges:cy.collection(), oldEdges : cy.collection()};
         result.oldEdges = result.oldEdges.add(edges);
         result.edges = result.edges.add(this.expandEdges(edges));   
+        return result;
       };
 
      

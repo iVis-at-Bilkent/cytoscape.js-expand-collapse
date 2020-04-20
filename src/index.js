@@ -385,7 +385,7 @@
         expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
        
         edgeTypeInfo : "edgeType", //the name of the field that has the edge type, retrieved from edge.data(), can be a function
-        GroupEdgesOfSameTypeOnCollapse : false,
+        groupEdgesOfSameTypeOnCollapse: false,
         zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
       };
 

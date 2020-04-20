@@ -32,16 +32,14 @@ overflow:auto;
 
 .fleft {
     float:left; 
-    width: 15%;
+    width: 20%;
 	height:95%
-   
 }
 
 .fright {
 float: right;
-    
 	height:95%;
-    width: 85%;
+    width: 80%;
 }
 
 
@@ -65,7 +63,12 @@ float: right;
 		<script>
 			document.addEventListener('DOMContentLoaded', function(){
 				
-				
+				var styles = {
+					"type1" : {"color" : "#CFA79D", "arrowShape":"triangle"},
+					"type2" : {"color" : "#9DCFA7", "arrowShape":"triangle"},
+					"type3" : {"color" : "#A79DCF", "arrowShape":"triangle"},
+					
+				};
 				var cy = window.cy = cytoscape({
 					container: document.getElementById('cy'),
 					
@@ -96,10 +99,10 @@ float: right;
 							selector: 'edge[edgeType="type1"]',
 							style: {
 								'width':1,
-								'line-color': '#CFA79D',
+								'line-color': styles["type1"].color,
 								'curve-style': 'bezier',
-								'target-arrow-shape': 'triangle',
-								'target-arrow-color': '#CFA79D',
+								'target-arrow-shape': styles["type1"].arrowShape,
+								'target-arrow-color': styles["type1"].color,
 
 							
 							}
@@ -108,10 +111,10 @@ float: right;
 							selector: 'edge[edgeType="type2"]',
 							style: {
 								'width': 1,
-								'line-color': '#9DCFA7',
+								'line-color': styles["type2"].color,
 								'curve-style': 'bezier',
-								'target-arrow-shape': 'triangle',
-								'target-arrow-color': '#9DCFA7',
+								'target-arrow-shape': styles["type2"].arrowShape,
+								'target-arrow-color': styles["type2"].color,
 
 							
 							}
@@ -120,10 +123,10 @@ float: right;
 							selector: 'edge[edgeType="type3"]',
 							style: {
 								'width': 1,
-								'line-color': '#A79DCF',
+								'line-color': styles["type3"].color,
 								'curve-style': 'bezier',
-								'target-arrow-shape': 'triangle',
-								'target-arrow-color': '#A79DCF',
+								'target-arrow-shape': styles["type3"].arrowShape,
+								'target-arrow-color': styles["type3"].color,
 
 							
 							}
@@ -140,7 +143,7 @@ float: right;
 									if(edge.data("edgeType") == "unknown"){
 										return '#b3b3b3'
 									}else{
-										return edge.data("collapsedEdges")[0].css("line-color");
+										return styles[edge.data("edgeType")].color;//edge.data("collapsedEdges")[0].css("line-color");
 									}
 									
 				  				},	
@@ -149,7 +152,7 @@ float: right;
 									if(edge.data("edgeType") == "unknown"){
 										return "chevron"
 									}else{
-										return edge.data("collapsedEdges")[0].css("target-arrow-shape");
+										return styles[edge.data("edgeType")].arrowShape;//edge.data("collapsedEdges")[0].css("target-arrow-shape");
 									}
 								},
 							
@@ -159,7 +162,7 @@ float: right;
 									if(edge.data("edgeType") == "unknown"){
 										return '#b3b3b3'
 									}else{
-										return edge.data("collapsedEdges")[0].css("line-color");
+										return styles[edge.data("edgeType")].color;
 									}
 									
 								  },
@@ -168,7 +171,7 @@ float: right;
 									if(edge.data("edgeType") == "unknown"){
 										return '#b3b3b3'
 									}else{
-										return edge.data("collapsedEdges")[0].css("line-color");
+										return styles[edge.data("edgeType")].color;
 									}
 									
 								  },
@@ -178,7 +181,7 @@ float: right;
 									if(edge.data("edgeType") == "unknown"){
 										return "chevron"
 									}else{
-										return edge.data("collapsedEdges")[0].css("target-arrow-shape");
+										return  styles[edge.data("edgeType")].arrowShape;
 									}
 									
 								  },
@@ -187,7 +190,7 @@ float: right;
 									if(edge.data("edgeType") == "unknown"){
 										return '#b3b3b3'
 									}else{
-										return edge.data("collapsedEdges")[0].css("line-color");
+										return styles[edge.data("edgeType")].color;
 									}
 									
 								  },
@@ -293,18 +296,61 @@ float: right;
 						{
 			           		data: { id: 'e12', source: 'n4', target: 'n3',edgeType: "type3" } ,selectable:true  ,unselectable:false           
 						},
+						
 						{
-			           		data: { id: 'e13', source: 'n2', target: 'n5',edgeType: "type2" } ,selectable:true  ,unselectable:false           
+			           		data: { id: 'e13', source: 'n5', target: 'n1',edgeType: "type3" } ,selectable:true  ,unselectable:false           
 						},
 						{
-			           		data: { id: 'e14', source: 'n2', target: 'n5',edgeType: "type2" } ,selectable:true  ,unselectable:false           
+			           		data: { id: 'e14', source: 'n1', target: 'n5',edgeType: "type3" } ,selectable:true  ,unselectable:false           
 						},
 						{
-			           		data: { id: 'e15', source: 'n5', target: 'n1',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+			           		data: { id: 'e15', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
 						},
 						{
-			           		data: { id: 'e16', source: 'n1', target: 'n5',edgeType: "type3" } ,selectable:true  ,unselectable:false           
-			            },
+			           		data: { id: 'e16', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e17', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e18', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e19', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e20', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e21', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e22', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e23', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e16', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e24', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e25', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e26', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e27', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e28', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e29', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
 			            ]
 			          },
 				});
@@ -327,11 +373,13 @@ float: right;
 
 
 				document.getElementById("collapseSelectedEdges").addEventListener("click", function () {
+					
 					var edges =cy.edges(":selected");
+					
 					if(edges.length >= 2){
 						ur.do("collapseEdges", {
 						edges: edges,
-						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+						options : {groupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
 					});
 					}
 					
@@ -353,7 +401,7 @@ float: right;
 				document.getElementById("collapseAll").addEventListener("click", function () {
 					
 					ur.do("collapseAllEdges", {						
-						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+						options : {groupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
 					});
 					//api.collapseAllEdges({GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
 				});
@@ -362,7 +410,7 @@ float: right;
 					if(nodes.length >= 2){
 						ur.do("collapseEdgesBetweenNodes", {
 						nodes: nodes,
-						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+						options : {groupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
 					});
 					}
 				
@@ -420,9 +468,9 @@ float: right;
 				<span class="list-item" id="expandSelectedEdges" style="cursor: pointer; color: darkmagenta">Expand selected edges</span>
 				<br/>
 				<br/>
-				<span class="list-item" id="collapseEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Collapse edges between the selected nodes</span>
+				<span class="list-item" id="collapseEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Collapse edges between selected nodes</span>
 				<br/>
-				<span class="list-item" id="expandEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Expand edges between the selected nodes</span>
+				<span class="list-item" id="expandEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Expand edges between selected nodes</span>
 				<br/>
 				<br/>
 				<span style="margin-left: 10px; font-size: 16px;"><b>Options:</b></span>

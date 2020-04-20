@@ -682,12 +682,12 @@ return {
   },
   /*********** start section edge expand collapse  */
   collapseGivenEdges :  function(edges, options){
-    
+    edges.unselect();
     var nodes = edges.connectedNodes();   
     var edgesToCollapse = {};
    
     //group edges by type if this option is set to true
-    if(options.GroupEdgesOfSameTypeOnCollapse){      
+    if(options.groupEdgesOfSameTypeOnCollapse){      
       edges.forEach(function(edge){
         var edgeType = "unknown";
         if(options.edgeTypeInfo !== undefined){

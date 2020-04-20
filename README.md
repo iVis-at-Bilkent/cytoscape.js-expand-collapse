@@ -176,8 +176,8 @@ Notice that following events are performed for *each* node that is collapsed/exp
  * Collapsed edges data have 'directionType' field which can be either:
     - 'unidirection' if all the edges that are collapsed into this edges have the same direction (all have same source and same target) 
       or 
-    - 'bidirection' if  the edges that are collapsed into this edges different direction
- * Collapsed edges data have a field that hold the type, the field name is as defined in options but if it is not defined in options or was defined as a function it will be named 'edgeType'
+    - 'bidirection' if  the edges that are collapsed into this edges have different direction (different target and/or source)
+ * Collapsed edges data have a field that holds the type, the field name is as defined in options but if it is not defined in options or was defined as a function it will be named 'edgeType'
 
  
 

@@ -238,10 +238,8 @@
         var tempOptions = extendOptions(options, opts); 
         return expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
       };
-      api.expandEdges = function(edges , opts){        
-        if(edges === undefined) return;
-        var options = getScratch(cy, 'options');
-        var tempOptions = extendOptions(options, opts); 
+      api.expandEdges = function(edges){        
+        if(edges === undefined) return; 
         var result = cy.collection();
         if(typeof edges[Symbol.iterator] === 'function'){
           edges.forEach(function(edge){
@@ -337,9 +335,7 @@
         }.bind(this)); */
 
       }; 
-      api.expandAllEdges = function(opts){
-        var options = getScratch(cy, 'options');
-        var tempOptions = extendOptions(options, opts);
+      api.expandAllEdges = function(){       
         var edges = cy.edges(".cy-expand-collapse-collapsed-edge");
         var result = {edges:cy.collection(), oldEdges : cy.collection()};
         result.oldEdges = result.oldEdges.add(edges);

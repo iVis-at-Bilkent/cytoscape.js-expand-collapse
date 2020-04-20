@@ -3,7 +3,7 @@ cytoscape-expand-collapse
 
 ## Description
 
-This extension provides an interface to expand/collapse nodes for better management of complexity of Cytoscape.js compound graphs, distributed under [The MIT License](https://opensource.org/licenses/MIT).
+This extension provides an interface to expand/collapse nodes and edges for better management of complexity of Cytoscape.js compound graphs, distributed under [The MIT License](https://opensource.org/licenses/MIT).
 
 ![](https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/blob/master/expand-collapse-extension-demo.gif)
 
@@ -87,6 +87,24 @@ Disable rendering of visual cue.
 `api.getParent(nodeId)`
 Get the parent of a node given its node id. Useful to reach parent of a node removed because of collapse operation.
 
+`api.collapseEdges(edges,opts)`
+Collapse the given edges if all the given edges are between same two nodes and number of edges passed is at least 2. Does nothing otherwise.
+
+` api.expandEdges(edges){ `
+Expand the given collapsed edges
+
+`api.collapseEdgesBetweenNodes(nodes, opts)`
+Collapse all edges between the set of given nodes. 
+
+`api.expandEdgesBetweenNodes(nodes)`
+Expand all collapsed edges between the set of given nodes
+
+`api.collapseAllEdges(opts)`
+Collapse all edges in the graph.
+
+`api.expandAllEdges()`
+Expand all edges in the graph.
+
 ## Events
 Notice that following events are performed for *each* node that is collapsed/expanded. Also, notice that any post-processing layout is performed *after* the event.
 
@@ -117,6 +135,8 @@ Notice that following events are performed for *each* node that is collapsed/exp
       expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
       collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
       expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
+      edgeTypeInfo : "edgeType", //the name of the field that has the edge type, retrieved from edge.data(), can be a function, if reading the field returns undefined the collapsed edge type will be "unknown"
+      GroupEdgesOfSameTypeOnCollapse : false, //if true, the edges to be collapsed will be grouped according to their types, and the created collapsed edges will have same type as their group. if false the collapased edge will have "unknown" type.
       zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
     };
 ```
@@ -134,10 +154,31 @@ Notice that following events are performed for *each* node that is collapsed/exp
 
 `ur.do("expandAll", { options: opts })` Equivalent of cy.expandAll(opts)
 
+`ur.do("collapseEdges", { edges: eles, options: opts})` Equivalent of eles.collapseEdges(opts)
+
+`ur.do("expandEdges", { edges: eles})` Equivalent of eles.expandEdges()
+
+`ur.do("collapseEdgesBetweenNodes", { nodes: eles, options: opts})` Equivalent of eles.collapseEdgesBetweenNodes(opts)
+
+`ur.do("expandEdgesBetweenNodes", { nodes: eles})` Equivalent of eles.expandEdgesBetweenNodes()
+
+`ur.do("collapseAllEdges", {options: opts)}` Equivalent of cy.collapseAllEdges(opts)
+
+`ur.do("expandAllEdges")`Equivalent of cy.expandAllEdges()
+
+
 ## Elements Style
 
  * Collapsed nodes have 'cy-expand-collapse-collapsed-node' class.
- * Meta edges have 'cy-expand-collapse-meta-edge' class.
+ * Meta edges (edges from/to collapsed nodes) have 'cy-expand-collapse-meta-edge' class.
+ * Collapsed edges have 'cy-expand-collapse-collapsed-edge' class.
+ * Collapsed edges data have 'directionType' field which can be either:
+    - 'unidirection' if all the edges that are collapsed into this edges have the same direction (all have same source and same target) 
+      or 
+    - 'bidirection' if  the edges that are collapsed into this edges different direction
+ * Collapsed edges data have a field that hold the type, the field name is as defined in options but if it is not defined in options or was defined as a function it will be named 'edgeType'
+
+ 
 
 ## Dependencies
 

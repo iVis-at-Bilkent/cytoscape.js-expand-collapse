@@ -694,14 +694,16 @@ return {
           edgeType = options.edgeTypeInfo instanceof Function ? options.edgeTypeInfo.call(edge) : edge.data()[options.edgeTypeInfo];
         }
         if(edgesToCollapse.hasOwnProperty(edgeType)){
+          edgesToCollapse[edgeType].edges = edgesToCollapse[edgeType].edges.add(edge);
 
-          edgesToCollapse[edgeType].edges.push(edge);
-
+          
           if(edgesToCollapse[edgeType].directionType == "unidirection" && (edgesToCollapse[edgeType].source != edge.source().id() || edgesToCollapse[edgeType].target != edge.target().id())){
             edgesToCollapse[edgeType].directionType = "bidirection";  
           }         
         }else{
-          edgesToCollapse[edgeType] = {edges : [].concat([edge]) , directionType : "unidirection", source: edge.source().id(), target : edge.target().id() }
+          var edgesX = cy.collection();
+          edgesX = edgesX.add(edge);
+          edgesToCollapse[edgeType] = {edges : edgesX , directionType : "unidirection", source: edge.source().id(), target : edge.target().id() }
           
         }
       });
@@ -717,30 +719,37 @@ return {
 
     var newEdges = [];
     for(const edgeGroupType in edgesToCollapse){
-      var newEdge = {};
-      newEdge.group = "edges";
-      newEdge.data = {};
-      newEdge.data.source = edgesToCollapse[edgeGroupType].source;
-      newEdge.data.target = edgesToCollapse[edgeGroupType].target;
-      newEdge.data.id = "collapsedEdge_"+nodes[0].id() + "_"+nodes[1].id()+"_"+edgeGroupType+ "_"+ Math.floor(Math.random() * Date.now());
-
-      newEdge.data.collapsedEdges = [];
-      edgesToCollapse[edgeGroupType].edges.forEach(function(edge){
-        newEdge.data.collapsedEdges.push({data: edge.data(),classes:edge.classes()});
-      });
+      if(edgesToCollapse[edgeGroupType].edges.length >=2){
+        var newEdge = {};
+        newEdge.group = "edges";
+        newEdge.data = {};
+        newEdge.data.source = edgesToCollapse[edgeGroupType].source;
+        newEdge.data.target = edgesToCollapse[edgeGroupType].target;
+        newEdge.data.id = "collapsedEdge_"+nodes[0].id() + "_"+nodes[1].id()+"_"+edgeGroupType+ "_"+ Math.floor(Math.random() * Date.now());
+        
+  
+        newEdge.data.collapsedEdges = cy.collection();
+        edgesToCollapse[edgeGroupType].edges.forEach(function(edge){
+          //newEdge.data.collapsedEdges.push({data: edge.data(),classes:edge.classes()});
+          newEdge.data.collapsedEdges = newEdge.data.collapsedEdges.add(edge);
+        });
+       
+        var edgesTypeField = "edgeType";
+          if(options.edgeTypeInfo !== undefined){
+            edgesTypeField = options.edgeTypeInfo instanceof Function ? edgeTypeField : options.edgeTypeInfo;
+          }
+        newEdge.data[edgesTypeField] = edgeGroupType;
      
-      var edgesTypeField = "edgeType";
-        if(options.edgeTypeInfo !== undefined){
-          edgesTypeField = options.edgeTypeInfo instanceof Function ? edgeTypeField : options.edgeTypeInfo;
-        }
-      newEdge.data[edgesTypeField] = edgeGroupType;
-      newEdge.data["directionType"] = edgesToCollapse[edgeGroupType].directionType;
-      newEdge.classes = "cy-expand-collapse-collapsed-edge";
-     
-      newEdges.push(newEdge);
+        newEdge.data["directionType"] = edgesToCollapse[edgeGroupType].directionType;
+        newEdge.classes = "cy-expand-collapse-collapsed-edge";
+       
+        newEdges.push(newEdge);
+        cy.remove(edgesToCollapse[edgeGroupType].edges);
+      }
+      
     }
    
-    cy.remove(edges);
+   
      var result = cy.add(newEdges);
     
     return result;
@@ -752,12 +761,16 @@ return {
         if(edges !== undefined && edges.length > 0){
           cy.remove(edge);
           var restoredEdges = [];
-          edges.forEach(function(restoredEdge){
-            restoredEdge.group = "edges";
-            restoredEdges.push(restoredEdge);
-          });
-          return cy.add(restoredEdges);
+          /* edges.forEach(function(restoredEdge){
+            //restoredEdge.group = "edges";
+            //restoredEdges.push(restoredEdge);
+          }); */
+          return cy.add(edges);
+         //edges.restore();
+        //return edges;
 
+        }else{
+          return cy.collection()
         }
       
   },

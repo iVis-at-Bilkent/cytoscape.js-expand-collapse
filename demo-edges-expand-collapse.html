@@ -24,12 +24,31 @@
 				font-size: 14px;
 			}
 
+			.wrap {
+width: 100%;
+
+overflow:auto;
+}
+
+.fleft {
+    float:left; 
+    width: 15%;
+	height:95%
+   
+}
+
+.fright {
+float: right;
+    
+	height:95%;
+    width: 85%;
+}
+
 
 			#cy {
 				z-index: 999;
-				 width: 100%;
-				height: 80%;
-				float: center; 
+				
+				
 			}
 
 			h1 {
@@ -45,6 +64,7 @@
 
 		<script>
 			document.addEventListener('DOMContentLoaded', function(){
+				
 				
 				var cy = window.cy = cytoscape({
 					container: document.getElementById('cy'),
@@ -73,72 +93,109 @@
 					
 
 						{
-							selector: 'edge[edgeType="type1"][^directionType]',
+							selector: 'edge[edgeType="type1"]',
 							style: {
 								'width':1,
-								'line-color': '#CC99FF',
+								'line-color': '#CFA79D',
 								'curve-style': 'bezier',
 								'target-arrow-shape': 'triangle',
-								'target-arrow-color': '#CC99FF',
+								'target-arrow-color': '#CFA79D',
 
 							
 							}
 						},
 						{
-							selector: 'edge[edgeType="type2"][^directionType]',
+							selector: 'edge[edgeType="type2"]',
 							style: {
 								'width': 1,
-								'line-color': '#99FFCC',
+								'line-color': '#9DCFA7',
 								'curve-style': 'bezier',
 								'target-arrow-shape': 'triangle',
-								'target-arrow-color': '#99FFCC',
+								'target-arrow-color': '#9DCFA7',
 
 							
 							}
 						},
 						{
-							selector: 'edge[edgeType="type3"][^directionType]',
+							selector: 'edge[edgeType="type3"]',
 							style: {
 								'width': 1,
-								'line-color': '#FFFF99',
+								'line-color': '#A79DCF',
 								'curve-style': 'bezier',
 								'target-arrow-shape': 'triangle',
-								'target-arrow-color': '#FFFF99',
+								'target-arrow-color': '#A79DCF',
 
 							
 							}
 						},
 
-						
-						 {
-							selector: 'edge.cy-expand-collapse-collapsed-edge[directionType="unidirection"]',
-							style: {
-								'width': 1,
-								'line-color': '#000000',	
-								'line-style' :'dotted'		,					
-								'target-arrow-shape' : "chevron",
+						{
+							selector: 'edge.cy-expand-collapse-collapsed-edge',
+							style: 						
+							{
+								'width': function(edge){
+									return 1 + Math.round(((Math.log(edge.data("collapsedEdges").length) / Math.log(3) + Number.EPSILON)) * 100) / 100;
+				  				},
+								'line-color':function(edge){
+									if(edge.data("edgeType") == "unknown"){
+										return '#b3b3b3'
+									}else{
+										return edge.data("collapsedEdges")[0].css("line-color");
+									}
+									
+				  				},	
+								'line-style' :'dashed'		,					
+								'target-arrow-shape' : function(edge){
+									if(edge.data("edgeType") == "unknown"){
+										return "chevron"
+									}else{
+										return edge.data("collapsedEdges")[0].css("target-arrow-shape");
+									}
+								},
 							
 								'curve-style': 'bezier',
-								'target-arrow-color': '#000000',
+
+								'target-arrow-color':function(edge){
+									if(edge.data("edgeType") == "unknown"){
+										return '#b3b3b3'
+									}else{
+										return edge.data("collapsedEdges")[0].css("line-color");
+									}
+									
+								  },
+								  
+								  'target-arrow-color':function(edge){
+									if(edge.data("edgeType") == "unknown"){
+										return '#b3b3b3'
+									}else{
+										return edge.data("collapsedEdges")[0].css("line-color");
+									}
+									
+								  },
+
+								  'source-arrow-shape':function(edge){
+									if(edge.data("directionType") == "unidirection" ) return undefined;
+									if(edge.data("edgeType") == "unknown"){
+										return "chevron"
+									}else{
+										return edge.data("collapsedEdges")[0].css("target-arrow-shape");
+									}
+									
+								  },
+								  'source-arrow-color':function(edge){
+									if(edge.data("directionType") == "unidirection" ) return undefined;
+									if(edge.data("edgeType") == "unknown"){
+										return '#b3b3b3'
+									}else{
+										return edge.data("collapsedEdges")[0].css("line-color");
+									}
+									
+								  },
 								
-								'arrow-scale' : 1
 							}
-						}, 
-						{
-							selector: 'edge.cy-expand-collapse-collapsed-edge[directionType="bidirection"]',
-							style: {
-								'width': 1,
-								'line-color': '#000000',	
-								'line-style' :'dotted'		,					
-								//'target-arrow-shape' : "chevron",
-								//'source-arrow-shape' : "chevron",
-								'curve-style': 'bezier',
-								//'target-arrow-color': '#000000',
-								//'source-arrow-color': '#000000',
-								'arrow-scale' : 0.5
-							}
-						}, 
-
+						}
+						
+						,
 						{
 							selector: 'node:selected',
 							style: {
@@ -270,18 +327,26 @@
 
 
 				document.getElementById("collapseSelectedEdges").addEventListener("click", function () {
-					ur.do("collapseEdges", {
-						edges: cy.edges(":selected"),
+					var edges =cy.edges(":selected");
+					if(edges.length >= 2){
+						ur.do("collapseEdges", {
+						edges: edges,
 						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
 					});
+					}
+					
 					//api.collapseEdges(cy.edges(":selected"),{GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked});
 				});
 
 				document.getElementById("expandSelectedEdges").addEventListener("click", function () {
-					ur.do("expandEdges", {
-						edges: cy.edges(":selected"),
-						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+					var edges =cy.edges(":selected");
+					if(edges.length > 0){
+						ur.do("expandEdges", {
+						edges: edges
+						
 					});
+					}
+					
 					//api.expandEdges(cy.edges(":selected"),{GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked});
 				});
 
@@ -293,25 +358,35 @@
 					//api.collapseAllEdges({GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
 				});
 				document.getElementById("collapseEdgesBetweenNodes").addEventListener("click", function () {
-				
-					ur.do("collapseEdgesBetweenNodes", {
-						nodes: cy.nodes(":selected"),
+					var nodes = cy.nodes(":selected");
+					if(nodes.length >= 2){
+						ur.do("collapseEdgesBetweenNodes", {
+						nodes: nodes,
 						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
 					});
+					}
+				
 					//api.collapseEdgesBetweenNodes(cy.nodes(":selected"),{GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
 				});
 				document.getElementById("expandEdgesBetweenNodes").addEventListener("click", function () {
-				
-					ur.do("expandEdgesBetweenNodes", {
-						nodes: cy.nodes(":selected"),
-						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+					var nodes = cy.nodes(":selected");
+					if(nodes.length >= 2){
+						ur.do("expandEdgesBetweenNodes", {
+						nodes: nodes,
+						
 					});
+					}
+
+					
 					//api.expandEdgesBetweenNodes(cy.nodes(":selected"),{GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
 				});
 				document.getElementById("expandAll").addEventListener("click", function () {
-					ur.do("expandAllEdges", {						
-						options : {GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
+					if(cy.edges(".cy-expand-collapse-collapsed-edge").length > 0){
+						ur.do("expandAllEdges", {						
+						
 					});
+					}
+					
 					//api.expandAllEdges();
 				});
 				document.addEventListener('keydown', function (e){
@@ -331,16 +406,18 @@
 		
 		
 		<h1>cytoscape-expand-collapse edge undoable demo </h1>
-		<b>CTRL+Z</b> to undo, <b>CTRL+Y</b> to redo<br/>
+		<div class="wrap">
+			<div class="fleft">
+				<b>CTRL+Z</b> to undo, <b>CTRL+Y</b> to redo<br/>
 				<br/>
-				<span class="list-item" id="collapseAll" style="cursor: pointer;color: darkslateblue">Collapse all Edges</span>
+				<span class="list-item" id="collapseAll" style="cursor: pointer;color: darkslateblue">Collapse all edges</span>
 				<br/>
 				<span class="list-item" id="expandAll" style="cursor: pointer; color: darkslateblue">Expand all edges</span>
 				<br/>	
 				<br/>				   
 				<span class="list-item" id="collapseSelectedEdges" style="cursor: pointer; color: darkmagenta">Collapse selected edges</span>
 				<br/>
-				<span class="list-item" id="expandSelectedEdges" style="cursor: pointer; color: darkmagenta">Expand selected Edges</span>
+				<span class="list-item" id="expandSelectedEdges" style="cursor: pointer; color: darkmagenta">Expand selected edges</span>
 				<br/>
 				<br/>
 				<span class="list-item" id="collapseEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Collapse edges between the selected nodes</span>
@@ -352,9 +429,15 @@
 				<br/>
 				<input id="groupEdges" type="checkbox" /><span> Group edges of similar type</span>
 			
+			</div>
+			<div class="fright" id="cy"></div>
+			
+		</div>
+		
+		
 		
 			
-				<div  id="cy"></div>
+				
 			
 			
 		

@@ -5,7 +5,11 @@ cytoscape-expand-collapse
 
 This extension provides an interface to expand/collapse nodes and edges for better management of complexity of Cytoscape.js compound graphs, distributed under [The MIT License](https://opensource.org/licenses/MIT).
 
-![](https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/blob/master/expand-collapse-extension-demo.gif) ![](https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/blob/unstable/expand-collapse-extension-edge-demo.gif)
+<p align="center">
+  <img src="expand-collapse-extension-demo.gif" height="240"/>
+  &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+  <img src="expand-collapse-extension-edge-demo.gif" height="240"/>
+</p>
 
 Please cite the following paper when using this extension:
 
@@ -136,8 +140,8 @@ Notice that following events are performed for *each* node that is collapsed/exp
       expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
       collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
       expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
-      edgeTypeInfo: "edgeType", //the name of the field that has the edge type, retrieved from edge.data(), can be a function, if reading the field returns undefined the collapsed edge type will be "unknown"
-      groupEdgesOfSameTypeOnCollapse : false, //if true, the edges to be collapsed will be grouped according to their types, and the created collapsed edges will have same type as their group. if false the collapased edge will have "unknown" type.
+      edgeTypeInfo: "edgeType", // the name of the field that has the edge type, retrieved from edge.data(), can be a function, if reading the field returns undefined the collapsed edge type will be "unknown"
+      groupEdgesOfSameTypeOnCollapse : false, // if true, the edges to be collapsed will be grouped according to their types, and the created collapsed edges will have same type as their group. if false the collapased edge will have "unknown" type.
       zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
     };
 ```

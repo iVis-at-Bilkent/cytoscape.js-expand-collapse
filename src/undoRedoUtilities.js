@@ -89,8 +89,11 @@ module.exports = function (cy, api) {
       result.firstTime = false;
     }else{
       result.edges = args.oldEdges;
-      cy.remove(args.edges);
-      cy.add(args.oldEdges);
+      if(args.edges.length > 0 && args.oldEdges.length > 0){
+        cy.remove(args.edges);
+        cy.add(args.oldEdges);
+      }
+     
      
     }
 
@@ -108,8 +111,11 @@ module.exports = function (cy, api) {
     }else{
      result.edges = args.oldEdges;
      result.oldEdges = args.edges;
-     cy.remove(args.edges);
-     cy.add(args.oldEdges);
+     if(args.edges.length > 0 && args.oldEdges.length > 0){
+      cy.remove(args.edges);
+      cy.add(args.oldEdges);
+      }
+    
     }
  
     return result;
@@ -127,8 +133,11 @@ module.exports = function (cy, api) {
    }else{
     result.edges = args.oldEdges;
     result.oldEdges = args.edges;
-    cy.remove(args.edges);
-    cy.add(args.oldEdges);
+    if(args.edges.length > 0  && args.oldEdges.length > 0){
+      cy.remove(args.edges);
+      cy.add(args.oldEdges);
+      }
+   
    }
 
    return result;
@@ -144,8 +153,11 @@ module.exports = function (cy, api) {
     
    }else{
     result.edges = args.oldEdges;
-    cy.remove(args.edges);
-    cy.add(args.oldEdges);
+    if(args.edges.length > 0 && args.oldEdges.length > 0){
+      cy.remove(args.edges);
+      cy.add(args.oldEdges);
+      }
+  
    }
 
    return result;
@@ -162,8 +174,11 @@ module.exports = function (cy, api) {
   }else{
    result.edges = args.oldEdges;
    result.oldEdges = args.edges;
-   cy.remove(args.edges);
-   cy.add(args.oldEdges);
+   if(args.edges.length > 0 && args.oldEdges.length > 0){
+    cy.remove(args.edges);
+    cy.add(args.oldEdges);
+    }
+  
   }
 
   return result;
@@ -180,8 +195,11 @@ module.exports = function (cy, api) {
   }else{
    result.edges = args.oldEdges;
    result.oldEdges = args.edges;
-   cy.remove(args.edges);
-   cy.add(args.oldEdges);
+   if(args.edges.length > 0 && args.oldEdges.length > 0){
+    cy.remove(args.edges);
+    cy.add(args.oldEdges);
+    }
+   
   }
 
   return result;

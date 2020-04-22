@@ -243,19 +243,19 @@
         var result =    {edges: cy.collection(), oldEdges: cy.collection()}    
         if(edges === undefined) return result; 
         
-        if(typeof edges[Symbol.iterator] === 'function'){//collection of edges is passed
+        //if(typeof edges[Symbol.iterator] === 'function'){//collection of edges is passed
           edges.forEach(function(edge){
             var operationResult = expandCollapseUtilities.expandEdge(edge);
             result.edges = result.edges.add(operationResult.edges);
             result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
            
           });
-        }else{//one edge passed
+       /*  }else{//one edge passed
           var operationResult = expandCollapseUtilities.expandEdge(edges);
           result.edges = result.edges.add(operationResult.edges);
           result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
           
-        }
+        } */
 
         return result;
        

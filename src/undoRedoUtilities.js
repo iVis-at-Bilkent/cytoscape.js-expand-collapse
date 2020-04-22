@@ -81,13 +81,15 @@ module.exports = function (cy, api) {
     var options = args.options;
     var edges = args.edges;
     var result = {};
-    result.oldEdges = edges;
+    
     result.options = options;
     if(args.firstTime){
-      result.edges = api.collapseEdges(edges,options);
-     
+      var collapseResult = api.collapseEdges(edges,options);    
+      result.edges = collapseResult.edges;
+      result.oldEdges = collapseResult.oldEdges;  
       result.firstTime = false;
     }else{
+      result.oldEdges = edges;
       result.edges = args.oldEdges;
       if(args.edges.length > 0 && args.oldEdges.length > 0){
         cy.remove(args.edges);
@@ -145,13 +147,16 @@ module.exports = function (cy, api) {
  function expandEdges(args){   
    var options = args.options;
    var result ={};
-   result.oldEdges = args.edges;
+  
    result.options = options;
    if(args.firstTime){
-    result.edges = api.expandEdges(args.edges);
+     var expandResult = api.expandEdges(args.edges);
+    result.edges = expandResult.edges;
+    result.oldEdges = expandResult.oldEdges;
     result.firstTime = false;
     
    }else{
+    result.oldEdges = args.edges;
     result.edges = args.oldEdges;
     if(args.edges.length > 0 && args.oldEdges.length > 0){
       cy.remove(args.edges);

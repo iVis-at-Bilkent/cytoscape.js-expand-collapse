@@ -231,22 +231,30 @@
         }
       };
 
-      api.collapseEdges = function(edges,opts){        
-        if(edges.length < 2) return cy.collection();
-        if(edges.connectedNodes().length > 2) return cy.collection();
+      api.collapseEdges = function(edges,opts){     
+        var result =    {edges: cy.collection(), oldEdges: cy.collection()};
+        if(edges.length < 2) return result ;
+        if(edges.connectedNodes().length > 2) return result;
         var options = getScratch(cy, 'options');
         var tempOptions = extendOptions(options, opts); 
         return expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
       };
-      api.expandEdges = function(edges){        
-        if(edges === undefined) return; 
-        var result = cy.collection();
-        if(typeof edges[Symbol.iterator] === 'function'){
+      api.expandEdges = function(edges){    
+        var result =    {edges: cy.collection(), oldEdges: cy.collection()}    
+        if(edges === undefined) return result; 
+        
+        if(typeof edges[Symbol.iterator] === 'function'){//collection of edges is passed
           edges.forEach(function(edge){
-            result = result.add(expandCollapseUtilities.expandEdge(edge));
+            var operationResult = expandCollapseUtilities.expandEdge(edge);
+            result.edges = result.edges.add(operationResult.edges);
+            result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
+           
           });
-        }else{
-          result = result.add(expandCollapseUtilities.expandEdge(edge));;
+        }else{//one edge passed
+          var operationResult = expandCollapseUtilities.expandEdge(edges);
+          result.edges = result.edges.add(operationResult.edges);
+          result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
+          
         }
 
         return result;
@@ -273,8 +281,9 @@
           var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');     
           
           if(edges.length >= 2){
-            result.oldEdges = result.oldEdges.add(edges);
-            result.edges = result.edges.add(expandCollapseUtilities.collapseGivenEdges(edges, tempOptions));
+            var operationResult = expandCollapseUtilities.collapseGivenEdges(edges, tempOptions)
+            result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
+            result.edges = result.edges.add(operationResult.edges);
           }    
          
         }.bind(this));       
@@ -297,16 +306,16 @@
             })
           return pairs;
         }
-        var result = {edges: cy.collection(), oldEdges: cy.collection()}   ;     
+        //var result = {edges: cy.collection(), oldEdges: cy.collection()}   ;     
         var nodesPairs = pairwise(nodes);
         nodesPairs.forEach(function(nodePair){
           var edges = nodePair[0].connectedEdges('.cy-expand-collapse-collapsed-edge[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');  
           edgesToExpand = edgesToExpand.union(edges);         
           
         }.bind(this));
-        result.oldEdges = result.oldEdges.add(edgesToExpand);
-        result.edges = result.edges.add(this.expandEdges(edgesToExpand));
-        return result;
+        //result.oldEdges = result.oldEdges.add(edgesToExpand);
+        //result.edges = result.edges.add(this.expandEdges(edgesToExpand));
+        return this.expandEdges(edgesToExpand);
       };
       api.collapseAllEdges = function(opts){
         var options = getScratch(cy, 'options');
@@ -338,8 +347,9 @@
       api.expandAllEdges = function(){       
         var edges = cy.edges(".cy-expand-collapse-collapsed-edge");
         var result = {edges:cy.collection(), oldEdges : cy.collection()};
-        result.oldEdges = result.oldEdges.add(edges);
-        result.edges = result.edges.add(this.expandEdges(edges));   
+        var operationResult = this.expandEdges(edges);
+        result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
+        result.edges = result.edges.add(operationResult.edges);   
         return result;
       };
 

@@ -717,9 +717,11 @@ return {
       }     
     }
 
+    var result = {edges: cy.collection(), oldEdges: cy.collection()}
     var newEdges = [];
     for(const edgeGroupType in edgesToCollapse){
       if(edgesToCollapse[edgeGroupType].edges.length >=2){
+        result.oldEdges = result.oldEdges.add(edgesToCollapse[edgeGroupType].edges);
         var newEdge = {};
         newEdge.group = "edges";
         newEdge.data = {};
@@ -750,28 +752,30 @@ return {
     }
    
    
-     var result = cy.add(newEdges);
+    result.edges = cy.add(newEdges);
     
     return result;
     
   },
 
   expandEdge : function(edge){
+    edge.unselect();
+    var result = {edges: cy.collection(), oldEdges:cy.collection()}
     var edges = edge.data().collapsedEdges;        
         if(edges !== undefined && edges.length > 0){
+          result.oldEdges = result.oldEdges.add(edge);
           cy.remove(edge);
           var restoredEdges = [];
           /* edges.forEach(function(restoredEdge){
             //restoredEdge.group = "edges";
             //restoredEdges.push(restoredEdge);
           }); */
-          return cy.add(edges);
+          result.edges = cy.add(edges);
          //edges.restore();
         //return edges;
 
-        }else{
-          return cy.collection()
         }
+        return result;
       
   },
 

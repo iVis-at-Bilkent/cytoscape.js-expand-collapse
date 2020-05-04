@@ -683,6 +683,7 @@ return {
   /* -------------------------------------- start section edge expand collapse -------------------------------------- */
   collapseGivenEdges: function (edges, options) {
     edges.unselect();
+    edges.trigger('expandcollapse.beforeCollapseEdge');
     var nodes = edges.connectedNodes();
     var edgesToCollapse = {};
     //group edges by type if this option is set to true
@@ -747,39 +748,29 @@ return {
         newEdges.push(newEdge);
         cy.remove(edgesToCollapse[edgeGroupType].edges);
       }
-
     }
 
-
     result.edges = cy.add(newEdges);
+    edges.trigger('expandcollapse.afterCollapseEdge');
     return result;
   },
 
   expandEdge: function (edge) {
     edge.unselect();
+    edge.trigger('expandcollapse.beforeExpandEdge');
     var result = { edges: cy.collection(), oldEdges: cy.collection() }
     var edges = edge.data().collapsedEdges;
     if (edges !== undefined && edges.length > 0) {
       result.oldEdges = result.oldEdges.add(edge);
       cy.remove(edge);
-      var restoredEdges = [];
-      /* edges.forEach(function(restoredEdge){
-        //restoredEdge.group = "edges";
-        //restoredEdges.push(restoredEdge);
-      }); */
       result.edges = cy.add(edges);
-      //edges.restore();
-      //return edges;
-
     }
+    edge.trigger('expandcollapse.afterExpandEdge');
     return result;
-
   },
 
   //if the edges are only between two nodes (valid for collpasing) returns the two nodes else it returns false
   isValidEdgesForCollapse: function (edges) {
-
-
     var endPoints = this.getEdgesDistinctEndPoints(edges);
     if (endPoints.length != 2) {
       return false;
@@ -794,18 +785,14 @@ return {
     edges.forEach(function (edge) {
       if (!this.containsElement(endPoints, edge.source())) {
         endPoints.push(edge.source());
-
       }
-
       if (!this.containsElement(endPoints, edge.target())) {
         endPoints.push(edge.target());
 
       }
-
     }.bind(this));
 
     return endPoints;
-
   },
 
   //function to check if a list of elements contains the given element by looking at id()

@@ -686,7 +686,7 @@ return {
     edges.trigger('expandcollapse.beforeCollapseEdge');
     var nodes = edges.connectedNodes();
     var edgesToCollapse = {};
-    //group edges by type if this option is set to true
+    // group edges by type if this option is set to true
     if (options.groupEdgesOfSameTypeOnCollapse) {
       edges.forEach(function (edge) {
         var edgeType = "unknown";
@@ -696,7 +696,6 @@ return {
         if (edgesToCollapse.hasOwnProperty(edgeType)) {
           edgesToCollapse[edgeType].edges = edgesToCollapse[edgeType].edges.add(edge);
 
-
           if (edgesToCollapse[edgeType].directionType == "unidirection" && (edgesToCollapse[edgeType].source != edge.source().id() || edgesToCollapse[edgeType].target != edge.target().id())) {
             edgesToCollapse[edgeType].directionType = "bidirection";
           }
@@ -704,7 +703,6 @@ return {
           var edgesX = cy.collection();
           edgesX = edgesX.add(edge);
           edgesToCollapse[edgeType] = { edges: edgesX, directionType: "unidirection", source: edge.source().id(), target: edge.target().id() }
-
         }
       });
     } else {
@@ -720,34 +718,35 @@ return {
     var result = { edges: cy.collection(), oldEdges: cy.collection() }
     var newEdges = [];
     for (const edgeGroupType in edgesToCollapse) {
-      if (edgesToCollapse[edgeGroupType].edges.length >= 2) {
-        result.oldEdges = result.oldEdges.add(edgesToCollapse[edgeGroupType].edges);
-        var newEdge = {};
-        newEdge.group = "edges";
-        newEdge.data = {};
-        newEdge.data.source = edgesToCollapse[edgeGroupType].source;
-        newEdge.data.target = edgesToCollapse[edgeGroupType].target;
-        newEdge.data.id = "collapsedEdge_" + nodes[0].id() + "_" + nodes[1].id() + "_" + edgeGroupType + "_" + Math.floor(Math.random() * Date.now());
-
-
-        newEdge.data.collapsedEdges = cy.collection();
-        edgesToCollapse[edgeGroupType].edges.forEach(function (edge) {
-          //newEdge.data.collapsedEdges.push({data: edge.data(),classes:edge.classes()});
-          newEdge.data.collapsedEdges = newEdge.data.collapsedEdges.add(edge);
-        });
-
-        var edgesTypeField = "edgeType";
-        if (options.edgeTypeInfo !== undefined) {
-          edgesTypeField = options.edgeTypeInfo instanceof Function ? edgeTypeField : options.edgeTypeInfo;
-        }
-        newEdge.data[edgesTypeField] = edgeGroupType;
-
-        newEdge.data["directionType"] = edgesToCollapse[edgeGroupType].directionType;
-        newEdge.classes = "cy-expand-collapse-collapsed-edge";
-
-        newEdges.push(newEdge);
-        cy.remove(edgesToCollapse[edgeGroupType].edges);
+      if (edgesToCollapse[edgeGroupType].edges.length < 2) {
+        continue;
       }
+      result.oldEdges = result.oldEdges.add(edgesToCollapse[edgeGroupType].edges);
+      var newEdge = {};
+      newEdge.group = "edges";
+      newEdge.data = {};
+      newEdge.data.source = edgesToCollapse[edgeGroupType].source;
+      newEdge.data.target = edgesToCollapse[edgeGroupType].target;
+      newEdge.data.id = "collapsedEdge_" + nodes[0].id() + "_" + nodes[1].id() + "_" + edgeGroupType + "_" + Math.floor(Math.random() * Date.now());
+      newEdge.data.collapsedEdges = cy.collection();
+
+      edgesToCollapse[edgeGroupType].edges.forEach(function (edge) {
+        newEdge.data.collapsedEdges = newEdge.data.collapsedEdges.add(edge);
+      });
+
+      newEdge.data.collapsedEdges = this.check4nestedCollapse(newEdge.data.collapsedEdges, options);
+
+      var edgesTypeField = "edgeType";
+      if (options.edgeTypeInfo !== undefined) {
+        edgesTypeField = options.edgeTypeInfo instanceof Function ? edgeTypeField : options.edgeTypeInfo;
+      }
+      newEdge.data[edgesTypeField] = edgeGroupType;
+
+      newEdge.data["directionType"] = edgesToCollapse[edgeGroupType].directionType;
+      newEdge.classes = "cy-expand-collapse-collapsed-edge";
+
+      newEdges.push(newEdge);
+      cy.remove(edgesToCollapse[edgeGroupType].edges);
     }
 
     result.edges = cy.add(newEdges);
@@ -755,11 +754,28 @@ return {
     return result;
   },
 
+  check4nestedCollapse: function(edges2collapse, options){
+    if (options.allowNestedEdgeCollapse) {
+      return edges2collapse;
+    }
+    let r = cy.collection();
+    for (let i = 0; i < edges2collapse.length; i++) {
+      let curr = edges2collapse[i];
+      let collapsedEdges = curr.data('collapsedEdges');
+      if (collapsedEdges && collapsedEdges.length > 0) {
+        r = r.add(collapsedEdges);
+      } else {
+        r = r.add(curr);
+      }
+    }
+    return r;
+  },
+
   expandEdge: function (edge) {
     edge.unselect();
     edge.trigger('expandcollapse.beforeExpandEdge');
     var result = { edges: cy.collection(), oldEdges: cy.collection() }
-    var edges = edge.data().collapsedEdges;
+    var edges = edge.data('collapsedEdges');
     if (edges !== undefined && edges.length > 0) {
       result.oldEdges = result.oldEdges.add(edge);
       cy.remove(edge);

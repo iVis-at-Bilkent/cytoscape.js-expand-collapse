@@ -373,79 +373,72 @@ float: right;
 
 
 				document.getElementById("collapseSelectedEdges").addEventListener("click", function () {
-					
-					var edges =cy.edges(":selected");
-					
-					if(edges.length >= 2){
-						ur.do("collapseEdges", {
-						edges: edges,
-						options : {groupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
-					});
-					}
-					
-					//api.collapseEdges(cy.edges(":selected"),{GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked});
+          var edges = cy.edges(":selected");
+
+          if (edges.length >= 2) {
+            const groupEdgesOfSameTypeOnCollapse = document.getElementById('groupEdges').checked;
+            const allowNestedEdgeCollapse = document.getElementById('allowNestedEdgeCollapse').checked;
+            ur.do("collapseEdges", {
+              edges: edges,
+              options: { groupEdgesOfSameTypeOnCollapse: groupEdgesOfSameTypeOnCollapse, allowNestedEdgeCollapse: allowNestedEdgeCollapse }
+            });
+          }
 				});
 
 				document.getElementById("expandSelectedEdges").addEventListener("click", function () {
-					var edges =cy.edges(":selected");
-					if(edges.length > 0){
-						ur.do("expandEdges", {
-						edges: edges
-						
-					});
-					}
-					
-					//api.expandEdges(cy.edges(":selected"),{GroupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked});
+					var edges = cy.edges(":selected");
+          if (edges.length > 0) {
+            ur.do("expandEdges", {
+              edges: edges
+            });
+          }
 				});
 
 				document.getElementById("collapseAll").addEventListener("click", function () {
-					
-					ur.do("collapseAllEdges", {						
-						options : {groupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
-					});
-					//api.collapseAllEdges({GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
+          const groupEdgesOfSameTypeOnCollapse = document.getElementById('groupEdges').checked;
+          const allowNestedEdgeCollapse = document.getElementById('allowNestedEdgeCollapse').checked;
+            
+          ur.do("collapseAllEdges", {
+            options: { groupEdgesOfSameTypeOnCollapse: groupEdgesOfSameTypeOnCollapse, allowNestedEdgeCollapse: allowNestedEdgeCollapse }
+          });
 				});
-				document.getElementById("collapseEdgesBetweenNodes").addEventListener("click", function () {
-					var nodes = cy.nodes(":selected");
-					if(nodes.length >= 2){
-						ur.do("collapseEdgesBetweenNodes", {
-						nodes: nodes,
-						options : {groupEdgesOfSameTypeOnCollapse:document.getElementById('groupEdges').checked}
-					});
-					}
-				
-					//api.collapseEdgesBetweenNodes(cy.nodes(":selected"),{GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
-				});
+
+        document.getElementById("collapseEdgesBetweenNodes").addEventListener("click", function () {
+          var nodes = cy.nodes(":selected");
+          if (nodes.length >= 2) {
+            const groupEdgesOfSameTypeOnCollapse = document.getElementById('groupEdges').checked;
+            const allowNestedEdgeCollapse = document.getElementById('allowNestedEdgeCollapse').checked;
+          
+            ur.do("collapseEdgesBetweenNodes", {
+              nodes: nodes,
+              options: { groupEdgesOfSameTypeOnCollapse: groupEdgesOfSameTypeOnCollapse, allowNestedEdgeCollapse: allowNestedEdgeCollapse }
+            });
+          }
+        });
+        
 				document.getElementById("expandEdgesBetweenNodes").addEventListener("click", function () {
 					var nodes = cy.nodes(":selected");
-					if(nodes.length >= 2){
-						ur.do("expandEdgesBetweenNodes", {
-						nodes: nodes,
-						
-					});
-					}
-
-					
-					//api.expandEdgesBetweenNodes(cy.nodes(":selected"),{GroupEdgesOfSameTypeOnCollapse: document.getElementById('groupEdges').checked});
-				});
+          if (nodes.length >= 2) {
+            ur.do("expandEdgesBetweenNodes", {
+              nodes: nodes,
+            });
+          }
+        });
+        
 				document.getElementById("expandAll").addEventListener("click", function () {
-					if(cy.edges(".cy-expand-collapse-collapsed-edge").length > 0){
-						ur.do("expandAllEdges", {						
-						
-					});
-					}
-					
-					//api.expandAllEdges();
-				});
+					if (cy.edges(".cy-expand-collapse-collapsed-edge").length > 0) {
+            ur.do("expandAllEdges", {});
+          }
+        });
+        
 				document.addEventListener('keydown', function (e){
 					if (e.ctrlKey && e.which == '90') {
-						cy.undoRedo().undo();
-					}
-					else if (e.ctrlKey && e.which == '89') {
-						cy.undoRedo().redo();
-					}
+            cy.undoRedo().undo();
+          }
+          else if (e.ctrlKey && e.which == '89') {
+            cy.undoRedo().redo();
+          }
 				}, true );
-
 			});
 		</script>
 	</head>
@@ -458,24 +451,20 @@ float: right;
 			<div class="fleft">
 				<b>CTRL+Z</b> to undo, <b>CTRL+Y</b> to redo<br/>
 				<br/>
-				<span class="list-item" id="collapseAll" style="cursor: pointer;color: darkslateblue">Collapse all edges</span>
-				<br/>
-				<span class="list-item" id="expandAll" style="cursor: pointer; color: darkslateblue">Expand all edges</span>
-				<br/>	
+				<div class="list-item" id="collapseAll" style="cursor: pointer;color: darkslateblue">Collapse all edges</div>
+				<div class="list-item" id="expandAll" style="cursor: pointer; color: darkslateblue">Expand all edges</div>
 				<br/>				   
-				<span class="list-item" id="collapseSelectedEdges" style="cursor: pointer; color: darkmagenta">Collapse selected edges</span>
+				<div class="list-item" id="collapseSelectedEdges" style="cursor: pointer; color: darkmagenta">Collapse selected edges</div>
+				<div class="list-item" id="expandSelectedEdges" style="cursor: pointer; color: darkmagenta">Expand selected edges</div>
 				<br/>
-				<span class="list-item" id="expandSelectedEdges" style="cursor: pointer; color: darkmagenta">Expand selected edges</span>
-				<br/>
-				<br/>
-				<span class="list-item" id="collapseEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Collapse edges between selected nodes</span>
-				<br/>
-				<span class="list-item" id="expandEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Expand edges between selected nodes</span>
-				<br/>
+				<div class="list-item" id="collapseEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Collapse edges between selected nodes</div>
+				<div class="list-item" id="expandEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Expand edges between selected nodes</div>
 				<br/>
 				<span style="margin-left: 10px; font-size: 16px;"><b>Options:</b></span>
 				<br/>
-				<input id="groupEdges" type="checkbox" /><span> Group edges of similar type</span>
+        <input id="groupEdges" type="checkbox" /><span> Group edges of similar type</span>
+				<br/>
+				<input id="allowNestedEdgeCollapse" type="checkbox" /><span> Allow nested edge collapse </span>
 			
 			</div>
 			<div class="fright" id="cy"></div>

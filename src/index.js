@@ -396,6 +396,7 @@
        
         edgeTypeInfo : "edgeType", //the name of the field that has the edge type, retrieved from edge.data(), can be a function
         groupEdgesOfSameTypeOnCollapse: false,
+        allowNestedEdgeCollapse: true,
         zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
       };
 

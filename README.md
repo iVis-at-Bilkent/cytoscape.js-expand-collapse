@@ -121,11 +121,11 @@ Notice that following events are performed for *each* node that is collapsed/exp
 
 `cy.nodes().on("expandcollapse.afterexpand", function(event) { var node = this; ... })`  Triggered after a node is expanded
 
-`cy.edges().on("expandcollapse.beforeCollapseEdge", function(event) { var edge = this; ... })` Triggered before an edge is collapsed
+`cy.edges().on("expandcollapse.beforecollapseedge", function(event) { var edge = this; ... })` Triggered before an edge is collapsed
 
 `cy.edges().on("expandcollapse.afterCollapseEdge", function(event) { var edge = this; ... })` Triggered after an edge is collapsed
 
-`cy.edges().on("expandcollapse.beforeExpandEdge", function(event) { var edge = this; ... })` Triggered before an edge is expanded
+`cy.edges().on("expandcollapse.beforeexpandedge", function(event) { var edge = this; ... })` Triggered before an edge is expanded
 
 `cy.edges().on("expandcollapse.afterExpandEdge", function(event) { var edge = this; ... })`  Triggered after an edge is expanded
 

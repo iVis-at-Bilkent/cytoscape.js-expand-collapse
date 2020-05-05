@@ -371,6 +371,13 @@ float: right;
 					collapseCueImage:"icon-minus.png"
 				});
 
+        cy.on('expandcollapse.beforeexpandedge', function (ev) {
+          console.log('before expand edge: ', ev);
+        });
+
+        cy.on('expandcollapse.afterExpandEdge', function (ev) {
+          console.log('after expand edge: ', ev);
+        });
 
 				document.getElementById("collapseSelectedEdges").addEventListener("click", function () {
           var edges = cy.edges(":selected");

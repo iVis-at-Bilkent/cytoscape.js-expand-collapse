@@ -683,7 +683,6 @@ return {
   /* -------------------------------------- start section edge expand collapse -------------------------------------- */
   collapseGivenEdges: function (edges, options) {
     edges.unselect();
-    edges.trigger('expandcollapse.beforeCollapseEdge');
     var nodes = edges.connectedNodes();
     var edgesToCollapse = {};
     // group edges by type if this option is set to true
@@ -721,6 +720,7 @@ return {
       if (edgesToCollapse[edgeGroupType].edges.length < 2) {
         continue;
       }
+      edges.trigger('expandcollapse.beforecollapseedge');
       result.oldEdges = result.oldEdges.add(edgesToCollapse[edgeGroupType].edges);
       var newEdge = {};
       newEdge.group = "edges";
@@ -747,10 +747,10 @@ return {
 
       newEdges.push(newEdge);
       cy.remove(edgesToCollapse[edgeGroupType].edges);
+      edges.trigger('expandcollapse.afterCollapseEdge');
     }
 
     result.edges = cy.add(newEdges);
-    edges.trigger('expandcollapse.afterCollapseEdge');
     return result;
   },
 
@@ -773,15 +773,15 @@ return {
 
   expandEdge: function (edge) {
     edge.unselect();
-    edge.trigger('expandcollapse.beforeExpandEdge');
     var result = { edges: cy.collection(), oldEdges: cy.collection() }
     var edges = edge.data('collapsedEdges');
     if (edges !== undefined && edges.length > 0) {
+      edge.trigger('expandcollapse.beforeexpandedge');
       result.oldEdges = result.oldEdges.add(edge);
       cy.remove(edge);
       result.edges = cy.add(edges);
+      edge.trigger('expandcollapse.afterExpandEdge');
     }
-    edge.trigger('expandcollapse.afterExpandEdge');
     return result;
   },
 

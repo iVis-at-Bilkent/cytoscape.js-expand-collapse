@@ -129,6 +129,10 @@ Notice that following events are performed for *each* node that is collapsed/exp
 
 `cy.edges().on("expandcollapse.afterexpandedge", function(event) { var edge = this; ... })`  Triggered after an edge is expanded
 
+All these events can also be listened as [cytoscape.js core events](https://js.cytoscape.org/#cy.on)
+e.g. 
+
+`cy.on("expandcollapse.afterexpandedge", function(event) { var elem = event.target; ... })`
 
 ## Default Options
 ```javascript

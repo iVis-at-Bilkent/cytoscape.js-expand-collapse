@@ -747,7 +747,7 @@ return {
 
       newEdges.push(newEdge);
       cy.remove(edgesToCollapse[edgeGroupType].edges);
-      edges.trigger('expandcollapse.afterCollapseEdge');
+      edges.trigger('expandcollapse.aftercollapseedge');
     }
 
     result.edges = cy.add(newEdges);
@@ -780,7 +780,7 @@ return {
       result.oldEdges = result.oldEdges.add(edge);
       cy.remove(edge);
       result.edges = cy.add(edges);
-      edge.trigger('expandcollapse.afterExpandEdge');
+      edge.trigger('expandcollapse.afterexpandedge');
     }
     return result;
   },

@@ -150,6 +150,7 @@ Notice that following events are performed for *each* node that is collapsed/exp
       expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
       edgeTypeInfo: "edgeType", // the name of the field that has the edge type, retrieved from edge.data(), can be a function, if reading the field returns undefined the collapsed edge type will be "unknown"
       groupEdgesOfSameTypeOnCollapse : false, // if true, the edges to be collapsed will be grouped according to their types, and the created collapsed edges will have same type as their group. if false the collapased edge will have "unknown" type.
+      allowNestedEdgeCollapse: true, // when you want to collapse a compound edge (edge which contains other edges) and normal edge, should it collapse without expanding the compound first
       zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
     };
 ```

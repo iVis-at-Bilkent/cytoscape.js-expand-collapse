@@ -136,14 +136,10 @@ module.exports = function (params, cy, api) {
 
         // Draw expand/collapse cue if specified use an image else render it in the default way
         if (isCollapsed && options().expandCueImage) {
-          var img = new Image();
-          img.src = options().expandCueImage;
-          ctx.drawImage(img, expandcollapseStartX, expandcollapseStartY, rectSize, rectSize);
+          drawImg(options().expandCueImage, expandcollapseStartX, expandcollapseStartY, rectSize, rectSize);
         }
         else if (!isCollapsed && options().collapseCueImage) {
-          var img = new Image();
-          img.src = options().collapseCueImage;
-          ctx.drawImage(img, expandcollapseStartX, expandcollapseStartY, rectSize, rectSize);
+          drawImg(options().collapseCueImage, expandcollapseStartX, expandcollapseStartY, rectSize, rectSize);
         }
         else {
           var oldFillStyle = ctx.fillStyle;
@@ -184,18 +180,19 @@ module.exports = function (params, cy, api) {
         nodeWithRenderedCue = node;
       }
 
+      function drawImg(imgSrc, x, y, w, h) {
+        var img = new Image(w, h);
+        img.src = imgSrc;
+        img.onload = () => {
+          ctx.drawImage(img, x, y, w, h);
+        };
+      }
+
       cy.on('resize', data.eCyResize = function () {
         sizeCanvas();
       });
 
       cy.on('expandcollapse.clearvisualcue', function () {
-
-        if (nodeWithRenderedCue) {
-          clearDraws();
-        }
-      });
-
-      cy.bind('zoom pan', data.eZoom = function () {
         if (nodeWithRenderedCue) {
           clearDraws();
         }
@@ -208,12 +205,6 @@ module.exports = function (params, cy, api) {
 
       cy.on('mouseup', data.eMouseUp = function (e) {
         currMousePos = e.renderedPosition || e.cyRenderedPosition
-      });
-
-      cy.on('position', 'node', data.ePosition = function () {
-        if (nodeWithRenderedCue) {
-          clearDraws();
-        }
       });
 
       cy.on('remove', 'node', data.eRemove = function () {
@@ -313,14 +304,12 @@ module.exports = function (params, cy, api) {
 
       cy.off('mousedown', 'node', data.eMouseDown)
         .off('mouseup', 'node', data.eMouseUp)
-        .off('position', 'node', data.ePosition)
         .off('remove', 'node', data.eRemove)
         .off('tap', 'node', data.eTap)
         .off('add', 'node', data.eAdd)
         .off('select unselect', data.eSelect)
         .off('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse)
         .off('free', 'node', data.eFree)
-        .off('zoom pan', data.eZoom)
         .off('resize', data.eCyResize);
     },
     rebind: function () {
@@ -333,14 +322,12 @@ module.exports = function (params, cy, api) {
 
       cy.on('mousedown', 'node', data.eMouseDown)
         .on('mouseup', 'node', data.eMouseUp)
-        .on('position', 'node', data.ePosition)
         .on('remove', 'node', data.eRemove)
         .on('tap', 'node', data.eTap)
         .on('add', 'node', data.eAdd)
         .on('select unselect', data.eSelect)
         .on('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse)
         .on('free', 'node', data.eFree)
-        .on('zoom pan', data.eZoom)
         .on('resize', data.eCyResize);
     }
   };

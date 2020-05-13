@@ -1,9 +1,10 @@
 var debounce = require('./debounce');
+var debounce2 = require('./debounce2');
 
 module.exports = function (params, cy, api) {
   var elementUtilities;
   var fn = params;
-
+  const CUE_POS_UPDATE_DELAY = 100;
   var nodeWithRenderedCue;
 
   const getData = function () {
@@ -213,9 +214,6 @@ module.exports = function (params, cy, api) {
 
       var ur;
       cy.on('select unselect', data.eSelect = function () {
-        if (this.length > cy.nodes(":selected").length) {
-          this.unselect();
-        }
         if (nodeWithRenderedCue) {
           clearDraws();
         }
@@ -249,34 +247,41 @@ module.exports = function (params, cy, api) {
           && cyRenderedPosX <= expandcollapseRenderedEndX + expandcollapseRenderedRectSize * factor
           && cyRenderedPosY >= expandcollapseRenderedStartY - expandcollapseRenderedRectSize * factor
           && cyRenderedPosY <= expandcollapseRenderedEndY + expandcollapseRenderedRectSize * factor) {
-          if (opts.undoable && !ur)
-            ur = cy.undoRedo({
-              defaultActions: false
-            });
-          if (api.isCollapsible(node))
+          if (opts.undoable && !ur) {
+            ur = cy.undoRedo({ defaultActions: false });
+          }
+
+          if (api.isCollapsible(node)) {
+            clearDraws();
             if (opts.undoable) {
               ur.do("collapse", {
                 nodes: node,
                 options: opts
               });
             }
-            else
+            else {
               api.collapse(node, opts);
-          else if (api.isExpandable(node))
-            if (opts.undoable)
-              ur.do("expand", {
-                nodes: node,
-                options: opts
-              });
-            else
+            }
+          }
+          else if (api.isExpandable(node)) {
+            clearDraws();
+            if (opts.undoable) {
+              ur.do("expand", { nodes: node, options: opts });
+            }
+            else {
               api.expand(node, opts);
-
+            }
+          }
           if (node.selectable()) {
             node.unselectify();
             cy.scratch('_cyExpandCollapse').selectableChanged = true;
           }
         }
       });
+
+      cy.on('position', 'node', data.ePosition = debounce2(data.eSelect, CUE_POS_UPDATE_DELAY, clearDraws));
+
+      cy.on('pan zoom', data.ePosition);
 
       cy.on('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse = function () {
         var delay = 50 + params.animate ? params.animationDuration : 0;
@@ -307,6 +312,8 @@ module.exports = function (params, cy, api) {
         .off('remove', 'node', data.eRemove)
         .off('tap', 'node', data.eTap)
         .off('add', 'node', data.eAdd)
+        .off('position', 'node', data.ePosition)
+        .off('pan zoom', data.ePosition)
         .off('select unselect', data.eSelect)
         .off('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse)
         .off('free', 'node', data.eFree)
@@ -325,6 +332,8 @@ module.exports = function (params, cy, api) {
         .on('remove', 'node', data.eRemove)
         .on('tap', 'node', data.eTap)
         .on('add', 'node', data.eAdd)
+        .on('position', 'node', data.ePosition)
+        .on('pan zoom', data.ePosition)
         .on('select unselect', data.eSelect)
         .on('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse)
         .on('free', 'node', data.eFree)

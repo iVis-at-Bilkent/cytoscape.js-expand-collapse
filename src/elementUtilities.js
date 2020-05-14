@@ -2,7 +2,7 @@ function elementUtilities(cy) {
  return {
   moveNodes: function (positionDiff, nodes, notCalcTopMostNodes) {
     var topMostNodes = notCalcTopMostNodes ? nodes : this.getTopMostNodes(nodes);
-    nonParents = topMostNodes.not(":parent"); 
+    var nonParents = topMostNodes.not(":parent"); 
     // moving parents spoils positioning, so move only nonparents
     nonParents.positions(function(ele, i){
       return {

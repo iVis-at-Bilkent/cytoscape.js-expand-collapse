@@ -174,9 +174,9 @@ module.exports = function (params, cy, api) {
           ctx.lineWidth = oldWidth;
         }
 
-        node.data('expandcollapseRenderedStartX', expandcollapseStartX);
-        node.data('expandcollapseRenderedStartY', expandcollapseStartY);
-        node.data('expandcollapseRenderedCueSize', expandcollapseRectSize);
+        node._private.data.expandcollapseRenderedStartX = expandcollapseStartX;
+        node._private.data.expandcollapseRenderedStartY = expandcollapseStartY;
+        node._private.data.expandcollapseRenderedCueSize = expandcollapseRectSize;
 
         nodeWithRenderedCue = node;
       }
@@ -221,7 +221,7 @@ module.exports = function (params, cy, api) {
         var isOnly1SelectedCompundNode = cy.nodes(':parent').filter(':selected').length == 1 && isOnly1Selected;
         var isOnly1SelectedCollapsedNode = cy.nodes('.cy-expand-collapse-collapsed-node').filter(':selected').length == 1 && isOnly1Selected;
         if (isOnly1SelectedCollapsedNode || isOnly1SelectedCompundNode) {
-          drawExpandCollapseCue(cy.nodes(':selected'));
+          drawExpandCollapseCue(cy.nodes(':selected')[0]);
         }
       });
 

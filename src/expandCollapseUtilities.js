@@ -44,7 +44,7 @@ return {
 
     // If expand is called just for one node then call end operation to perform layout
     if (single) {
-      this.endOperation(layoutBy);
+      this.endOperation(layoutBy, node);
     }
   },
   /*
@@ -95,11 +95,15 @@ return {
   /*
    * The operation to be performed after expand/collapse. It rearrange nodes by layoutBy parameter.
    */
-  endOperation: function (layoutBy) {
+  endOperation: function (layoutBy, nodes) {
     var self = this;
     cy.ready(function () {
       setTimeout(function() {
         elementUtilities.rearrange(layoutBy);
+        if(cy.scratch('_cyExpandCollapse').selectableChanged){
+          nodes.selectify();
+          cy.scratch('_cyExpandCollapse').selectableChanged = false;
+        }
       }, 0);
       
     });
@@ -110,7 +114,7 @@ return {
   expandAllNodes: function (nodes, options) {//*//
     var expandedStack = this.simpleExpandAllNodes(nodes, options.fisheye);
 
-    this.endOperation(options.layoutBy);
+    this.endOperation(options.layoutBy, nodes);
 
     /*
      * return the nodes to undo the operation
@@ -145,7 +149,7 @@ return {
     else {
       // First expand given nodes and then perform layout according to the layoutBy parameter
       this.simpleExpandGivenNodes(nodes, options.fisheye);
-      this.endOperation(options.layoutBy);
+      this.endOperation(options.layoutBy, nodes);
     }
 
     /*
@@ -164,7 +168,7 @@ return {
     cy.endBatch();
 
     nodes.trigger("position"); // position not triggered by default when collapseNode is called
-    this.endOperation(options.layoutBy);
+    this.endOperation(options.layoutBy, nodes);
 
     // Update the style
     cy.style().update();
@@ -675,8 +679,152 @@ return {
       collapsedChildren = collapsedChildren.union(children[i]);
     }
     return collapsedChildren;
+  },
+  /* -------------------------------------- start section edge expand collapse -------------------------------------- */
+  collapseGivenEdges: function (edges, options) {
+    edges.unselect();
+    var nodes = edges.connectedNodes();
+    var edgesToCollapse = {};
+    // group edges by type if this option is set to true
+    if (options.groupEdgesOfSameTypeOnCollapse) {
+      edges.forEach(function (edge) {
+        var edgeType = "unknown";
+        if (options.edgeTypeInfo !== undefined) {
+          edgeType = options.edgeTypeInfo instanceof Function ? options.edgeTypeInfo.call(edge) : edge.data()[options.edgeTypeInfo];
+        }
+        if (edgesToCollapse.hasOwnProperty(edgeType)) {
+          edgesToCollapse[edgeType].edges = edgesToCollapse[edgeType].edges.add(edge);
+
+          if (edgesToCollapse[edgeType].directionType == "unidirection" && (edgesToCollapse[edgeType].source != edge.source().id() || edgesToCollapse[edgeType].target != edge.target().id())) {
+            edgesToCollapse[edgeType].directionType = "bidirection";
+          }
+        } else {
+          var edgesX = cy.collection();
+          edgesX = edgesX.add(edge);
+          edgesToCollapse[edgeType] = { edges: edgesX, directionType: "unidirection", source: edge.source().id(), target: edge.target().id() }
+        }
+      });
+    } else {
+      edgesToCollapse["unknown"] = { edges: edges, directionType: "unidirection", source: edges[0].source().id(), target: edges[0].target().id() }
+      for (var i = 0; i < edges.length; i++) {
+        if (edgesToCollapse["unknown"].directionType == "unidirection" && (edgesToCollapse["unknown"].source != edges[i].source().id() || edgesToCollapse["unknown"].target != edges[i].target().id())) {
+          edgesToCollapse["unknown"].directionType = "bidirection";
+          break;
+        }
+      }
+    }
+
+    var result = { edges: cy.collection(), oldEdges: cy.collection() }
+    var newEdges = [];
+    for (const edgeGroupType in edgesToCollapse) {
+      if (edgesToCollapse[edgeGroupType].edges.length < 2) {
+        continue;
+      }
+      edges.trigger('expandcollapse.beforecollapseedge');
+      result.oldEdges = result.oldEdges.add(edgesToCollapse[edgeGroupType].edges);
+      var newEdge = {};
+      newEdge.group = "edges";
+      newEdge.data = {};
+      newEdge.data.source = edgesToCollapse[edgeGroupType].source;
+      newEdge.data.target = edgesToCollapse[edgeGroupType].target;
+      newEdge.data.id = "collapsedEdge_" + nodes[0].id() + "_" + nodes[1].id() + "_" + edgeGroupType + "_" + Math.floor(Math.random() * Date.now());
+      newEdge.data.collapsedEdges = cy.collection();
+
+      edgesToCollapse[edgeGroupType].edges.forEach(function (edge) {
+        newEdge.data.collapsedEdges = newEdge.data.collapsedEdges.add(edge);
+      });
+
+      newEdge.data.collapsedEdges = this.check4nestedCollapse(newEdge.data.collapsedEdges, options);
+
+      var edgesTypeField = "edgeType";
+      if (options.edgeTypeInfo !== undefined) {
+        edgesTypeField = options.edgeTypeInfo instanceof Function ? edgeTypeField : options.edgeTypeInfo;
+      }
+      newEdge.data[edgesTypeField] = edgeGroupType;
+
+      newEdge.data["directionType"] = edgesToCollapse[edgeGroupType].directionType;
+      newEdge.classes = "cy-expand-collapse-collapsed-edge";
+
+      newEdges.push(newEdge);
+      cy.remove(edgesToCollapse[edgeGroupType].edges);
+      edges.trigger('expandcollapse.aftercollapseedge');
+    }
+
+    result.edges = cy.add(newEdges);
+    return result;
+  },
+
+  check4nestedCollapse: function(edges2collapse, options){
+    if (options.allowNestedEdgeCollapse) {
+      return edges2collapse;
+    }
+    let r = cy.collection();
+    for (let i = 0; i < edges2collapse.length; i++) {
+      let curr = edges2collapse[i];
+      let collapsedEdges = curr.data('collapsedEdges');
+      if (collapsedEdges && collapsedEdges.length > 0) {
+        r = r.add(collapsedEdges);
+      } else {
+        r = r.add(curr);
+      }
+    }
+    return r;
+  },
+
+  expandEdge: function (edge) {
+    edge.unselect();
+    var result = { edges: cy.collection(), oldEdges: cy.collection() }
+    var edges = edge.data('collapsedEdges');
+    if (edges !== undefined && edges.length > 0) {
+      edge.trigger('expandcollapse.beforeexpandedge');
+      result.oldEdges = result.oldEdges.add(edge);
+      cy.remove(edge);
+      result.edges = cy.add(edges);
+      edge.trigger('expandcollapse.afterexpandedge');
+    }
+    return result;
+  },
+
+  //if the edges are only between two nodes (valid for collpasing) returns the two nodes else it returns false
+  isValidEdgesForCollapse: function (edges) {
+    var endPoints = this.getEdgesDistinctEndPoints(edges);
+    if (endPoints.length != 2) {
+      return false;
+    } else {
+      return endPoints;
+    }
+  },
+
+  //returns a list of distinct endpoints of a set of edges.
+  getEdgesDistinctEndPoints: function (edges) {
+    var endPoints = [];
+    edges.forEach(function (edge) {
+      if (!this.containsElement(endPoints, edge.source())) {
+        endPoints.push(edge.source());
+      }
+      if (!this.containsElement(endPoints, edge.target())) {
+        endPoints.push(edge.target());
+
+      }
+    }.bind(this));
+
+    return endPoints;
+  },
+
+  //function to check if a list of elements contains the given element by looking at id()
+  containsElement: function (elements, element) {
+    var exists = false;
+    for (var i = 0; i < elements.length; i++) {
+      if (elements[i].id() == element.id()) {
+        exists = true;
+        break;
+      }
+    }
+    return exists;
   }
+  /* -------------------------------------- end section edge expand collapse -------------------------------------- */
 }
+
 };
 
 module.exports = expandCollapseUtilities;

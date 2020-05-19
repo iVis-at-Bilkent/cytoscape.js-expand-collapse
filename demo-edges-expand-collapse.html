@@ -1,0 +1,497 @@
+<!DOCTYPE>
+
+<html>
+
+	<head>
+		<title>cytoscape-expand-collapse.js edges demo</title>
+
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+		<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+
+		<!-- for testing with local version of cytoscape.js -->
+		<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
+    <script src="https://unpkg.com/layout-base/layout-base.js"></script>
+    <script src="https://unpkg.com/cose-base/cose-base.js"></script>
+	<script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
+	<script src="https://unpkg.com/cytoscape-undo-redo/cytoscape-undo-redo.js"></script>
+		<script src="cytoscape-expand-collapse.js"></script>
+
+		<style>
+			body {
+				font-family: helvetica neue, helvetica, liberation sans, arial, sans-serif;
+				font-size: 14px;
+			}
+
+			.wrap {
+width: 100%;
+
+overflow:auto;
+}
+
+.fleft {
+    float:left; 
+    width: 20%;
+	height:95%
+}
+
+.fright {
+float: right;
+	height:95%;
+    width: 80%;
+}
+
+
+			#cy {
+				z-index: 999;
+				
+				
+			}
+
+			h1 {
+				opacity: 0.5;
+				font-size: 1.3em;
+				font-weight: bold;
+			}
+			.list-item{
+				margin-left : 10px;
+				margin-top: 10px;
+			}
+		</style>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function(){
+				
+				var styles = {
+					"type1" : {"color" : "#CFA79D", "arrowShape":"triangle"},
+					"type2" : {"color" : "#9DCFA7", "arrowShape":"triangle"},
+					"type3" : {"color" : "#A79DCF", "arrowShape":"triangle"},
+					
+				};
+				var cy = window.cy = cytoscape({
+					container: document.getElementById('cy'),
+					
+					layout: {
+						name: 'cose-bilkent',
+						
+					},
+				
+					style: [
+						{
+							selector: 'node',
+							style: {
+								'background-color': '#dedede',
+								//'label': 'data(id)'
+							}
+						},
+
+						{
+							selector: ':parent',
+							style: {
+								'background-opacity': 0.333
+							}
+						},
+
+					
+
+						{
+							selector: 'edge[edgeType="type1"]',
+							style: {
+								'width':1,
+								'line-color': styles["type1"].color,
+								'curve-style': 'bezier',
+								'target-arrow-shape': styles["type1"].arrowShape,
+								'target-arrow-color': styles["type1"].color,
+
+							
+							}
+						},
+						{
+							selector: 'edge[edgeType="type2"]',
+							style: {
+								'width': 1,
+								'line-color': styles["type2"].color,
+								'curve-style': 'bezier',
+								'target-arrow-shape': styles["type2"].arrowShape,
+								'target-arrow-color': styles["type2"].color,
+
+							
+							}
+						},
+						{
+							selector: 'edge[edgeType="type3"]',
+							style: {
+								'width': 1,
+								'line-color': styles["type3"].color,
+								'curve-style': 'bezier',
+								'target-arrow-shape': styles["type3"].arrowShape,
+								'target-arrow-color': styles["type3"].color,
+
+							
+							}
+						},
+
+						{
+							selector: 'edge.cy-expand-collapse-collapsed-edge',
+							style: 						
+							{
+								'width': function(edge){
+									return 1 + Math.round(((Math.log(edge.data("collapsedEdges").length) / Math.log(3) + Number.EPSILON)) * 100) / 100;
+				  				},
+								'line-color':function(edge){
+									if(edge.data("edgeType") == "unknown"){
+										return '#b3b3b3'
+									}else{
+										return styles[edge.data("edgeType")].color;//edge.data("collapsedEdges")[0].css("line-color");
+									}
+									
+				  				},	
+								'line-style' :'dashed'		,					
+								'target-arrow-shape' : function(edge){
+									if(edge.data("edgeType") == "unknown"){
+										return "chevron"
+									}else{
+										return styles[edge.data("edgeType")].arrowShape;//edge.data("collapsedEdges")[0].css("target-arrow-shape");
+									}
+								},
+							
+								'curve-style': 'bezier',
+
+								'target-arrow-color':function(edge){
+									if(edge.data("edgeType") == "unknown"){
+										return '#b3b3b3'
+									}else{
+										return styles[edge.data("edgeType")].color;
+									}
+									
+								  },
+								  
+								  'target-arrow-color':function(edge){
+									if(edge.data("edgeType") == "unknown"){
+										return '#b3b3b3'
+									}else{
+										return styles[edge.data("edgeType")].color;
+									}
+									
+								  },
+
+								  'source-arrow-shape':function(edge){
+									if(edge.data("directionType") == "unidirection" ) return undefined;
+									if(edge.data("edgeType") == "unknown"){
+										return "chevron"
+									}else{
+										return  styles[edge.data("edgeType")].arrowShape;
+									}
+									
+								  },
+								  'source-arrow-color':function(edge){
+									if(edge.data("directionType") == "unidirection" ) return undefined;
+									if(edge.data("edgeType") == "unknown"){
+										return '#b3b3b3'
+									}else{
+										return styles[edge.data("edgeType")].color;
+									}
+									
+								  },
+								
+							}
+						}
+						
+						,
+						{
+							selector: 'node:selected',
+							style: {
+							  "border-width": 1,
+								"border-color": '#FF00FF'
+							}
+						},
+						{
+							selector: 'edge:selected',
+							style: {
+							  "width": 1,
+							  "line-color":'#FF00FF',
+							  "target-arrow-color":'#FF00FF',
+							  "source-arrow-color":'#FF00FF'
+								
+							}
+						}
+					],
+
+					elements:  {
+			            nodes: [{
+			                data: {
+			                  id: 'n0',
+			                  name: 'n0'
+			                }
+			  
+			              },
+			              {
+			                data: {
+			                  id: 'n1',
+			                  name: 'n1'
+			                }
+			              },
+			              {
+			                data: {
+			                  id: 'n2',
+			                  name: 'n2'
+			                }
+			              }, 
+			              {
+			                data: {
+			                  id: 'n3',
+			                  name: 'n3'
+			                }
+						  },   
+						  {
+			                data: {
+			                  id: 'n4',
+			                  name: 'n4'
+			                }
+						  },    
+						  {
+			                data: {
+			                  id: 'n5',
+			                  name: 'n5'
+			                }
+			              },               
+			            ],
+			            edges: [{
+			           		data: {id: 'e0', source: 'n0', target: 'n1',edgeType: "type1" },selectable:true,unselectable:false     
+			            },
+			            {
+			           		data: { id: 'e1', source: 'n0', target: 'n1',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+			            },
+			            {
+			           		data: { id: 'e3', source: 'n1', target: 'n0',edgeType: "type1" } ,selectable:true  ,unselectable:false   
+						},
+						
+			            {
+			           		data: { id: 'e4', source: 'n2', target: 'n3',edgeType: "type2" } ,selectable:true  ,unselectable:false   
+						},
+						
+			            {
+			           		data: { id: 'e5', source: 'n3', target: 'n2',edgeType: "type2" } ,selectable:true  ,unselectable:false   
+			            },
+						
+			            {
+			           		data: { id: 'e6', source: 'n0', target: 'n3',edgeType: "type2" } ,selectable:true  ,unselectable:false   
+						},
+						{
+			           		data: { id: 'e7', source: 'n1', target: 'n0',edgeType: "type2" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e8', source: 'n1', target: 'n0',edgeType: "type2" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e9', source: 'n1', target: 'n0',edgeType: "type2" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e10', source: 'n3', target: 'n4',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e11', source: 'n3', target: 'n4',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e12', source: 'n4', target: 'n3',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+						},
+						
+						{
+			           		data: { id: 'e13', source: 'n5', target: 'n1',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e14', source: 'n1', target: 'n5',edgeType: "type3" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e15', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e16', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e17', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e18', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e19', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e20', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e21', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e22', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e23', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e16', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e24', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e25', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e26', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e27', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e28', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+						{
+			           		data: { id: 'e29', source: 'n2', target: 'n5',edgeType: "type1" } ,selectable:true  ,unselectable:false           
+						},
+			            ]
+			          },
+				});
+				
+				var ur = cy.undoRedo();
+			
+				var api = cy.expandCollapse({
+					/* layoutBy: {
+						name: "cose-bilkent",
+						animate: "end",
+						randomize: false,
+						fit: true
+					}, */
+					//fisheye: true,
+					//animate: true,
+				
+					expandCueImage :"icon-plus.png",
+					collapseCueImage:"icon-minus.png"
+				});
+
+        cy.on('expandcollapse.beforeexpandedge', function (ev) {
+          console.log('before expand edge: ', ev);
+        });
+
+        cy.on('expandcollapse.afterexpandedge', function (ev) {
+          console.log('after expand edge: ', ev);
+        });
+
+				document.getElementById("collapseSelectedEdges").addEventListener("click", function () {
+          var edges = cy.edges(":selected");
+
+          if (edges.length >= 2) {
+            const groupEdgesOfSameTypeOnCollapse = document.getElementById('groupEdges').checked;
+            const allowNestedEdgeCollapse = document.getElementById('allowNestedEdgeCollapse').checked;
+            ur.do("collapseEdges", {
+              edges: edges,
+              options: { groupEdgesOfSameTypeOnCollapse: groupEdgesOfSameTypeOnCollapse, allowNestedEdgeCollapse: allowNestedEdgeCollapse }
+            });
+          }
+				});
+
+				document.getElementById("expandSelectedEdges").addEventListener("click", function () {
+					var edges = cy.edges(":selected");
+          if (edges.length > 0) {
+            ur.do("expandEdges", {
+              edges: edges
+            });
+          }
+				});
+
+				document.getElementById("collapseAll").addEventListener("click", function () {
+          const groupEdgesOfSameTypeOnCollapse = document.getElementById('groupEdges').checked;
+          const allowNestedEdgeCollapse = document.getElementById('allowNestedEdgeCollapse').checked;
+            
+          ur.do("collapseAllEdges", {
+            options: { groupEdgesOfSameTypeOnCollapse: groupEdgesOfSameTypeOnCollapse, allowNestedEdgeCollapse: allowNestedEdgeCollapse }
+          });
+				});
+
+        document.getElementById("collapseEdgesBetweenNodes").addEventListener("click", function () {
+          var nodes = cy.nodes(":selected");
+          if (nodes.length >= 2) {
+            const groupEdgesOfSameTypeOnCollapse = document.getElementById('groupEdges').checked;
+            const allowNestedEdgeCollapse = document.getElementById('allowNestedEdgeCollapse').checked;
+          
+            ur.do("collapseEdgesBetweenNodes", {
+              nodes: nodes,
+              options: { groupEdgesOfSameTypeOnCollapse: groupEdgesOfSameTypeOnCollapse, allowNestedEdgeCollapse: allowNestedEdgeCollapse }
+            });
+          }
+        });
+        
+				document.getElementById("expandEdgesBetweenNodes").addEventListener("click", function () {
+					var nodes = cy.nodes(":selected");
+          if (nodes.length >= 2) {
+            ur.do("expandEdgesBetweenNodes", {
+              nodes: nodes,
+            });
+          }
+        });
+        
+				document.getElementById("expandAll").addEventListener("click", function () {
+					if (cy.edges(".cy-expand-collapse-collapsed-edge").length > 0) {
+            ur.do("expandAllEdges", {});
+          }
+        });
+        
+				document.addEventListener('keydown', function (e){
+					if (e.ctrlKey && e.which == '90') {
+            cy.undoRedo().undo();
+          }
+          else if (e.ctrlKey && e.which == '89') {
+            cy.undoRedo().redo();
+          }
+				}, true );
+			});
+		</script>
+	</head>
+
+	<body>
+		
+		
+		<h1>cytoscape-expand-collapse edge undoable demo </h1>
+		<div class="wrap">
+			<div class="fleft">
+				<b>CTRL+Z</b> to undo, <b>CTRL+Y</b> to redo<br/>
+				<br/>
+				<div class="list-item" id="collapseAll" style="cursor: pointer;color: darkslateblue">Collapse all edges</div>
+				<div class="list-item" id="expandAll" style="cursor: pointer; color: darkslateblue">Expand all edges</div>
+				<br/>				   
+				<div class="list-item" id="collapseSelectedEdges" style="cursor: pointer; color: darkmagenta">Collapse selected edges</div>
+				<div class="list-item" id="expandSelectedEdges" style="cursor: pointer; color: darkmagenta">Expand selected edges</div>
+				<br/>
+				<div class="list-item" id="collapseEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Collapse edges between selected nodes</div>
+				<div class="list-item" id="expandEdgesBetweenNodes" style="cursor: pointer; color: rgb(0, 139, 42)">Expand edges between selected nodes</div>
+				<br/>
+				<span style="margin-left: 10px; font-size: 16px;"><b>Options:</b></span>
+				<br/>
+        <input id="groupEdges" type="checkbox" /><span> Group edges of similar type</span>
+				<br/>
+				<input id="allowNestedEdgeCollapse" type="checkbox" /><span> Allow nested edge collapse </span>
+			
+			</div>
+			<div class="fright" id="cy"></div>
+			
+		</div>
+		
+		
+		
+			
+				
+			
+			
+		
+
+		
+	
+
+
+
+	
+	</body>
+
+</html>

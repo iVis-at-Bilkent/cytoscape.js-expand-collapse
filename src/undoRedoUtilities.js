@@ -77,4 +77,153 @@ module.exports = function (cy, api) {
       ur.action(actions[i], doIt(actions[i]), doIt(actions[(i + 3) % 6]));
   }
 
+  function collapseEdges(args){    
+    var options = args.options;
+    var edges = args.edges;
+    var result = {};
+    
+    result.options = options;
+    if(args.firstTime){
+      var collapseResult = api.collapseEdges(edges,options);    
+      result.edges = collapseResult.edges;
+      result.oldEdges = collapseResult.oldEdges;  
+      result.firstTime = false;
+    }else{
+      result.oldEdges = edges;
+      result.edges = args.oldEdges;
+      if(args.edges.length > 0 && args.oldEdges.length > 0){
+        cy.remove(args.edges);
+        cy.add(args.oldEdges);
+      }
+     
+     
+    }
+
+    return result;
+  }
+  function collapseEdgesBetweenNodes(args){
+    var options = args.options;
+    var result = {};
+    result.options = options;
+    if(args.firstTime){
+     var collapseAllResult = api.collapseEdgesBetweenNodes(args.nodes, options);
+     result.edges = collapseAllResult.edges;
+     result.oldEdges = collapseAllResult.oldEdges;
+     result.firstTime = false;
+    }else{
+     result.edges = args.oldEdges;
+     result.oldEdges = args.edges;
+     if(args.edges.length > 0 && args.oldEdges.length > 0){
+      cy.remove(args.edges);
+      cy.add(args.oldEdges);
+      }
+    
+    }
+ 
+    return result;
+
+ }
+ function collapseAllEdges(args){
+   var options = args.options;
+   var result = {};
+   result.options = options;
+   if(args.firstTime){
+    var collapseAllResult = api.collapseAllEdges(options);
+    result.edges = collapseAllResult.edges;
+    result.oldEdges = collapseAllResult.oldEdges;
+    result.firstTime = false;
+   }else{
+    result.edges = args.oldEdges;
+    result.oldEdges = args.edges;
+    if(args.edges.length > 0  && args.oldEdges.length > 0){
+      cy.remove(args.edges);
+      cy.add(args.oldEdges);
+      }
+   
+   }
+
+   return result;
+ }
+ function expandEdges(args){   
+   var options = args.options;
+   var result ={};
+  
+   result.options = options;
+   if(args.firstTime){
+     var expandResult = api.expandEdges(args.edges);
+    result.edges = expandResult.edges;
+    result.oldEdges = expandResult.oldEdges;
+    result.firstTime = false;
+    
+   }else{
+    result.oldEdges = args.edges;
+    result.edges = args.oldEdges;
+    if(args.edges.length > 0 && args.oldEdges.length > 0){
+      cy.remove(args.edges);
+      cy.add(args.oldEdges);
+      }
+  
+   }
+
+   return result;
+ }
+ function expandEdgesBetweenNodes(args){
+  var options = args.options;
+  var result = {};
+  result.options = options;
+  if(args.firstTime){
+   var collapseAllResult = api.expandEdgesBetweenNodes(args.nodes,options);
+   result.edges = collapseAllResult.edges;
+   result.oldEdges = collapseAllResult.oldEdges;
+   result.firstTime = false;
+  }else{
+   result.edges = args.oldEdges;
+   result.oldEdges = args.edges;
+   if(args.edges.length > 0 && args.oldEdges.length > 0){
+    cy.remove(args.edges);
+    cy.add(args.oldEdges);
+    }
+  
+  }
+
+  return result;
+ }
+ function expandAllEdges(args){
+  var options = args.options;
+  var result = {};
+  result.options = options;
+  if(args.firstTime){
+   var expandResult = api.expandAllEdges(options);
+   result.edges = expandResult.edges;
+   result.oldEdges = expandResult.oldEdges;
+   result.firstTime = false;
+  }else{
+   result.edges = args.oldEdges;
+   result.oldEdges = args.edges;
+   if(args.edges.length > 0 && args.oldEdges.length > 0){
+    cy.remove(args.edges);
+    cy.add(args.oldEdges);
+    }
+   
+  }
+
+  return result;
+ }
+ 
+ 
+  ur.action("collapseEdges", collapseEdges, expandEdges);
+  ur.action("expandEdges", expandEdges, collapseEdges);
+
+  ur.action("collapseEdgesBetweenNodes", collapseEdgesBetweenNodes, expandEdgesBetweenNodes);
+  ur.action("expandEdgesBetweenNodes", expandEdgesBetweenNodes, collapseEdgesBetweenNodes);
+
+  ur.action("collapseAllEdges", collapseAllEdges, expandAllEdges);
+  ur.action("expandAllEdges", expandAllEdges, collapseAllEdges);
+
+ 
+
+
+  
+
+
 };

@@ -727,7 +727,12 @@ return {
       newEdge.data = {};
       newEdge.data.source = edgesToCollapse[edgeGroupType].source;
       newEdge.data.target = edgesToCollapse[edgeGroupType].target;
-      newEdge.data.id = "collapsedEdge_" + nodes[0].id() + "_" + nodes[1].id() + "_" + edgeGroupType + "_" + Math.floor(Math.random() * Date.now());
+      var id1 = nodes[0].id();
+      var id2 = id1;
+      if (nodes[1]) {
+          id2 = nodes[1].id();
+      }
+      newEdge.data.id = "collapsedEdge_" + id1 + "_" + id2 + "_" + edgeGroupType + "_" + Math.floor(Math.random() * Date.now());
       newEdge.data.collapsedEdges = cy.collection();
 
       edgesToCollapse[edgeGroupType].edges.forEach(function (edge) {

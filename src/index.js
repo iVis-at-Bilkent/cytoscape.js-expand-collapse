@@ -298,10 +298,15 @@
           return pairs;
         }
         var nodesPairs = pairwise(nodes);
+        nodesPairs.push(...nodes.map(x => [x, x]));
         var result = { edges: cy.collection(), oldEdges: cy.collection() };
         nodesPairs.forEach(function (nodePair) {
-          var edges = nodePair[0].connectedEdges('[source = "' + nodePair[1].id() + '"],[target = "' + nodePair[1].id() + '"]');
-
+          const id1 = nodePair[1].id();
+          var edges = nodePair[0].connectedEdges('[source = "' + id1 + '"],[target = "' + id1 + '"]');
+          // edges for self-loops
+          if (nodePair[0].id() === id1) {
+            edges = nodePair[0].connectedEdges('[source = "' + id1 + '"][target = "' + id1 + '"]');
+          }
           if (edges.length >= 2) {
             var operationResult = expandCollapseUtilities.collapseGivenEdges(edges, tempOptions)
             result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
@@ -313,6 +318,7 @@
         return result;
 
       };
+
       api.expandEdgesBetweenNodes = function (nodes) {
         if (nodes.length <= 1) cy.collection();
         var edgesToExpand = cy.collection();
@@ -339,33 +345,11 @@
         //result.edges = result.edges.add(this.expandEdges(edgesToExpand));
         return this.expandEdges(edgesToExpand);
       };
+
       api.collapseAllEdges = function (opts) {
-        var options = getScratch(cy, 'options');
-        var tempOptions = extendOptions(options, opts);
-        function pairwise(list) {
-          var pairs = [];
-          list
-            .slice(0, list.length - 1)
-            .forEach(function (first, n) {
-              var tail = list.slice(n + 1, list.length);
-              tail.forEach(function (item) {
-                pairs.push([first, item])
-              });
-            })
-          return pairs;
-        }
-
         return this.collapseEdgesBetweenNodes(cy.edges().connectedNodes(), opts);
-        /*  var nodesPairs = pairwise(cy.edges().connectedNodes());
-         nodesPairs.forEach(function(nodePair){
-           var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');         
-           if(edges.length >=2){
-             expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
-           }
-           
-         }.bind(this)); */
-
       };
+
       api.expandAllEdges = function () {
         var edges = cy.edges(".cy-expand-collapse-collapsed-edge");
         var result = { edges: cy.collection(), oldEdges: cy.collection() };

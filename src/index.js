@@ -46,6 +46,29 @@
         }
       }
 
+      function isOnly1Pair(edges) {
+        let relatedEdgesArr = [];
+        for (let i = 0; i < edges.length; i++) {
+          const srcId = edges[i].source().id();
+          const targetId = edges[i].target().id();
+          const obj = {};
+          obj[srcId] = true;
+          obj[targetId] = true;
+          relatedEdgesArr.push(obj);
+        }
+        for (let i = 0; i < relatedEdgesArr.length; i++) {
+          for (let j = i + 1; j < relatedEdgesArr.length; j++) {
+            const keys1 = Object.keys(relatedEdgesArr[i]);
+            const keys2 = Object.keys(relatedEdgesArr[j]);
+            const allKeys = new Set(keys1.concat(keys2));
+            if (allKeys.size != keys1.length || allKeys.size != keys2.length) {
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+
       // set all options at once
       api.setOptions = function (opts) {
         handleNewOptions(opts);
@@ -233,7 +256,7 @@
       api.collapseEdges = function (edges, opts) {
         var result = { edges: cy.collection(), oldEdges: cy.collection() };
         if (edges.length < 2) return result;
-        if (edges.connectedNodes().length > 2) return result;
+        if (!isOnly1Pair(edges)) return result;
         var options = getScratch(cy, 'options');
         var tempOptions = extendOptions(options, opts);
         return expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);

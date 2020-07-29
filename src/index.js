@@ -298,6 +298,7 @@
           return pairs;
         }
         var nodesPairs = pairwise(nodes);
+        // for self-loops
         nodesPairs.push(...nodes.map(x => [x, x]));
         var result = { edges: cy.collection(), oldEdges: cy.collection() };
         nodesPairs.forEach(function (nodePair) {
@@ -320,7 +321,6 @@
       };
 
       api.expandEdgesBetweenNodes = function (nodes) {
-        if (nodes.length <= 1) cy.collection();
         var edgesToExpand = cy.collection();
         function pairwise(list) {
           var pairs = [];
@@ -334,15 +334,18 @@
             })
           return pairs;
         }
-        //var result = {edges: cy.collection(), oldEdges: cy.collection()}   ;     
         var nodesPairs = pairwise(nodes);
+        // for self-loops
+        nodesPairs.push(...nodes.map(x => [x, x]));
         nodesPairs.forEach(function (nodePair) {
-          var edges = nodePair[0].connectedEdges('.cy-expand-collapse-collapsed-edge[source = "' + nodePair[1].id() + '"],[target = "' + nodePair[1].id() + '"]');
+          const id1 = nodePair[1].id();
+          var edges = nodePair[0].connectedEdges('.cy-expand-collapse-collapsed-edge[source = "' + id1 + '"],[target = "' + id1 + '"]');
+          // edges for self-loops
+          if (nodePair[0].id() === id1) {
+            edges = nodePair[0].connectedEdges('[source = "' + id1 + '"][target = "' + id1 + '"]');
+          }
           edgesToExpand = edgesToExpand.union(edges);
-
         }.bind(this));
-        //result.oldEdges = result.oldEdges.add(edgesToExpand);
-        //result.edges = result.edges.add(this.expandEdges(edgesToExpand));
         return this.expandEdges(edgesToExpand);
       };
 

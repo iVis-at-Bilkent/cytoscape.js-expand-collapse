@@ -384,24 +384,20 @@
 
       document.getElementById("collapseEdgesBetweenNodes").addEventListener("click", function () {
         var nodes = cy.nodes(":selected");
-        if (nodes.length >= 2) {
-          const groupEdgesOfSameTypeOnCollapse = document.getElementById('groupEdges').checked;
-          const allowNestedEdgeCollapse = document.getElementById('allowNestedEdgeCollapse').checked;
+        const groupEdgesOfSameTypeOnCollapse = document.getElementById('groupEdges').checked;
+        const allowNestedEdgeCollapse = document.getElementById('allowNestedEdgeCollapse').checked;
 
-          ur.do("collapseEdgesBetweenNodes", {
-            nodes: nodes,
-            options: { groupEdgesOfSameTypeOnCollapse: groupEdgesOfSameTypeOnCollapse, allowNestedEdgeCollapse: allowNestedEdgeCollapse }
-          });
-        }
+        ur.do("collapseEdgesBetweenNodes", {
+          nodes: nodes,
+          options: { groupEdgesOfSameTypeOnCollapse: groupEdgesOfSameTypeOnCollapse, allowNestedEdgeCollapse: allowNestedEdgeCollapse }
+        });
       });
 
       document.getElementById("expandEdgesBetweenNodes").addEventListener("click", function () {
         var nodes = cy.nodes(":selected");
-        if (nodes.length >= 2) {
-          ur.do("expandEdgesBetweenNodes", {
-            nodes: nodes,
-          });
-        }
+        ur.do("expandEdgesBetweenNodes", {
+          nodes: nodes,
+        });
       });
 
       document.getElementById("expandAll").addEventListener("click", function () {

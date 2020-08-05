@@ -10,11 +10,15 @@
 
 		<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
 
+		<!-- jquery for graphml -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
 		<!-- for testing with local version of cytoscape.js -->
 		<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
-    <script src="https://unpkg.com/layout-base/layout-base.js"></script>
-    <script src="https://unpkg.com/cose-base/cose-base.js"></script>
-    <script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
+		<script src="https://unpkg.com/layout-base/layout-base.js"></script>
+		<script src="https://unpkg.com/cose-base/cose-base.js"></script>
+		<script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
+		<script src="https://unpkg.com/cytoscape-graphml/cytoscape-graphml.js"></script>
 		<script src="cytoscape-expand-collapse.js"></script>
 
 
@@ -146,6 +150,56 @@
 					api.expandAll();
 				});
 
+				document.getElementById("graphml-input").addEventListener("change", function(evt) {
+					//read graphML file
+					let files = evt.target.files;
+					let reader = new FileReader();
+					let contents;
+					reader.readAsText(files[0]);
+					reader.onload = function(event) {
+						contents = event.target.result;
+						
+						cy.startBatch();
+						cy.elements().remove();
+						cy.graphml(contents);
+						cy.endBatch();
+
+						//to be able to open the same file again
+						document.getElementById("graphml-input").value = "";
+					};
+				});
+
+				document.getElementById("apply-markov-clustering").addEventListener("click", function() {
+					var clusteringDepth = document.getElementById("clustering-depth-input").value;
+					if (clusteringDepth < 1)
+						return;
+					cy.startBatch();
+					for (var i = 0; i < clusteringDepth; i++) {
+						//get clusters for this depth level
+						let clusters = cy.elements().markovClustering();
+
+						for (var j = 0; j < clusters.length; j++) {
+							let parentId = "p_" + i + "_" + j;
+							cy.add({
+								group: 'nodes',
+								data: {
+									id: parentId
+								}
+							});
+							clusters[j].move({
+								parent: parentId
+							});
+						}
+						cy.layout({
+							name: "cose-bilkent",
+							randomize: true,
+							fit: true
+						}).run();
+						api.collapseAll();
+					}
+					cy.endBatch();
+				});
+
 			});
 		</script>
 	</head>
@@ -155,7 +209,13 @@
 
 			<b id="expandAllAndRemove" style="cursor: pointer;color: #2ecc71">Expand all and remove</b> / <b id="loadInCollapsedState" style="cursor: pointer; color: #e74c3c">Load compouds collapsed</b> <br/>
 			<b id="collapseAll" style="cursor: pointer;color: darkred">Collapse all</b> / <b id="expandAll" style="cursor: pointer; color: darkslateblue">Expand all</b> <br/>
-			<b id="collapseRecursively" style="cursor: pointer; color: darksalmon">Collapse selected recursively</b> / <b id="expandRecursively" style="cursor: pointer; color: darkmagenta">Expand selected recursively</b>
+			<b id="collapseRecursively" style="cursor: pointer; color: darksalmon">Collapse selected recursively</b> / <b id="expandRecursively" style="cursor: pointer; color: darkmagenta">Expand selected recursively</b><br/>
+			<b id="graphml" style="cursor: pointer; color: #22A6CA" onclick="document.getElementById('graphml-input').click();"><b>Import from GraphML file</b></b>
+			<input id="graphml-input" type="file" name="name" style="display: none;"/> <br/>
+			<form>
+				<label id="apply-markov-clustering" for="clustering-depth-input" style="cursor: pointer;color: #e74c3c">Apply markov clustering with depth: </label>
+				<input id="clustering-depth-input" type="number" value="1" style="width:100px"/>
+			</form> 
 
 		<div id="cy"></div>
 

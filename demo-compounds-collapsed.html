@@ -116,7 +116,8 @@
 				});
 
 				var api = cy.expandCollapse('get');
-				var elements = null;
+        var elements = null;
+        var markovClusteringClickable = true;
 
 				document.getElementById("collapseRecursively").addEventListener("click", function () {
 					api.collapseRecursively(cy.$(":selected"));
@@ -148,29 +149,10 @@
 
 				document.getElementById("expandAll").addEventListener("click", function () {
 					api.expandAll();
-				});
-
-				document.getElementById("graphml-input").addEventListener("change", function(evt) {
-					//read graphML file
-					let files = evt.target.files;
-					let reader = new FileReader();
-					let contents;
-					reader.readAsText(files[0]);
-					reader.onload = function(event) {
-						contents = event.target.result;
-						
-						cy.startBatch();
-						cy.elements().remove();
-						cy.graphml(contents);
-						cy.endBatch();
-
-						//to be able to open the same file again
-						document.getElementById("graphml-input").value = "";
-					};
-				});
-
-				document.getElementById("apply-markov-clustering").addEventListener("click", function() {
-					var clusteringDepth = document.getElementById("clustering-depth-input").value;
+        });
+        
+        function applyMarkovClustering() {
+          var clusteringDepth = document.getElementById("clustering-depth-input").value;
 					if (clusteringDepth < 1)
 						return;
 					cy.startBatch();
@@ -197,8 +179,38 @@
 						}).run();
 						api.collapseAll();
 					}
-					cy.endBatch();
+          cy.endBatch();
+          document.getElementById("apply-markov-clustering").removeEventListener("click", applyMarkovClustering);
+          document.getElementById("apply-markov-clustering").style.cursor = "auto";
+          markovClusteringClickable = false;
+        }
+
+				document.getElementById("graphml-input").addEventListener("change", function(evt) {
+					//read graphML file
+					let files = evt.target.files;
+					let reader = new FileReader();
+					let contents;
+					reader.readAsText(files[0]);
+					reader.onload = function(event) {
+						contents = event.target.result;
+						
+						cy.startBatch();
+            cy.elements().remove();
+            cy.graphml({layoutBy: 'cose-bilkent'});
+						cy.graphml(contents);
+						cy.endBatch();
+
+						//to be able to open the same file again
+            document.getElementById("graphml-input").value = "";
+            //avoid adding the same listener multiple times
+            if (!markovClusteringClickable)
+              document.getElementById("apply-markov-clustering").addEventListener("click", applyMarkovClustering);
+              document.getElementById("apply-markov-clustering").style.cursor = "pointer";
+              markovClusteringClickable = true;
+					};
 				});
+
+        document.getElementById("apply-markov-clustering").addEventListener("click", applyMarkovClustering);
 
 			});
 		</script>

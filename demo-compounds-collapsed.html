@@ -154,20 +154,23 @@
         function applyMarkovClustering() {
           var clusteringDepth = document.getElementById("clustering-depth-input").value;
 					if (clusteringDepth < 1)
-						return;
+            return;
+          var createdNodeIds = [];
 					cy.startBatch();
 					for (var i = 0; i < clusteringDepth; i++) {
 						//get clusters for this depth level
 						let clusters = cy.elements().markovClustering();
 
 						for (var j = 0; j < clusters.length; j++) {
-							let parentId = "p_" + i + "_" + j;
-							cy.add({
+              let parentId = "p_" + i + "_" + j;
+              
+              cy.add({
 								group: 'nodes',
 								data: {
 									id: parentId
 								}
-							});
+              });
+              createdNodeIds.push(parentId);
 							clusters[j].move({
 								parent: parentId
 							});
@@ -178,6 +181,11 @@
 							fit: true
 						}).run();
 						api.collapseAll();
+            cy.nodes(element => {
+              if (createdNodeIds.includes(element.id()) && element.degree() < 1) {
+                cy.remove(element);
+              }
+            });
 					}
           cy.endBatch();
           document.getElementById("apply-markov-clustering").removeEventListener("click", applyMarkovClustering);
@@ -192,23 +200,23 @@
 					let contents;
 					reader.readAsText(files[0]);
 					reader.onload = function(event) {
-						contents = event.target.result;
-						
-						cy.startBatch();
-            cy.elements().remove();
-            cy.graphml({layoutBy: 'cose-bilkent'});
-						cy.graphml(contents);
-						cy.endBatch();
+          contents = event.target.result;
+          
+          cy.startBatch();
+          cy.elements().remove();
+          cy.graphml({layoutBy: 'cose-bilkent'});
+          cy.graphml(contents);
+          cy.endBatch();
 
-						//to be able to open the same file again
-            document.getElementById("graphml-input").value = "";
-            //avoid adding the same listener multiple times
-            if (!markovClusteringClickable)
-              document.getElementById("apply-markov-clustering").addEventListener("click", applyMarkovClustering);
-              document.getElementById("apply-markov-clustering").style.cursor = "pointer";
-              markovClusteringClickable = true;
-					};
-				});
+          //to be able to open the same file again
+          document.getElementById("graphml-input").value = "";
+          //avoid adding the same listener multiple times
+          if (!markovClusteringClickable)
+            document.getElementById("apply-markov-clustering").addEventListener("click", applyMarkovClustering);
+            document.getElementById("apply-markov-clustering").style.cursor = "pointer";
+            markovClusteringClickable = true;
+          };
+        });
 
         document.getElementById("apply-markov-clustering").addEventListener("click", applyMarkovClustering);
 

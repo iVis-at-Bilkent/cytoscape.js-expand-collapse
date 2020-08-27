@@ -182,16 +182,18 @@
 						} 
 					});
 					cy.remove(nodesToRemove);
-					
+					api.collapseAll();
+          
 					const layout = cy.makeLayout({
 						name: 'cose-bilkent',
 						randomize: true,
-						fit: true
-					});
-					layout.run();
-                    layout.on("layoutstop", () => {
-						api.collapseAll();
-            		});
+						fit: true,
+            animate: false
+					}).run();
+          //cy.nodes().on("expandcollapse.aftercollapse", function(event) { layout.run();});
+          // layout.on("layoutstop", () => {
+					// 	  api.collapseAll();
+          // });
 					
 					/*
 					cy.layout({

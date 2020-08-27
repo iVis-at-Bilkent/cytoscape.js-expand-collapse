@@ -183,27 +183,12 @@
 					});
 					cy.remove(nodesToRemove);
 					api.collapseAll();
-          
 					const layout = cy.makeLayout({
 						name: 'cose-bilkent',
 						randomize: true,
 						fit: true,
-            animate: false
-					}).run();
-          //cy.nodes().on("expandcollapse.aftercollapse", function(event) { layout.run();});
-          // layout.on("layoutstop", () => {
-					// 	  api.collapseAll();
-          // });
-					
-					/*
-					cy.layout({
-						name: 'cose-bilkent',
-						randomize: true,
-						fit: true
-					}).run();
-					api.collapseAll();
-					*/
-					
+            			animate: false
+					}).run();					
             		
 				}
           cy.endBatch();
@@ -258,7 +243,8 @@
 			<input id="graphml-input" type="file" name="name" style="display: none;"/> <br/>
 			<form style="margin-bottom: auto;">
 				<label id="apply-markov-clustering" for="clustering-depth-input" style="cursor: pointer;color: #e74c3c"><b> Apply Markov clustering with depth: </b></label>
-				<input id="clustering-depth-input" type="number" value="1" style="width:100px"/>
+				<input id="clustering-depth-input" type="number" value="1" min= "1" style="width:50px" oninput="(!validity.rangeUnderflow||(value=1)) &&
+				(!validity.stepMismatch||(value=parseInt(this.value)));"/>
 			</form>
 			<form>
 				<label for="cluster-by-default" style="color: darkmagenta;"> <b>Apply Markov clustering on load</b></label>

@@ -175,17 +175,34 @@
 							parent: parentId
 						});
 					}
+					var nodesToRemove = cy.collection();
+					cy.nodes().forEach(function (node) {
+						if (createdNodeIds.includes(node.id()) && node.degree() < 1 && !node.isParent()) {
+							nodesToRemove = nodesToRemove.union(node);
+						} 
+					});
+					cy.remove(nodesToRemove);
+					
+					const layout = cy.makeLayout({
+						name: 'cose-bilkent',
+						randomize: true,
+						fit: true
+					});
+					layout.run();
+                    layout.on("layoutstop", () => {
+						api.collapseAll();
+            		});
+					
+					/*
 					cy.layout({
-					name: "cose-bilkent",
-					randomize: true,
-					fit: true
+						name: 'cose-bilkent',
+						randomize: true,
+						fit: true
 					}).run();
 					api.collapseAll();
-            		cy.nodes(element => {
-              			if (createdNodeIds.includes(element.id()) && element.degree() < 1) {
-                			cy.remove(element);
-              			}
-            		});
+					*/
+					
+            		
 				}
           cy.endBatch();
           document.getElementById("apply-markov-clustering").removeEventListener("click", applyMarkovClustering);

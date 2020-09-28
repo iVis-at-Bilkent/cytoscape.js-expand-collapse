@@ -208,8 +208,11 @@ module.exports = function (params, cy, api) {
         currMousePos = e.renderedPosition || e.cyRenderedPosition
       });
 
-      cy.on('remove', 'node', data.eRemove = function () {
-        clearDraws();
+      cy.on('remove', 'node', data.eRemove = function (evt) {
+        const node = evt.target;
+        if (node == nodeWithRenderedCue){
+          clearDraws();
+        }      
       });
 
       var ur;

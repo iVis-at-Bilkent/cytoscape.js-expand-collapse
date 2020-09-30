@@ -286,15 +286,6 @@ module.exports = function (params, cy, api) {
 
       cy.on('pan zoom', data.ePosition);
 
-      cy.on('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse = function () {
-        var delay = 50 + (params.animate ? params.animationDuration : 0);
-        setTimeout(() => {
-          if (this.selected()) {
-            drawExpandCollapseCue(this);
-          }
-        }, delay);
-      });
-
       // write options to data
       data.hasEventFields = true;
       setData(data);
@@ -318,7 +309,6 @@ module.exports = function (params, cy, api) {
         .off('position', 'node', data.ePosition)
         .off('pan zoom', data.ePosition)
         .off('select unselect', data.eSelect)
-        .off('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse)
         .off('free', 'node', data.eFree)
         .off('resize', data.eCyResize);
     },
@@ -338,7 +328,6 @@ module.exports = function (params, cy, api) {
         .on('position', 'node', data.ePosition)
         .on('pan zoom', data.ePosition)
         .on('select unselect', data.eSelect)
-        .on('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse)
         .on('free', 'node', data.eFree)
         .on('resize', data.eCyResize);
     }

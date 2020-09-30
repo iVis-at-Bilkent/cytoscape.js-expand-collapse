@@ -287,7 +287,7 @@ module.exports = function (params, cy, api) {
       cy.on('pan zoom', data.ePosition);
 
       cy.on('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse = function () {
-        var delay = 50 + params.animate ? params.animationDuration : 0;
+        var delay = 50 + (params.animate ? params.animationDuration : 0);
         setTimeout(() => {
           if (this.selected()) {
             drawExpandCollapseCue(this);

@@ -10,6 +10,7 @@
 
     var undoRedoUtilities = require('./undoRedoUtilities');
     var cueUtilities = require("./cueUtilities");
+    var saveLoadUtils = null;
 
     function extendOptions(options, extendBy) {
       var tempOpts = {};
@@ -362,7 +363,13 @@
         return result;
       };
 
+      api.loadJson = function (jsonStr) {
+        saveLoadUtils.loadJson(jsonStr);
+      };
 
+      api.saveJson = function (elems, filename) {
+        saveLoadUtils.saveJson(elems, filename);
+      };
 
       return api; // Return the API instance
     }
@@ -415,7 +422,7 @@
 
         var expandCollapseUtilities = require('./expandCollapseUtilities')(cy);
         var api = createExtensionAPI(cy, expandCollapseUtilities); // creates and returns the API instance for the extension
-
+        saveLoadUtils = require("./saveLoadUtilities")(cy, api);
         setScratch(cy, 'api', api);
 
         undoRedoUtilities(cy, api);

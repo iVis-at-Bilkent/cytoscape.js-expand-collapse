@@ -1,4 +1,11 @@
 function saveLoadUtilities(cy, api) {
+  /** converts array of JSON to a cytoscape.js collection (bottom-up recursive)
+   * keeps information about parents, all nodes added to cytoscape, and nodes to be collapsed
+  * @param  {} jsonArr an array of objects (a JSON array)
+  * @param  {} allNodes a cytoscape.js collection
+  * @param  {} nodes2collapse a cytoscape.js collection
+  * @param  {} node2parent a JS object (simply key-value pairs)
+  */
   function json2cyCollection(jsonArr, allNodes, nodes2collapse, node2parent) {
     // process edges last since they depend on nodes
     jsonArr.sort((a) => {
@@ -49,6 +56,9 @@ function saveLoadUtilities(cy, api) {
     return coll;
   }
 
+  /** clears all the data related to collapsed node
+   * @param  {} e a cytoscape element
+   */
   function clearCollapseMetaData(e) {
     e.data('collapsedChildren', null);
     e.removeClass('cy-expand-collapse-collapsed-node');
@@ -59,6 +69,9 @@ function saveLoadUtilities(cy, api) {
     e.data('expandcollapseRenderedCueSize', null);
   }
 
+  /** converts cytoscape collection to JSON array.(bottom-up recursive)
+   * @param  {} elems
+   */
   function cyCollection2Json(elems) {
     let r = [];
     for (let i = 0; i < elems.length; i++) {
@@ -84,7 +97,10 @@ function saveLoadUtilities(cy, api) {
     return r;
   }
 
-  // { cy: any, collapsedEdges: any, collapsedChildren: any, originalEnds: any }[]
+  /** returns { cy: any, collapsedEdges: any, collapsedChildren: any, originalEnds: any }[]
+   * from cytoscape collection
+   * @param  {} col
+   */
   function halfDeepCopyCollection(col) {
     let arr = [];
     for (let i = 0; i < col.length; i++) {
@@ -109,6 +125,13 @@ function saveLoadUtilities(cy, api) {
   }
 
   return {
+
+    /** Load elements from JSON formatted string representation.
+     * For collapsed compounds, first add all collapsed nodes as normal nodes then collapse them. Then reposition them.
+     * For collapsed edges, first add all of the edges then remove collapsed edges from cytoscape.
+     * For original ends, restore their reference to cytoscape elements
+     * @param  {} txt string
+     */
     loadJson: function (txt) {
       const fileJSON = JSON.parse(txt);
       // original endpoints won't exist in cy. So keep a reference.
@@ -161,6 +184,12 @@ function saveLoadUtilities(cy, api) {
       cy.fit();
     },
 
+
+    /** saves cytoscape elements (collection) as JSON
+     * calls elements' json method (https://js.cytoscape.org/#ele.json) when we keep a cytoscape element in the data. 
+     * @param  {} elems cytoscape collection
+     * @param  {} filename string
+     */
     saveJson: function (elems, filename) {
       if (!elems) {
         elems = cy.$();

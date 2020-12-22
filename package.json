@@ -7,6 +7,7 @@
     "main": "cytoscape-expand-collapse.js"
   },
   "scripts": {
+    "build": "echo 'node version must be 10!' && gulp build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

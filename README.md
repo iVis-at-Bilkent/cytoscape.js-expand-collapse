@@ -110,6 +110,12 @@ Collapse all edges in the graph.
 `api.expandAllEdges()`
 Expand all edges in the graph.
 
+`api.loadJson(jsonStr)`
+Load elements from JSON string.
+
+`api.saveJson(elems, filename)`
+Saves elements in JSON format to a file. Default value for `elems` is all the elements. Default value for `filename` is 'expand-collapse-output.json'
+
 ## Events
 Notice that following events are performed for *each* node that is collapsed/expanded. Also, notice that any post-processing layout is performed *after* the event.
 

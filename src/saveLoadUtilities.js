@@ -90,7 +90,15 @@ function saveLoadUtilities(cy, api) {
         jsonObj.data.collapsedEdges = elem.collapsedEdges;
       }
       if (elem.originalEnds) {
-        jsonObj.data.originalEnds = { source: elem.originalEnds.source.json(), target: elem.originalEnds.target.json() };
+        const src = elem.originalEnds.source.json();
+        const tgt = elem.originalEnds.target.json();
+        if (src.data.collapsedChildren) {
+          src.data.collapsedChildren = cyCollection2Json(halfDeepCopyCollection(src.data.collapsedChildren));
+        }
+        if (tgt.data.collapsedChildren) {
+          tgt.data.collapsedChildren = cyCollection2Json(halfDeepCopyCollection(tgt.data.collapsedChildren));
+        }
+        jsonObj.data.originalEnds = { source: src, target: tgt };
       }
       r.push(jsonObj);
     }
@@ -207,7 +215,16 @@ function saveLoadUtilities(cy, api) {
           e.collapsedEdges = cyCollection2Json(halfDeepCopyCollection(e.collapsedEdges));
         }
         if (e.originalEnds) {
-          e.originalEnds = { source: e.originalEnds.source.json(), target: e.originalEnds.target.json() };
+          const src = e.originalEnds.source.json();
+          const tgt = e.originalEnds.target.json();
+          if (src.data.collapsedChildren) {
+            // e.originalEnds.source.data.collapsedChildren will be changed
+            src.data.collapsedChildren = cyCollection2Json(halfDeepCopyCollection(src.data.collapsedChildren));
+          }
+          if (tgt.data.collapsedChildren) {
+            tgt.data.collapsedChildren = cyCollection2Json(halfDeepCopyCollection(tgt.data.collapsedChildren));
+          }
+          e.originalEnds = { source: src, target: tgt };
         }
         const jsonObj = e.cy.json();
         jsonObj.data.collapsedEdges = e.collapsedEdges;

@@ -153,6 +153,15 @@ function activateAccordions() {
   }
 }
 
+function addParentNode(idSuffix, parent = undefined) {
+  const id = 'c' + idSuffix;
+  const parentNode = { data: { id: id } };
+  cy.add(parentNode);
+  cy.$('#' + id).move({ parent: parent });
+  return id;
+}
+
+
 function main() {
   const edgeStyles = {
     "type1": { "color": "#CFA79D", "arrowShape": "triangle" },
@@ -319,6 +328,12 @@ function main() {
   var elements = null;
   var markovClusteringClickable = true;
 
+
+  function setClusterBtn(isEnabled) {
+    markovClusteringClickable = isEnabled;
+    document.getElementById("apply-markov-clustering").disabled = !isEnabled;
+  }
+
   document.getElementById("collapseRecursively").addEventListener("click", function () {
     api.collapseRecursively(cy.$(":selected"));
   });
@@ -392,10 +407,7 @@ function main() {
 
     }
     cy.endBatch();
-    const btn = document.getElementById("apply-markov-clustering");
-    btn.removeEventListener("click", applyMarkovClustering);
-    btn.disabled = true;
-    markovClusteringClickable = false;
+    setClusterBtn(false);
   }
 
   document.getElementById("graphml-input").addEventListener("change", function (evt) {
@@ -417,9 +429,7 @@ function main() {
       document.getElementById("graphml-input").value = "";
       //avoid adding the same listener multiple times
       if (!markovClusteringClickable) {
-        document.getElementById("apply-markov-clustering").addEventListener("click", applyMarkovClustering);
-        document.getElementById("apply-markov-clustering").style.cursor = "pointer";
-        markovClusteringClickable = true;
+        setClusterBtn(true);
       }
       if (document.getElementById("cluster-by-default").checked) {
         applyMarkovClustering();
@@ -485,11 +495,46 @@ function main() {
     })
   });
 
+  document.getElementById('add-compound').addEventListener('click', function () {
+    const elems = cy.nodes(':selected');
+    if (elems.length < 1) {
+      return;
+    }
+    const parent = elems[0].parent().id();
+    for (let i = 1; i < elems.length; i++) {
+      if (parent !== elems[i].parent().id()) {
+        return;
+      }
+    }
+    const id = new Date().getTime();
+    addParentNode(id, parent);
+    for (let i = 0; i < elems.length; i++) {
+      elems[i].move({ parent: 'c' + id });
+    }
+  });
+
+  document.getElementById('remove-compound').addEventListener('click', function () {
+    const elems = cy.nodes(':selected').filter(':compound');
+    if (elems.length < 1) {
+      return;
+    }
+    for (let i = 0; i < elems.length; i++) {
+      // expand if collapsed
+      if (elems[i].hasClass('cy-expand-collapse-collapsed-node')) {
+        api.expand(elems[i], { layoutBy: null, fisheye: false, animate: false });
+      }
+      const grandParent = elems[i].parent().id() ?? null;
+      const children = elems[i].children();
+      children.move({ parent: grandParent });
+      cy.remove(elems[i]);
+    }
+  });
+
   activateAccordions();
 
   setTimeout(() => {
     document.getElementsByClassName('accordion')[1].click();
-  }, 1000);
+  }, 500);
 }
 
 document.addEventListener('DOMContentLoaded', main);

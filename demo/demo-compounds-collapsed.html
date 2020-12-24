@@ -43,6 +43,8 @@
       <div class="accordion-container">
         <div class="accordion">Nodes</div>
         <div class="panel">
+          <button id="add-compound">Add compound for selected</button>
+          <button id="remove-compound">Remove selected compound</button>
           <button id="expandAllAndRemove">Expand all and remove</button>
           <button id="loadInCollapsedState">Load compouds collapsed</button>
           <button id="collapseAll">Collapse all nodes</button>
@@ -50,19 +52,19 @@
           <button id="collapseRecursively">Collapse selected recursively</button>
           <button id="expandRecursively">Expand selected recursively</button>
           <button id="apply-markov-clustering">Apply Markov clustering</button>
-          <form>
+          <div>
             <label for="clustering-depth-input">
               <b> Clustering depth: </b>
             </label>
             <input id="clustering-depth-input" type="number" value="1" min="1" style="width:50px" oninput="(!validity.rangeUnderflow||(value=1)) &&
             (!validity.stepMismatch||(value=parseInt(this.value)));" />
-          </form>
-          <form>
+          </div>
+          <div>
             <label for="cluster-by-default">
               <b>Apply Markov clustering on load</b>
             </label>
             <input id="cluster-by-default" type="checkbox" />
-          </form>
+          </div>
         </div>
       </div>
       <div class="accordion-container">
@@ -74,18 +76,18 @@
           <button id="expandSelectedEdges">Expand selected edges </button>
           <button id="collapseEdgesBetweenNodes"> Collapse edges between selected nodes</button>
           <button id="expandEdgesBetweenNodes"> Expand edges between selected nodes</button>
-          <form>
+          <div>
             <label for="cluster-by-default">
               <b>Group edges of similar type</b>
             </label>
             <input id="groupEdges" type="checkbox" />
-          </form>
-          <form>
+          </div>
+          <div>
             <label for="cluster-by-default">
               <b>Allow nested edge collapse </b>
             </label>
             <input id="allowNestedEdgeCollapse" type="checkbox" />
-          </form>
+          </div>
         </div>
       </div>
 

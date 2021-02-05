@@ -363,8 +363,8 @@
         return result;
       };
 
-      api.loadJson = function (jsonStr, isOverrideExisting = true) {
-        saveLoadUtils.loadJson(jsonStr, isOverrideExisting);
+      api.loadJson = function (jsonStr) {
+        saveLoadUtils.loadJson(jsonStr);
       };
 
       api.saveJson = function (elems, filename) {

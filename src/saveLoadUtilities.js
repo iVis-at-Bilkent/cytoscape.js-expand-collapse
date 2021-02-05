@@ -6,7 +6,7 @@ function saveLoadUtilities(cy, api) {
   * @param  {} nodes2collapse a cytoscape.js collection
   * @param  {} node2parent a JS object (simply key-value pairs)
   */
-  function json2cyCollection(jsonArr, allNodes, nodes2collapse, node2parent, isOverrideExisting) {
+  function json2cyCollection(jsonArr, allNodes, nodes2collapse, node2parent) {
     // process edges last since they depend on nodes
     jsonArr.sort((a) => {
       if (a.group === 'edges') {
@@ -24,16 +24,7 @@ function saveLoadUtilities(cy, api) {
         node2parent[d.id] = d.parent;
       }
       const pos = { x: json.position.x, y: json.position.y };
-      const existing = cy.$id(d.id);
-      let e = null;
-      if (existing.length > 0) {
-        if (isOverrideExisting) {
-          overrideJson2Elem(existing, json);
-        }
-        e = existing;
-      } else {
-        e = cy.add(json);
-      }
+      const e = cy.add(json);
       if (e.isNode()) {
         allNodes.merge(e);
       }
@@ -52,10 +43,10 @@ function saveLoadUtilities(cy, api) {
       }
       if (d.collapsedChildren) {
         nodes2collapse.merge(e);
-        json2cyCollection(d.collapsedChildren, allNodes, nodes2collapse, node2parent, isOverrideExisting);
+        json2cyCollection(d.collapsedChildren, allNodes, nodes2collapse, node2parent);
         clearCollapseMetaData(e);
       } else if (d.collapsedEdges) {
-        e.data('collapsedEdges', json2cyCollection(d.collapsedEdges, allNodes, nodes2collapse, node2parent, isOverrideExisting));
+        e.data('collapsedEdges', json2cyCollection(d.collapsedEdges, allNodes, nodes2collapse, node2parent));
         // delete collapsed edges from cy
         cy.remove(e.data('collapsedEdges'));
       }
@@ -165,7 +156,7 @@ function saveLoadUtilities(cy, api) {
      * For original ends, restore their reference to cytoscape elements
      * @param  {} txt string
      */
-    loadJson: function (txt, isOverrideExisting) {
+    loadJson: function (txt) {
       const fileJSON = JSON.parse(txt);
       // original endpoints won't exist in cy. So keep a reference.
       const nodePositions = {};
@@ -177,37 +168,18 @@ function saveLoadUtilities(cy, api) {
         if (n.data.parent) {
           node2parent[n.data.id] = n.data.parent;
         }
-        const existing = cy.$id(n.data.id);
-        let node = null;
-        if (existing.length > 0) {
-          if (isOverrideExisting) {
-            overrideJson2Elem(existing, n);
-          }
-          node = existing;
-        } else {
-          node = cy.add(n);
-        }
-
+        const node = cy.add(n);
         allNodes.merge(node);
         if (node.data('collapsedChildren')) {
-          json2cyCollection(node.data('collapsedChildren'), allNodes, nodes2collapse, node2parent, isOverrideExisting);
+          json2cyCollection(node.data('collapsedChildren'), allNodes, nodes2collapse, node2parent);
           nodes2collapse.merge(node);
           clearCollapseMetaData(node);
         }
       }
       for (const e of fileJSON.edges) {
-        const existing = cy.$id(e.data.id);
-        let edge = null;
-        if (existing.length > 0) {
-          if (isOverrideExisting) {
-            overrideJson2Elem(existing, e);
-          }
-          edge = existing;
-        } else {
-          edge = cy.add(e);
-        }
+        const edge = cy.add(e);
         if (edge.data('collapsedEdges')) {
-          edge.data('collapsedEdges', json2cyCollection(e.data.collapsedEdges, allNodes, nodes2collapse, node2parent, isOverrideExisting));
+          edge.data('collapsedEdges', json2cyCollection(e.data.collapsedEdges, allNodes, nodes2collapse, node2parent));
           cy.remove(edge.data('collapsedEdges')); // delete collapsed edges from cy
         }
         if (edge.data('originalEnds')) {

@@ -28,7 +28,7 @@ function saveLoadUtilities(cy, api) {
       let e = null;
       if (existing.length > 0) {
         if (isOverrideExisting) {
-          existing.json(json);
+          overrideJson2Elem(existing, json);
         }
         e = existing;
       } else {
@@ -141,6 +141,22 @@ function saveLoadUtilities(cy, api) {
     anchor.click();
   }
 
+  function overrideJson2Elem(elem, json) {
+    const collapsedChildren = elem.data('collapsedChildren');
+    const collapsedEdges = elem.data('collapsedEdges');
+    const originalEnds = elem.data('originalEnds');
+    elem.json(json);
+    if (collapsedChildren) {
+      elem.data('collapsedChildren', collapsedChildren);
+    }
+    if (collapsedEdges) {
+      elem.data('collapsedEdges', collapsedEdges);
+    }
+    if (originalEnds) {
+      elem.data('originalEnds', originalEnds);
+    }
+  }
+
   return {
 
     /** Load elements from JSON formatted string representation.
@@ -165,7 +181,7 @@ function saveLoadUtilities(cy, api) {
         let node = null;
         if (existing.length > 0) {
           if (isOverrideExisting) {
-            existing.json(n);
+            overrideJson2Elem(existing, n);
           }
           node = existing;
         } else {
@@ -184,7 +200,7 @@ function saveLoadUtilities(cy, api) {
         let edge = null;
         if (existing.length > 0) {
           if (isOverrideExisting) {
-            existing.json(e);
+            overrideJson2Elem(existing, e);
           }
           edge = existing;
         } else {

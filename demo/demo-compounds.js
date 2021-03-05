@@ -221,15 +221,21 @@ function main() {
     container: document.getElementById('cy'),
 
     ready: function () {
-      var api = this.expandCollapse({
+      this.layout({
+        name: 'fcose',
+        randomize: true,
+        fit: true,
+        animate: false
+      }).run();      
+      var api = this.expandCollapse({        
         layoutBy: {
-          name: "cose-bilkent",
-          animate: "end",
+          name: "fcose",
+          animate: true,
           randomize: false,
           fit: true
         },
         fisheye: true,
-        animate: false,
+        animate: true,
         undoable: false
       });
       api.collapseAll();
@@ -371,19 +377,24 @@ function main() {
     if (clusteringDepth < 1)
       return;
     var createdNodeIds = [];
-    cy.startBatch();
+    //cy.startBatch();
+    
     for (var i = 0; i < clusteringDepth; i++) {
       //get clusters for this depth level
       let clusters = cy.elements().markovClustering();
 
       for (var j = 0; j < clusters.length; j++) {
         let parentId = "p_" + i + "_" + j;
-
-        cy.add({
+        
+        let clusterBoundingBox = clusters[j].bb();
+        let parentPos = {x: clusterBoundingBox.x1 + clusterBoundingBox.w / 2, y: clusterBoundingBox.y1 + clusterBoundingBox.h / 2};
+        
+        var newNode = cy.add({
           group: 'nodes',
           data: {
             id: parentId
-          }
+          },
+          position: parentPos
         });
         createdNodeIds.push(parentId);
         clusters[j].move({
@@ -397,16 +408,11 @@ function main() {
         }
       });
       cy.remove(nodesToRemove);
-      api.collapseAll();
-      cy.makeLayout({
-        name: 'cose-bilkent',
-        randomize: true,
-        fit: true,
-        animate: false
-      }).run();
 
+      api.collapseAll();
     }
-    cy.endBatch();
+
+    //cy.endBatch();
     setClusterBtn(false);
   }
 
@@ -421,9 +427,16 @@ function main() {
 
       cy.startBatch();
       cy.elements().remove();
-      cy.graphml({ layoutBy: 'cose-bilkent' });
+      cy.graphml({ layoutBy: 'preset'});
       cy.graphml(contents);
       cy.endBatch();
+
+      cy.makeLayout({
+        name: 'fcose',
+        randomize: true,
+        fit: true,
+        animate: false
+      }).run();
 
       //to be able to open the same file again
       document.getElementById("graphml-input").value = "";

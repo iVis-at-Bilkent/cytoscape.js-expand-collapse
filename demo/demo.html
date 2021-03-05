@@ -14,7 +14,7 @@
   <!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
   <script src="https://unpkg.com/layout-base/layout-base.js"></script>
   <script src="https://unpkg.com/cose-base/cose-base.js"></script>
-  <script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
+  <script src="https://unpkg.com/cytoscape-fcose/cytoscape-fcose.js"></script>
   <script src="../cytoscape-expand-collapse.js"></script>
 
   <script>
@@ -23,7 +23,7 @@
       var cy = window.cy = cytoscape({
         container: document.getElementById('cy'),
         layout: {
-          name: 'cose-bilkent'
+          name: 'fcose'
         },
         style: [
           {
@@ -75,8 +75,8 @@
 
       var api = cy.expandCollapse({
         layoutBy: {
-          name: "cose-bilkent",
-          animate: "end",
+          name: "fcose",
+          animate: true,
           randomize: false,
           fit: true
         },

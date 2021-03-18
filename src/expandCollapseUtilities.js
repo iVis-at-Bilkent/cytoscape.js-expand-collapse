@@ -449,7 +449,7 @@ return {
     }
 
     // If there is no sibling call expand node base function here else it is to be called one of fishEyeViewMoveNode() calls
-    if (siblings.length == 0) {
+    if (siblings.length == 0 && node.same(nodeToExpand)) {
       this.expandNodeBaseFunction(nodeToExpand, single, layoutBy);
     }
 

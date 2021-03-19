@@ -489,8 +489,7 @@ return {
     if (childrenList.length == 0) {
       var newPosition = {x: node._private.position.x + T_x, y: node._private.position.y + T_y};
       if (!single || !animate) {
-        node._private.position.x = newPosition.x;
-        node._private.position.y = newPosition.y;
+        node.position(newPosition); // at this point, position should be updated
       }
       else {
         this.animatedlyMovingNodeCount++;

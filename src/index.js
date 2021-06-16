@@ -1,4 +1,3 @@
-;
 (function () {
   'use strict';
 
@@ -11,6 +10,7 @@
 
     var undoRedoUtilities = require('./undoRedoUtilities');
     var cueUtilities = require("./cueUtilities");
+    var saveLoadUtils = null;
 
     function extendOptions(options, extendBy) {
       var tempOpts = {};
@@ -22,40 +22,63 @@
           tempOpts[key] = extendBy[key];
       return tempOpts;
     }
-    
+
     // evaluate some specific options in case of they are specified as functions to be dynamically changed
     function evalOptions(options) {
       var animate = typeof options.animate === 'function' ? options.animate.call() : options.animate;
       var fisheye = typeof options.fisheye === 'function' ? options.fisheye.call() : options.fisheye;
-      
+
       options.animate = animate;
       options.fisheye = fisheye;
     }
-    
+
     // creates and returns the API instance for the extension
     function createExtensionAPI(cy, expandCollapseUtilities) {
       var api = {}; // API to be returned
       // set functions
 
-      function handleNewOptions( opts ) {
+      function handleNewOptions(opts) {
         var currentOpts = getScratch(cy, 'options');
-        if ( opts.cueEnabled && !currentOpts.cueEnabled ) {
+        if (opts.cueEnabled && !currentOpts.cueEnabled) {
           api.enableCue();
         }
-        else if ( !opts.cueEnabled && currentOpts.cueEnabled ) {
+        else if (!opts.cueEnabled && currentOpts.cueEnabled) {
           api.disableCue();
         }
       }
 
+      function isOnly1Pair(edges) {
+        let relatedEdgesArr = [];
+        for (let i = 0; i < edges.length; i++) {
+          const srcId = edges[i].source().id();
+          const targetId = edges[i].target().id();
+          const obj = {};
+          obj[srcId] = true;
+          obj[targetId] = true;
+          relatedEdgesArr.push(obj);
+        }
+        for (let i = 0; i < relatedEdgesArr.length; i++) {
+          for (let j = i + 1; j < relatedEdgesArr.length; j++) {
+            const keys1 = Object.keys(relatedEdgesArr[i]);
+            const keys2 = Object.keys(relatedEdgesArr[j]);
+            const allKeys = new Set(keys1.concat(keys2));
+            if (allKeys.size != keys1.length || allKeys.size != keys2.length) {
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+
       // set all options at once
-      api.setOptions = function(opts) {
+      api.setOptions = function (opts) {
         handleNewOptions(opts);
         setScratch(cy, 'options', opts);
       };
 
-      api.extendOptions = function(opts) {
+      api.extendOptions = function (opts) {
         var options = getScratch(cy, 'options');
-        var newOptions = extendOptions( options, opts );
+        var newOptions = extendOptions(options, opts);
         handleNewOptions(newOptions);
         setScratch(cy, 'options', newOptions);
       }
@@ -63,10 +86,10 @@
       // set the option whose name is given
       api.setOption = function (name, value) {
         var opts = {};
-        opts[ name ] = value;
+        opts[name] = value;
 
         var options = getScratch(cy, 'options');
-        var newOptions = extendOptions( options, opts );
+        var newOptions = extendOptions(options, opts);
 
         handleNewOptions(newOptions);
         setScratch(cy, 'options', newOptions);
@@ -153,7 +176,7 @@
         var self = this;
         var nodes = _nodes ? _nodes : cy.nodes();
         return nodes.filter(function (ele, i) {
-          if(typeof ele === "number") {
+          if (typeof ele === "number") {
             ele = i;
           }
           return self.isCollapsible(ele);
@@ -165,13 +188,13 @@
         var self = this;
         var nodes = _nodes ? _nodes : cy.nodes();
         return nodes.filter(function (ele, i) {
-          if(typeof ele === "number") {
+          if (typeof ele === "number") {
             ele = i;
           }
           return self.isExpandable(ele);
         });
       };
-      
+
       // Get the children of the given collapsed node which are removed during collapse operation
       api.getCollapsedChildren = function (node) {
         return node.data('collapsedChildren');
@@ -182,7 +205,7 @@
        * @param node : a collapsed node
        * @return all collapsed children
        */
-      api.getCollapsedChildrenRecursively = function(node) {
+      api.getCollapsedChildrenRecursively = function (node) {
         var collapsedChildren = cy.collection();
         return expandCollapseUtilities.getCollapsedChildrenRecursively(node, collapsedChildren);
       };
@@ -191,21 +214,21 @@
        * Returned value includes edges and nodes, use selector to get edges or nodes
        * @return all collapsed children
        */
-      api.getAllCollapsedChildrenRecursively = function(){
+      api.getAllCollapsedChildrenRecursively = function () {
         var collapsedChildren = cy.collection();
         var collapsedNodes = cy.nodes(".cy-expand-collapse-collapsed-node");
         var j;
-        for (j=0; j < collapsedNodes.length; j++){
-            collapsedChildren = collapsedChildren.union(this.getCollapsedChildrenRecursively(collapsedNodes[j]));
+        for (j = 0; j < collapsedNodes.length; j++) {
+          collapsedChildren = collapsedChildren.union(this.getCollapsedChildrenRecursively(collapsedNodes[j]));
         }
         return collapsedChildren;
       };
       // This method forces the visual cue to be cleared. It is to be called in extreme cases
-      api.clearVisualCue = function(node) {
+      api.clearVisualCue = function (node) {
         cy.trigger('expandcollapse.clearvisualcue');
       };
 
-      api.disableCue = function() {
+      api.disableCue = function () {
         var options = getScratch(cy, 'options');
         if (options.cueEnabled) {
           cueUtilities('unbind', cy, api);
@@ -213,7 +236,7 @@
         }
       };
 
-      api.enableCue = function() {
+      api.enableCue = function () {
         var options = getScratch(cy, 'options');
         if (!options.cueEnabled) {
           cueUtilities('rebind', cy, api);
@@ -221,48 +244,48 @@
         }
       };
 
-      api.getParent = function(nodeId) {
-        if(cy.getElementById(nodeId)[0] === undefined){
+      api.getParent = function (nodeId) {
+        if (cy.getElementById(nodeId)[0] === undefined) {
           var parentData = getScratch(cy, 'parentData');
           return parentData[nodeId];
         }
-        else{
+        else {
           return cy.getElementById(nodeId).parent();
         }
       };
 
-      api.collapseEdges = function(edges,opts){     
-        var result =    {edges: cy.collection(), oldEdges: cy.collection()};
-        if(edges.length < 2) return result ;
-        if(edges.connectedNodes().length > 2) return result;
+      api.collapseEdges = function (edges, opts) {
+        var result = { edges: cy.collection(), oldEdges: cy.collection() };
+        if (edges.length < 2) return result;
+        if (!isOnly1Pair(edges)) return result;
         var options = getScratch(cy, 'options');
-        var tempOptions = extendOptions(options, opts); 
+        var tempOptions = extendOptions(options, opts);
         return expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
       };
-      api.expandEdges = function(edges){    
-        var result =    {edges: cy.collection(), oldEdges: cy.collection()}    
-        if(edges === undefined) return result; 
-        
+
+      api.expandEdges = function (edges) {
+        var result = { edges: cy.collection(), oldEdges: cy.collection() }
+        if (edges === undefined) return result;
+
         //if(typeof edges[Symbol.iterator] === 'function'){//collection of edges is passed
-          edges.forEach(function(edge){
-            var operationResult = expandCollapseUtilities.expandEdge(edge);
-            result.edges = result.edges.add(operationResult.edges);
-            result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
-           
-          });
-       /*  }else{//one edge passed
-          var operationResult = expandCollapseUtilities.expandEdge(edges);
+        edges.forEach(function (edge) {
+          var operationResult = expandCollapseUtilities.expandEdge(edge);
           result.edges = result.edges.add(operationResult.edges);
           result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
-          
-        } */
 
+        });
+        /*  }else{//one edge passed
+           var operationResult = expandCollapseUtilities.expandEdge(edges);
+           result.edges = result.edges.add(operationResult.edges);
+           result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
+           
+         } */
         return result;
-       
       };
-      api.collapseEdgesBetweenNodes = function(nodes, opts){
+
+      api.collapseEdgesBetweenNodes = function (nodes, opts) {
         var options = getScratch(cy, 'options');
-        var tempOptions = extendOptions(options, opts); 
+        var tempOptions = extendOptions(options, opts);
         function pairwise(list) {
           var pairs = [];
           list
@@ -276,23 +299,29 @@
           return pairs;
         }
         var nodesPairs = pairwise(nodes);
-        var result = {edges: cy.collection(), oldEdges: cy.collection()};
-        nodesPairs.forEach(function(nodePair){
-          var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');     
-          
-          if(edges.length >= 2){
+        // for self-loops
+        nodesPairs.push(...nodes.map(x => [x, x]));
+        var result = { edges: cy.collection(), oldEdges: cy.collection() };
+        nodesPairs.forEach(function (nodePair) {
+          const id1 = nodePair[1].id();
+          var edges = nodePair[0].connectedEdges('[source = "' + id1 + '"],[target = "' + id1 + '"]');
+          // edges for self-loops
+          if (nodePair[0].id() === id1) {
+            edges = nodePair[0].connectedEdges('[source = "' + id1 + '"][target = "' + id1 + '"]');
+          }
+          if (edges.length >= 2) {
             var operationResult = expandCollapseUtilities.collapseGivenEdges(edges, tempOptions)
             result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
             result.edges = result.edges.add(operationResult.edges);
-          }    
-         
-        }.bind(this));       
-     
+          }
+
+        }.bind(this));
+
         return result;
 
       };
-      api.expandEdgesBetweenNodes = function(nodes){
-        if(nodes.length <= 1) cy.collection();
+
+      api.expandEdgesBetweenNodes = function (nodes) {
         var edgesToExpand = cy.collection();
         function pairwise(list) {
           var pairs = [];
@@ -306,71 +335,58 @@
             })
           return pairs;
         }
-        //var result = {edges: cy.collection(), oldEdges: cy.collection()}   ;     
         var nodesPairs = pairwise(nodes);
-        nodesPairs.forEach(function(nodePair){
-          var edges = nodePair[0].connectedEdges('.cy-expand-collapse-collapsed-edge[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');  
-          edgesToExpand = edgesToExpand.union(edges);         
-          
+        // for self-loops
+        nodesPairs.push(...nodes.map(x => [x, x]));
+        nodesPairs.forEach(function (nodePair) {
+          const id1 = nodePair[1].id();
+          var edges = nodePair[0].connectedEdges('.cy-expand-collapse-collapsed-edge[source = "' + id1 + '"],[target = "' + id1 + '"]');
+          // edges for self-loops
+          if (nodePair[0].id() === id1) {
+            edges = nodePair[0].connectedEdges('[source = "' + id1 + '"][target = "' + id1 + '"]');
+          }
+          edgesToExpand = edgesToExpand.union(edges);
         }.bind(this));
-        //result.oldEdges = result.oldEdges.add(edgesToExpand);
-        //result.edges = result.edges.add(this.expandEdges(edgesToExpand));
         return this.expandEdges(edgesToExpand);
       };
-      api.collapseAllEdges = function(opts){
-        var options = getScratch(cy, 'options');
-        var tempOptions = extendOptions(options, opts); 
-        function pairwise(list) {
-          var pairs = [];
-          list
-            .slice(0, list.length - 1)
-            .forEach(function (first, n) {
-              var tail = list.slice(n + 1, list.length);
-              tail.forEach(function (item) {
-                pairs.push([first, item])
-              });
-            })
-          return pairs;
-        } 
-        
-        return this.collapseEdgesBetweenNodes(cy.edges().connectedNodes(),opts);
-       /*  var nodesPairs = pairwise(cy.edges().connectedNodes());
-        nodesPairs.forEach(function(nodePair){
-          var edges = nodePair[0].connectedEdges('[source = "'+ nodePair[1].id()+'"],[target = "'+ nodePair[1].id()+'"]');         
-          if(edges.length >=2){
-            expandCollapseUtilities.collapseGivenEdges(edges, tempOptions);
-          }
-          
-        }.bind(this)); */
 
-      }; 
-      api.expandAllEdges = function(){       
+      api.collapseAllEdges = function (opts) {
+        return this.collapseEdgesBetweenNodes(cy.edges().connectedNodes(), opts);
+      };
+
+      api.expandAllEdges = function () {
         var edges = cy.edges(".cy-expand-collapse-collapsed-edge");
-        var result = {edges:cy.collection(), oldEdges : cy.collection()};
+        var result = { edges: cy.collection(), oldEdges: cy.collection() };
         var operationResult = this.expandEdges(edges);
         result.oldEdges = result.oldEdges.add(operationResult.oldEdges);
-        result.edges = result.edges.add(operationResult.edges);   
+        result.edges = result.edges.add(operationResult.edges);
         return result;
       };
 
-     
-     
+      api.loadJson = function (jsonStr) {
+        saveLoadUtils.loadJson(jsonStr);
+      };
+
+      api.saveJson = function (elems, filename) {
+        saveLoadUtils.saveJson(elems, filename);
+      };
+
       return api; // Return the API instance
     }
 
     // Get the whole scratchpad reserved for this extension (on an element or core) or get a single property of it
-    function getScratch (cyOrEle, name) {
+    function getScratch(cyOrEle, name) {
       if (cyOrEle.scratch('_cyExpandCollapse') === undefined) {
         cyOrEle.scratch('_cyExpandCollapse', {});
       }
 
       var scratch = cyOrEle.scratch('_cyExpandCollapse');
-      var retVal = ( name === undefined ) ? scratch : scratch[name];
+      var retVal = (name === undefined) ? scratch : scratch[name];
       return retVal;
     }
 
     // Set a single property on scratchpad of an element or the core
-    function setScratch (cyOrEle, name, val) {
+    function setScratch(cyOrEle, name, val) {
       getScratch(cyOrEle)[name] = val;
     }
 
@@ -393,8 +409,8 @@
         expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
         collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
         expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
-       
-        edgeTypeInfo : "edgeType", //the name of the field that has the edge type, retrieved from edge.data(), can be a function
+
+        edgeTypeInfo: "edgeType", //the name of the field that has the edge type, retrieved from edge.data(), can be a function
         groupEdgesOfSameTypeOnCollapse: false,
         allowNestedEdgeCollapse: true,
         zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
@@ -406,7 +422,7 @@
 
         var expandCollapseUtilities = require('./expandCollapseUtilities')(cy);
         var api = createExtensionAPI(cy, expandCollapseUtilities); // creates and returns the API instance for the extension
-
+        saveLoadUtils = require("./saveLoadUtilities")(cy, api);
         setScratch(cy, 'api', api);
 
         undoRedoUtilities(cy, api);
@@ -414,11 +430,11 @@
         cueUtilities(options, cy, api);
 
         // if the cue is not enabled unbind cue events
-        if(!options.cueEnabled) {
+        if (!options.cueEnabled) {
           cueUtilities('unbind', cy, api);
         }
 
-        if ( options.ready ) {
+        if (options.ready) {
           options.ready();
         }
 
@@ -431,7 +447,6 @@
       return getScratch(cy, 'api'); // Expose the API to the users
     });
   };
-  
 
   if (typeof module !== 'undefined' && module.exports) { // expose as a commonjs module
     module.exports = register;
@@ -443,8 +458,8 @@
     });
   }
 
-    if (typeof cytoscape !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
-      register(cytoscape);
+  if (typeof cytoscape !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
+    register(cytoscape);
   }
 
 })();

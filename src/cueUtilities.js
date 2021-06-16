@@ -208,8 +208,11 @@ module.exports = function (params, cy, api) {
         currMousePos = e.renderedPosition || e.cyRenderedPosition
       });
 
-      cy.on('remove', 'node', data.eRemove = function () {
-        clearDraws();
+      cy.on('remove', 'node', data.eRemove = function (evt) {
+        const node = evt.target;
+        if (node == nodeWithRenderedCue) {
+          clearDraws();
+        }
       });
 
       var ur;
@@ -217,11 +220,14 @@ module.exports = function (params, cy, api) {
         if (nodeWithRenderedCue) {
           clearDraws();
         }
-        var isOnly1Selected = cy.$(':selected').length == 1;
-        var isOnly1SelectedCompundNode = cy.nodes(':parent').filter(':selected').length == 1 && isOnly1Selected;
-        var isOnly1SelectedCollapsedNode = cy.nodes('.cy-expand-collapse-collapsed-node').filter(':selected').length == 1 && isOnly1Selected;
-        if (isOnly1SelectedCollapsedNode || isOnly1SelectedCompundNode) {
-          drawExpandCollapseCue(cy.nodes(':selected')[0]);
+        var selectedNodes = cy.nodes(':selected');
+        if (selectedNodes.length !== 1) {
+          return;
+        }
+        var selectedNode = selectedNodes[0];
+
+        if (selectedNode.isParent() || selectedNode.hasClass('cy-expand-collapse-collapsed-node')) {
+          drawExpandCollapseCue(selectedNode);
         }
       });
 
@@ -279,18 +285,11 @@ module.exports = function (params, cy, api) {
         }
       });
 
+      cy.on('afterUndo afterRedo', data.eUndoRedo = data.eSelect);
+
       cy.on('position', 'node', data.ePosition = debounce2(data.eSelect, CUE_POS_UPDATE_DELAY, clearDraws));
 
       cy.on('pan zoom', data.ePosition);
-
-      cy.on('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse = function () {
-        var delay = 50 + params.animate ? params.animationDuration : 0;
-        setTimeout(() => {
-          if (this.selected()) {
-            drawExpandCollapseCue(this);
-          }
-        }, delay);
-      });
 
       // write options to data
       data.hasEventFields = true;
@@ -315,9 +314,9 @@ module.exports = function (params, cy, api) {
         .off('position', 'node', data.ePosition)
         .off('pan zoom', data.ePosition)
         .off('select unselect', data.eSelect)
-        .off('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse)
         .off('free', 'node', data.eFree)
-        .off('resize', data.eCyResize);
+        .off('resize', data.eCyResize)
+        .off('afterUndo afterRedo', data.eUndoRedo);
     },
     rebind: function () {
       var data = getData();
@@ -335,9 +334,9 @@ module.exports = function (params, cy, api) {
         .on('position', 'node', data.ePosition)
         .on('pan zoom', data.ePosition)
         .on('select unselect', data.eSelect)
-        .on('expandcollapse.afterexpand expandcollapse.aftercollapse', 'node', data.eAfterExpandCollapse)
         .on('free', 'node', data.eFree)
-        .on('resize', data.eCyResize);
+        .on('resize', data.eCyResize)
+        .on('afterUndo afterRedo', data.eUndoRedo);
     }
   };
 

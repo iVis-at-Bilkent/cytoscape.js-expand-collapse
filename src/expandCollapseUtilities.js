@@ -449,7 +449,7 @@ return {
     }
 
     // If there is no sibling call expand node base function here else it is to be called one of fishEyeViewMoveNode() calls
-    if (siblings.length == 0) {
+    if (siblings.length == 0 && node.same(nodeToExpand)) {
       this.expandNodeBaseFunction(nodeToExpand, single, layoutBy);
     }
 
@@ -489,8 +489,7 @@ return {
     if (childrenList.length == 0) {
       var newPosition = {x: node._private.position.x + T_x, y: node._private.position.y + T_y};
       if (!single || !animate) {
-        node._private.position.x = newPosition.x;
-        node._private.position.y = newPosition.y;
+        node.position(newPosition); // at this point, position should be updated
       }
       else {
         this.animatedlyMovingNodeCount++;
@@ -727,7 +726,12 @@ return {
       newEdge.data = {};
       newEdge.data.source = edgesToCollapse[edgeGroupType].source;
       newEdge.data.target = edgesToCollapse[edgeGroupType].target;
-      newEdge.data.id = "collapsedEdge_" + nodes[0].id() + "_" + nodes[1].id() + "_" + edgeGroupType + "_" + Math.floor(Math.random() * Date.now());
+      var id1 = nodes[0].id();
+      var id2 = id1;
+      if (nodes[1]) {
+          id2 = nodes[1].id();
+      }
+      newEdge.data.id = "collapsedEdge_" + id1 + "_" + id2 + "_" + edgeGroupType + "_" + Math.floor(Math.random() * Date.now());
       newEdge.data.collapsedEdges = cy.collection();
 
       edgesToCollapse[edgeGroupType].edges.forEach(function (edge) {

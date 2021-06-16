@@ -1,0 +1,101 @@
+<!DOCTYPE>
+<html>
+<head>
+  <title>cytoscape-expand-collapse.js demo</title>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+
+  <!-- jquery for graphml -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+  <!-- for testing with local version of cytoscape.js -->
+  <!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
+  <script src="https://unpkg.com/layout-base/layout-base.js"></script>
+  <script src="https://unpkg.com/cose-base/cose-base.js"></script>
+  <script src="https://unpkg.com/cytoscape-fcose/cytoscape-fcose.js"></script>
+  <script src="https://unpkg.com/cytoscape-graphml/cytoscape-graphml.js"></script>
+  <script src="../cytoscape-expand-collapse.js"></script>
+  <script src="demo-compounds.js"></script>
+</head>
+
+<body>
+  <h1>cytoscape-expand-collapse demo</h1>
+  <div class="fleft">
+    <div class="menu-container">
+
+      <div class="accordion-container">
+        <div class="accordion">General</div>
+        <div class="panel">
+          <button id="graphml" onclick="document.getElementById('graphml-input').click();">
+            Import from GraphML file
+          </button>
+          <input id="graphml-input" type="file" name="name" style="display: none;" />
+          <input id="load-from-inp" type="file" name="name" style="display: none;" />
+
+          <button id="saveAsJson">Save as JSON</button>
+          <button id="loadFromJson">Load from JSON</button>
+        </div>
+      </div>
+
+      <div class="accordion-container">
+        <div class="accordion">Nodes</div>
+        <div class="panel">
+          <button id="add-compound">Add compound for selected</button>
+          <button id="remove-compound">Remove selected compound</button>
+          <button id="expandAllAndRemove">Expand all and remove</button>
+          <button id="loadInCollapsedState">Load compouds collapsed</button>
+          <button id="collapseAll">Collapse all nodes</button>
+          <button id="expandAll">Expand all nodes</button>
+          <button id="collapseRecursively">Collapse selected recursively</button>
+          <button id="expandRecursively">Expand selected recursively</button>
+          <button id="apply-markov-clustering">Apply Markov clustering</button>
+          <div>
+            <label for="clustering-depth-input">
+              <b> Clustering depth: </b>
+            </label>
+            <input id="clustering-depth-input" type="number" value="1" min="1" style="width:50px" oninput="(!validity.rangeUnderflow||(value=1)) &&
+            (!validity.stepMismatch||(value=parseInt(this.value)));" />
+          </div>
+          <div>
+            <label for="cluster-by-default">
+              <b>Apply Markov clustering on load</b>
+            </label>
+            <input id="cluster-by-default" type="checkbox" />
+          </div>
+        </div>
+      </div>
+      <div class="accordion-container">
+        <div class="accordion">Edges</div>
+        <div class="panel">
+          <button id="collapseAllEdges">Collapse all edges </button>
+          <button id="expandAllEdges">Expand all edges </button>
+          <button id="collapseSelectedEdges">Collapse selected edges</button>
+          <button id="expandSelectedEdges">Expand selected edges </button>
+          <button id="collapseEdgesBetweenNodes"> Collapse edges between selected nodes</button>
+          <button id="expandEdgesBetweenNodes"> Expand edges between selected nodes</button>
+          <div>
+            <label for="cluster-by-default">
+              <b>Group edges of similar type</b>
+            </label>
+            <input id="groupEdges" type="checkbox" />
+          </div>
+          <div>
+            <label for="cluster-by-default">
+              <b>Allow nested edge collapse </b>
+            </label>
+            <input id="allowNestedEdgeCollapse" type="checkbox" />
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="fright" id="cy"></div>
+
+</body>
+
+</html>

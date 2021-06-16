@@ -17,8 +17,7 @@ U. Dogrusoz , A. Karacelik, I. Safarli, H. Balci, L. Dervishi, and M.C. Siper, "
 
 ## Demo
 
-Click [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo.html) (no undo and with custom cue image) or [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo-undoable.html) (undoable) or [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo-compounds-collapsed.html) (compounds initially collapsed) for a demo.
-Click [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo-edges-expand-collapse.html) for undoable edges expand collapse demo.
+Click [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo.html) (no undo and with custom cue image) or [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo-undoable.html) (undoable) or [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo-compounds-collapsed.html) (compounds initially collapsed) for a demo.
 
 ## API
 
@@ -109,6 +108,12 @@ Collapse all edges in the graph.
 
 `api.expandAllEdges()`
 Expand all edges in the graph.
+
+`api.loadJson(jsonStr)`
+Load elements from JSON string.
+
+`api.saveJson(elems, filename)`
+Saves elements in JSON format to a file. Default value for `elems` is all the elements. Default value for `filename` is 'expand-collapse-output.json'
 
 ## Events
 Notice that following events are performed for *each* node that is collapsed/expanded. Also, notice that any post-processing layout is performed *after* the event.
@@ -243,7 +248,7 @@ This project is set up to automatically be published to npm and bower.  To publi
 
 ## Team
 
-  * [Hasan Balci](https://github.com/hasanbalci), [Nasim Saleh](https://github.com/nasimsaleh), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis) and [Metin Can Siper](https://github.com/metincansiper) of the Demir Lab at [OHSU](http://www.ohsu.edu/)
+  * [Hasan Balci](https://github.com/hasanbalci), [Nasim Saleh](https://github.com/nasimsaleh), [Yusuf Canbaz](https://github.com/canbax), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis) and [Metin Can Siper](https://github.com/metincansiper) of the Demir Lab at [OHSU](http://www.ohsu.edu/)
 
 ## Alumni
 

@@ -15,9 +15,12 @@ Please cite the following paper when using this extension:
 
 U. Dogrusoz , A. Karacelik, I. Safarli, H. Balci, L. Dervishi, and M.C. Siper, "[Efficient methods and readily customizable libraries for managing complexity of large networks](https://doi.org/10.1371/journal.pone.0197238)", PLoS ONE, 13(5): e0197238, 2018.
 
-## Demo
-
-Click [here](https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo.html) (no undo and with custom cue image) or [here](https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo-undoable.html) (undoable) or [here](https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo-compounds-collapsed.html) for a collapsing edges and nodes demo.
+Here are some demos: **no undo and with custom cue image**, **undoable**, and **collapsing edges and nodes**, respectively:
+<p align="center">
+<a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo.html" title="No undo and with custom cue image"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo1.png" height=42px></a> &emsp;
+<a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo-undoable.html" title="Undoable"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo2.png" height=42px></a> &emsp;
+<a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo-compounds-collapsed.html" title="Collapsing edges and nodes"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo3.png" height=42px></a>
+</p>
 
 ## API
 
@@ -248,8 +251,8 @@ This project is set up to automatically be published to npm and bower.  To publi
 
 ## Team
 
-  * [Hasan Balci](https://github.com/hasanbalci), [Nasim Saleh](https://github.com/nasimsaleh), [Yusuf Canbaz](https://github.com/canbax), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis) and [Metin Can Siper](https://github.com/metincansiper) of the Demir Lab at [OHSU](http://www.ohsu.edu/)
+  * [Hasan Balci](https://github.com/hasanbalci), [Yusuf Canbaz](https://github.com/canbax), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis) and [Metin Can Siper](https://github.com/metincansiper) of the Demir Lab at [OHSU](http://www.ohsu.edu/)
 
 ## Alumni
 
-  * [Ilkin Safarli](https://github.com/kinimesi), [Alper Karacelik](https://github.com/alperkaracelik), [Selim Firat Yilmaz](https://github.com/mrsfy)
+  * [Alper Karacelik](https://github.com/alperkaracelik), [Ilkin Safarli](https://github.com/kinimesi), [Nasim Saleh](https://github.com/nasimsaleh), [Selim Firat Yilmaz](https://github.com/mrsfy)

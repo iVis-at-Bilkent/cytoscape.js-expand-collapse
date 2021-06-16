@@ -15,6 +15,8 @@ Please cite the following paper when using this extension:
 
 U. Dogrusoz , A. Karacelik, I. Safarli, H. Balci, L. Dervishi, and M.C. Siper, "[Efficient methods and readily customizable libraries for managing complexity of large networks](https://doi.org/10.1371/journal.pone.0197238)", PLoS ONE, 13(5): e0197238, 2018.
 
+## Demo
+
 Here are some demos: **no undo and with custom cue image**, **undoable**, and **collapsing edges and nodes**, respectively:
 <p align="center">
 <a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo.html" title="No undo and with custom cue image"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo1.png" height=42px></a> &emsp;

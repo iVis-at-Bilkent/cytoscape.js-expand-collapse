@@ -1,0 +1,49 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Dogrusoz"
+  given-names: "Ugur"
+  orcid: "https://orcid.org/0000-0002-7153-0784"
+- family-names: "Karacelik"
+  given-names: "Alper"
+  orcid: "https://orcid.org/0000-0000-0000-0000"
+- family-names: "Safarli"
+  given-names: "Ilkin"
+- family-names: "Balci"
+  given-names: "Hasan"
+  orcid: "https://orcid.org/0000-0001-8319-7758"
+- family-names: "Dervishi"
+  given-names: "Leonard"
+- family-names: "Siper"
+  given-names: "Metin Can" 
+title: "cytoscape-expand-collapse"
+version: 4.1.0
+date-released: 2021-06-16
+url: "https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Dogrusoz"
+    given-names: "Ugur"
+    orcid: "https://orcid.org/0000-0002-7153-0784"
+  - family-names: "Karacelik"
+    given-names: "Alper"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+  - family-names: "Safarli"
+    given-names: "Ilkin"
+  - family-names: "Balci"
+    given-names: "Hasan"
+    orcid: "https://orcid.org/0000-0001-8319-7758"
+  - family-names: "Dervishi"
+    given-names: "Leonard"
+  - family-names: "Siper"
+    given-names: "Metin Can"
+  doi: "10.1371/journal.pone.0197238"
+  journal: "PLOS ONE"
+  month: 5
+  start: 1 # First page number
+  end: 18 # Last page number
+  title: "Efficient methods and readily customizable libraries for managing complexity of large networks"
+  issue: 5
+  volume: 13
+  year: 2018

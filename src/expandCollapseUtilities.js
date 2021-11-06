@@ -581,7 +581,12 @@ return {
   barrowEdgesOfcollapsedChildren: function(node) {
     var relatedNodes = node.descendants();
     var edges = relatedNodes.edgesWith(cy.nodes().not(relatedNodes.union(node)));
-    
+
+    if(edges.hasClass('cy-expand-collapse-collapsed-edge')){
+      edges.filter('.cy-expand-collapse-collapsed-edge').forEach((edge) => this.expandEdge(edge))
+      edges = relatedNodes.edgesWith(cy.nodes().not(relatedNodes.union(node)));
+    }
+
     var relatedNodeMap = {};
     
     relatedNodes.each(function(ele, i) {

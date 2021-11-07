@@ -33,7 +33,7 @@ return {
       delete parentData[restoredNodes[i].id()];
     }
     cy.scratch('_cyExpandCollapse').parentData = parentData;
-    this.repairEdges(node);
+    this.repairEdgesForNode(node);
     node._private.data.collapsedChildren = null;
 
     elementUtilities.moveNodes(positionDiff, node.children());
@@ -443,7 +443,7 @@ return {
       if (y_a > y_b) {
         T_y = -1 * T_y;
       }
-      
+
       // Move the sibling in the special way
       this.fishEyeViewMoveNode(sibling, T_x, T_y, nodeToExpand, single, animate, layoutBy, animationDuration);
     }
@@ -578,6 +578,9 @@ return {
   isMetaEdge: function(edge) {
     return edge.hasClass("cy-expand-collapse-meta-edge");
   },
+  isCollapsedEdge: function(edge) {
+    return edge.hasClass("cy-expand-collapse-collapsed-edge");
+  },
   barrowEdgesOfcollapsedChildren: function(node) {
     var relatedNodes = node.descendants();
     var edges = relatedNodes.edgesWith(cy.nodes().not(relatedNodes.union(node)));
@@ -606,9 +609,12 @@ return {
         edge.data('originalEnds', originalEndsData);
       }
       
+      let finalTarget = relatedNodeMap[target.id()] ? node.id() : target.id();
+      let finalSource = relatedNodeMap[source.id()] ? node.id() : source.id();
+
       edge.move({
-        target: !relatedNodeMap[target.id()] ? target.id() : node.id(),
-        source: !relatedNodeMap[source.id()] ? source.id() : node.id()
+        source: finalSource,
+        target: finalTarget,
       });
     }
   },
@@ -624,7 +630,11 @@ return {
     
     return current;
   },
-  repairEdges: function(node) {
+  repairEdge: function (edge) {
+    this.repairEdgesForNode(edge.source());
+    this.repairEdgesForNode(edge.target());
+  },
+  repairEdgesForNode: function(node) {
     var connectedMetaEdges = node.connectedEdges('.cy-expand-collapse-meta-edge');
     
     for (var i = 0; i < connectedMetaEdges.length; i++) {
@@ -633,6 +643,10 @@ return {
       var currentSrcId = edge.data('source');
       var currentTgtId = edge.data('target');
       
+      if(!originalEnds.source || !originalEnds.target) {
+        return;
+      }
+
       if ( currentSrcId === node.id() ) {
         edge = edge.move({
           source: this.findNewEnd(originalEnds.source).id()
@@ -670,6 +684,10 @@ return {
    */
   getCollapsedChildrenRecursively: function(node, collapsedChildren){
     var children = node.data('collapsedChildren') || [];
+    for(let child of node.children()) {
+      collapsedChildren = this.getCollapsedChildrenRecursively(child, collapsedChildren);
+    }
+
     var i;
     for (i=0; i < children.length; i++){
       if (children[i].data('collapsedChildren')){
@@ -783,7 +801,33 @@ return {
       edge.trigger('expandcollapse.beforeexpandedge');
       result.oldEdges = result.oldEdges.add(edge);
       cy.remove(edge);
-      result.edges = cy.add(edges);
+      try{
+        for(let edgeToAdd of edges) {
+          let missingSource = cy.getElementById(edgeToAdd.source().id()).length === 0;
+          let missingTarget = cy.getElementById(edgeToAdd.target().id()).length === 0;
+
+          if(missingSource || missingTarget){
+            edgeToAdd.addClass("cy-expand-collapse-meta-edge");
+            var originalEndsData = {
+              source: edgeToAdd.source(),
+              target: edgeToAdd.target(),
+            };
+
+            edgeToAdd.addClass("cy-expand-collapse-meta-edge");
+            edgeToAdd.data('originalEnds', originalEndsData);
+
+            edgeToAdd.data()['source'] = missingSource ? edge.source().id() : edgeToAdd.source().id();
+            edgeToAdd.data()['target'] = missingTarget ? edge.target().id() : edgeToAdd.target().id();
+          }
+        }
+        result.edges = cy.add(edges);
+        for(let edgeToRepair of edges) {
+          this.repairEdge(edge);
+        }
+      } catch (e) {
+        console.error('Error', e);
+        console.error('Expanding edge', edge);
+      }
       edge.trigger('expandcollapse.afterexpandedge');
     }
     return result;

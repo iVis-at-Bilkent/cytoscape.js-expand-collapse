@@ -605,7 +605,7 @@ return {
         edge.addClass("cy-expand-collapse-meta-edge");
         edge.data('originalEnds', originalEndsData);
       }
-      
+
       edge.move({
         target: !relatedNodeMap[target.id()] ? target.id() : node.id(),
         source: !relatedNodeMap[source.id()] ? source.id() : node.id()
@@ -625,6 +625,8 @@ return {
     return current;
   },
   repairEdges: function(node) {
+    node.connectedEdges('.cy-expand-collapse-collapsed-edge').forEach((edge) => this.expandEdge(edge));
+
     var connectedMetaEdges = node.connectedEdges('.cy-expand-collapse-meta-edge');
     
     for (var i = 0; i < connectedMetaEdges.length; i++) {

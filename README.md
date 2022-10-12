@@ -118,7 +118,7 @@ Expand all edges in the graph.
 Load elements from JSON string.
 
 `api.saveJson(elems, filename)`
-Saves elements in JSON format to a file. Default value for `elems` is all the elements. Default value for `filename` is 'expand-collapse-output.json'
+Return elements in JSON format and saves them to a file if a file name is provided via `filename` parameter. Default value for `elems` is all the elements.
 
 ## Events
 Notice that following events are performed for *each* node that is collapsed/expanded. Also, notice that any post-processing layout is performed *after* the event.

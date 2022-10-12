@@ -256,10 +256,11 @@ function saveLoadUtilities(cy, api) {
         o.nodes.push(jsonObj);
       }
 
-      if (!filename) {
-        filename = 'expand-collapse-output.json';
+      let stringifiedJSON = JSON.stringify(o);
+      if (filename) {
+        str2file(stringifiedJSON, filename);
       }
-      str2file(JSON.stringify(o), filename);
+      return stringifiedJSON;
     }
   };
 }

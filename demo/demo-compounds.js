@@ -492,7 +492,7 @@ function main() {
   });
 
   document.getElementById('saveAsJson').addEventListener('click', function () {
-    api.saveJson(cy.$());
+    api.saveJson(cy.$(), 'expand-collapse-output.json');
   });
 
   document.getElementById('loadFromJson').addEventListener('click', function () {

@@ -368,7 +368,7 @@
       };
 
       api.saveJson = function (elems, filename) {
-        saveLoadUtils.saveJson(elems, filename);
+        return saveLoadUtils.saveJson(elems, filename);
       };
 
       return api; // Return the API instance

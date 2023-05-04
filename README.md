@@ -1,6 +1,8 @@
 cytoscape-expand-collapse
 ================================================================================
 
+**We are in the process of developing a new unified framework for complexity management of graphs. Thus this repositoy is no longer being maintained**
+
 ## Description
 
 This extension provides an interface to expand/collapse nodes and edges for better management of complexity of Cytoscape.js compound graphs, distributed under [The MIT License](https://opensource.org/licenses/MIT).

@@ -1,19 +1,18 @@
-var gulp = require('gulp');
-var watch = require('gulp-watch');
-var replace = require('gulp-replace');
-var shell = require('gulp-shell');
-var jshint = require('gulp-jshint');
-var jshStylish = require('jshint-stylish');
-var exec = require('child_process').exec;
-var runSequence = require('run-sequence');
-var prompt = require('gulp-prompt');
-var browserify = require('browserify');
-var buffer = require('vinyl-buffer');
-var source = require('vinyl-source-stream');
-var gutil = require('gulp-util');
-var notifier = require('node-notifier');
-var derequire = require('gulp-derequire');
-var version;
+const {series, dest, src} = require('gulp');
+const watch = require('gulp-watch');
+const replace = require('gulp-replace');
+const {task} = require('gulp-shell');
+const jshint = require('gulp-jshint');
+const jshStylish = require('jshint-stylish');
+const exec = require('child_process').exec;
+const prompt = require('gulp-prompt');
+const browserify = require('browserify');
+const buffer = require('vinyl-buffer');
+const source = require('vinyl-source-stream');
+const gutil = require('gulp-util');
+const notifier = require('node-notifier');
+const derequire = require('gulp-derequire');
+let version_number;
 
 var browserifyOpts = {
   entries: './src/index.js',
@@ -22,92 +21,80 @@ var browserifyOpts = {
 };
 
 var logError = function (err) {
-  notifier.notify({ title: 'cytoscape-expand-collapse', message: 'Error: ' + err.message });
+  notifier.notify({title: 'cytoscape-expand-collapse', message: 'Error: ' + err.message});
   gutil.log(gutil.colors.red('Error in watch:'), gutil.colors.red(err));
 };
 
-gulp.task('build', function () {
+function build() {
   return browserify(browserifyOpts)
     .bundle()
     .on('error', logError)
     .pipe(source('cytoscape-expand-collapse.js'))
     .pipe(buffer())
     .pipe(derequire())
-    .pipe(gulp.dest('.'))
-});
-
-gulp.task('default', ['build'], function (next) {
-  next();
-});
+    .pipe(dest('.'))
+}
 
 // watch for changes in files, run build immediately
-gulp.task('dev', ['build'], function () {
+const dev = series(build, function () {
   watch('src/*.js', () => {
-    gulp.run('build');
+    build()
   });
 });
 
-gulp.task('publish', [], function (next) {
-  runSequence('confver', 'pkgver', 'push', 'tag', 'npm', next);
+const confver = series(version, function () {
+  return src('.')
+    .pipe(prompt.confirm({message: 'Are you sure version `' + version_number + '` is OK to publish?'}));
 });
 
-gulp.task('confver', ['version'], function () {
-  return gulp.src('.')
-    .pipe(prompt.confirm({ message: 'Are you sure version `' + version + '` is OK to publish?' }))
-    ;
-});
-
-gulp.task('version', function (next) {
+function version(next) {
   var now = new Date();
-  version = process.env['VERSION'];
+  version_number = process.env['VERSION'];
 
-  if (version) {
+  if (version_number) {
     done();
   } else {
     exec('git rev-parse HEAD', function (error, stdout, stderr) {
       var sha = stdout.substring(0, 10); // shorten so not huge filename
 
-      version = ['snapshot', sha, +now].join('-');
+      version_number = ['snapshot', sha, +now].join('-');
       done();
     });
   }
 
   function done() {
-    console.log('Using version number `%s` for building', version);
+    console.log('Using version number `%s` for building', version_number);
     next();
   }
+}
 
-});
-
-gulp.task('pkgver', ['version'], function () {
-  return gulp.src([
+const pkgver = series(version, function () {
+  return src([
     'package.json',
     'bower.json'
   ])
-    .pipe(replace(/\"version\"\:\s*\".*?\"/, '"version": "' + version + '"'))
+    .pipe(replace(/\"version\"\:\s*\".*?\"/, '"version": "' + version_number + '"'))
+    .pipe(dest('./'));
+})
 
-    .pipe(gulp.dest('./'))
-    ;
-});
-
-gulp.task('push', shell.task([
+const push = task([
   'git add -A',
   'git commit -m "pushing changes for v$VERSION release" || echo Nothing to commit',
   'git push || echo Nothing to push'
-]));
+]);
 
-gulp.task('tag', shell.task([
+const tag = task([
   'git tag -a $VERSION -m "tagging v$VERSION"',
   'git push origin $VERSION'
-]));
+]);
 
-gulp.task('npm', shell.task([
+const npm = task([
   'npm publish .'
-]));
+]);
 
 // http://www.jshint.com/docs/options/
-gulp.task('lint', function () {
-  return gulp.src('cytoscape-*.js')
+function lint() {
+  return src('cytoscape-*.js')
     .pipe(jshint({
       funcscope: true,
       laxbreak: true,
@@ -124,4 +111,14 @@ gulp.task('lint', function () {
 
     .pipe(jshint.reporter('fail'))
     ;
-});
+}
+
+exports.default = build;
+exports.build = build;
+exports.version = version;
+exports.lint = lint;
+exports.publish = series(confver, pkgver, push, tag, npm)
+
+exports.npm = npm;
+exports.tag = tag;
+exports.dev = dev;

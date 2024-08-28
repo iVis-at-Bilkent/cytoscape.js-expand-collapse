@@ -21,9 +21,9 @@ U. Dogrusoz , A. Karacelik, I. Safarli, H. Balci, L. Dervishi, and M.C. Siper, "
 
 Here are some demos: **no undo and with custom cue image**, **undoable**, and **collapsing edges and nodes**, respectively:
 <p align="center">
-<a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo.html" title="No undo and with custom cue image"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo1.png" height=42px></a> &emsp;
-<a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo-undoable.html" title="Undoable"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo2.png" height=42px></a> &emsp;
-<a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo-compounds-collapsed.html" title="Collapsing edges and nodes"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo3.png" height=42px></a>
+<a href="https://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo.html" title="No undo and with custom cue image"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo1.png" height=42px></a> &emsp;
+<a href="https://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo-undoable.html" title="Undoable"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo2.png" height=42px></a> &emsp;
+<a href="https://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo-compounds-collapsed.html" title="Collapsing edges and nodes"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo3.png" height=42px></a>
 </p>
 
 ## API

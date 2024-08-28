@@ -742,7 +742,7 @@ return {
 
       var edgesTypeField = "edgeType";
       if (options.edgeTypeInfo !== undefined) {
-        edgesTypeField = options.edgeTypeInfo instanceof Function ? edgeTypeField : options.edgeTypeInfo;
+        edgesTypeField = options.edgeTypeInfo instanceof Function ? edgesTypeField : options.edgeTypeInfo;
       }
       newEdge.data[edgesTypeField] = edgeGroupType;
 

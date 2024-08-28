@@ -19,7 +19,12 @@ U. Dogrusoz , A. Karacelik, I. Safarli, H. Balci, L. Dervishi, and M.C. Siper, "
 
 ## Demo
 
-Click [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo.html) (no undo and with custom cue image) or [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo-undoable.html) (undoable) or [here](http://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo-compounds-collapsed.html) (compounds initially collapsed) for a demo.
+Here are some demos: **no undo and with custom cue image**, **undoable**, and **collapsing edges and nodes**, respectively:
+<p align="center">
+<a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo.html" title="No undo and with custom cue image"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo1.png" height=42px></a> &emsp;
+<a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo-undoable.html" title="Undoable"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo2.png" height=42px></a> &emsp;
+<a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/unstable/demo/demo-compounds-collapsed.html" title="Collapsing edges and nodes"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo3.png" height=42px></a>
+</p>
 
 ## API
 
@@ -115,7 +120,7 @@ Expand all edges in the graph.
 Load elements from JSON string.
 
 `api.saveJson(elems, filename)`
-Saves elements in JSON format to a file. Default value for `elems` is all the elements. Default value for `filename` is 'expand-collapse-output.json'
+Return elements in JSON format and saves them to a file if a file name is provided via `filename` parameter. Default value for `elems` is all the elements.
 
 ## Events
 Notice that following events are performed for *each* node that is collapsed/expanded. Also, notice that any post-processing layout is performed *after* the event.
@@ -239,19 +244,27 @@ require(['cytoscape', 'cytoscape-expand-collapse'], function( cytoscape, expandC
 Plain HTML/JS has the extension registered for you automatically, because no `require()` is needed.
 
 
+## Build targets
+
+* `npm run build` : Build `./src/**` into `cytoscape-expand-collapse.js` in production environment and minimize the file.
+* `npm run build:dev` :  Build `./src/**` into `cytoscape-expand-collapse.js` in development environment without minimizing the file.
+
 ## Publishing instructions
 
 This project is set up to automatically be published to npm and bower.  To publish:
 
-1. Set the version number environment variable: `export VERSION=1.2.3`
-1. Publish: `gulp publish`
+1. Build the extension : `npm run build`
+1. Commit the build : `git commit -am "Build for release"`
+1. Bump the version number and tag: `npm version major|minor|patch`
+1. Push to origin: `git push && git push --tags`
+1. Publish to npm: `npm publish .`
 1. If publishing to bower for the first time, you'll need to run `bower register cytoscape-expand-collapse https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse.git`
 
 
 ## Team
 
-  * [Hasan Balci](https://github.com/hasanbalci), [Nasim Saleh](https://github.com/nasimsaleh), [Yusuf Canbaz](https://github.com/canbax), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis) and [Metin Can Siper](https://github.com/metincansiper) of the Demir Lab at [OHSU](http://www.ohsu.edu/)
+  * [Hasan Balci](https://github.com/hasanbalci), [Yusuf Canbaz](https://github.com/canbax), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis) and [Metin Can Siper](https://github.com/metincansiper) of the Demir Lab at [OHSU](http://www.ohsu.edu/)
 
 ## Alumni
 
-  * [Ilkin Safarli](https://github.com/kinimesi), [Alper Karacelik](https://github.com/alperkaracelik), [Selim Firat Yilmaz](https://github.com/mrsfy)
+  * [Alper Karacelik](https://github.com/alperkaracelik), [Ilkin Safarli](https://github.com/kinimesi), [Nasim Saleh](https://github.com/nasimsaleh), [Selim Firat Yilmaz](https://github.com/mrsfy)

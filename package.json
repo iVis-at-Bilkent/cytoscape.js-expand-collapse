@@ -7,7 +7,8 @@
     "main": "cytoscape-expand-collapse.js"
   },
   "scripts": {
-    "build": "echo 'node version must be 10!' && gulp build",
+    "build": "cross-env NODE_ENV=production webpack",
+    "build:dev": "cross-env NODE_ENV=development webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,20 +25,18 @@
   },
   "homepage": "https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse",
   "devDependencies": {
-    "browserify": "^11.2.0",
-    "gulp": "^3.9.0",
-    "gulp-derequire": "^3.0.0",
-    "gulp-jshint": "^1.11.2",
-    "gulp-prompt": "^0.1.2",
-    "gulp-replace": "^0.5.4",
-    "gulp-shell": "^0.5.0",
-    "gulp-util": "^3.0.6",
-    "gulp-watch": "^5.0.1",
+    "@babel/core": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "babel-loader": "^8.1.0",
+    "camelcase": "^6.2.0",
+    "cross-env": "^7.0.2",
     "jshint-stylish": "^2.0.1",
     "node-notifier": "^4.3.1",
     "run-sequence": "^1.1.4",
     "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^1.1.2"
+    "vinyl-source-stream": "^1.1.2",
+    "webpack": "^5.36.1",
+    "webpack-cli": "^4.6.0"
   },
   "peerDependencies": {
     "cytoscape": "^3.3.0"

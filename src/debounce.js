@@ -8,11 +8,11 @@ var debounce = (function () {
    * Available under MIT license <https://lodash.com/license>
    */
   /** Used as the `TypeError` message for "Functions" methods. */
-  var FUNC_ERROR_TEXT = 'Expected a function';
+  var FUNC_ERROR_TEXT = "Expected a function";
 
   /* Native method references for those with the same name as other `lodash` methods. */
   var nativeMax = Math.max,
-          nativeNow = Date.now;
+    nativeNow = Date.now;
 
   /**
    * Gets the number of milliseconds that have elapsed since the Unix epoch
@@ -28,9 +28,11 @@ var debounce = (function () {
    * }, _.now());
    * // => logs the number of milliseconds it took for the deferred function to be invoked
    */
-  var now = nativeNow || function () {
-    return new Date().getTime();
-  };
+  var now =
+    nativeNow ||
+    function () {
+      return new Date().getTime();
+    };
 
   /**
    * Creates a debounced function that delays invoking `func` until after `wait`
@@ -97,27 +99,27 @@ var debounce = (function () {
    */
   function debounce(func, wait, options) {
     var args,
-            maxTimeoutId,
-            result,
-            stamp,
-            thisArg,
-            timeoutId,
-            trailingCall,
-            lastCalled = 0,
-            maxWait = false,
-            trailing = true;
+      maxTimeoutId,
+      result,
+      stamp,
+      thisArg,
+      timeoutId,
+      trailingCall,
+      lastCalled = 0,
+      maxWait = false,
+      trailing = true;
 
-    if (typeof func != 'function') {
+    if (typeof func != "function") {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
-    wait = wait < 0 ? 0 : (+wait || 0);
+    wait = wait < 0 ? 0 : +wait || 0;
     if (options === true) {
       var leading = true;
       trailing = false;
     } else if (isObject(options)) {
       leading = !!options.leading;
-      maxWait = 'maxWait' in options && nativeMax(+options.maxWait || 0, wait);
-      trailing = 'trailing' in options ? !!options.trailing : trailing;
+      maxWait = "maxWait" in options && nativeMax(+options.maxWait || 0, wait);
+      trailing = "trailing" in options ? !!options.trailing : trailing;
     }
 
     function cancel() {
@@ -171,7 +173,7 @@ var debounce = (function () {
           lastCalled = stamp;
         }
         var remaining = maxWait - (stamp - lastCalled),
-                isCalled = remaining <= 0 || remaining > maxWait;
+          isCalled = remaining <= 0 || remaining > maxWait;
 
         if (isCalled) {
           if (maxTimeoutId) {
@@ -179,15 +181,13 @@ var debounce = (function () {
           }
           lastCalled = stamp;
           result = func.apply(thisArg, args);
-        }
-        else if (!maxTimeoutId) {
+        } else if (!maxTimeoutId) {
           maxTimeoutId = setTimeout(maxDelayed, remaining);
         }
       }
       if (isCalled && timeoutId) {
         timeoutId = clearTimeout(timeoutId);
-      }
-      else if (!timeoutId && wait !== maxWait) {
+      } else if (!timeoutId && wait !== maxWait) {
         timeoutId = setTimeout(delayed, wait);
       }
       if (leadingCall) {
@@ -228,11 +228,10 @@ var debounce = (function () {
     // Avoid a V8 JIT bug in Chrome 19-20.
     // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
     var type = typeof value;
-    return !!value && (type == 'object' || type == 'function');
+    return !!value && (type == "object" || type == "function");
   }
 
   return debounce;
-
 })();
 
 module.exports = debounce;

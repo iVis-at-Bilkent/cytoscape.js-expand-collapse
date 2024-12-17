@@ -1,5 +1,4 @@
-cytoscape-expand-collapse
-================================================================================
+# cytoscape-expand-collapse
 
 **We are in the process of developing a new unified framework for complexity management of graphs. Thus this repositoy is no longer being maintained**
 
@@ -20,6 +19,7 @@ U. Dogrusoz , A. Karacelik, I. Safarli, H. Balci, L. Dervishi, and M.C. Siper, "
 ## Demo
 
 Here are some demos: **no undo and with custom cue image**, **undoable**, and **collapsing edges and nodes**, respectively:
+
 <p align="center">
 <a href="https://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo.html" title="No undo and with custom cue image"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo1.png" height=42px></a> &emsp;
 <a href="https://ivis-at-bilkent.github.io/cytoscape.js-expand-collapse/demo/demo-undoable.html" title="Undoable"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo2.png" height=42px></a> &emsp;
@@ -28,7 +28,7 @@ Here are some demos: **no undo and with custom cue image**, **undoable**, and **
 
 ## API
 
-* Note that compounds are nodes.
+- Note that compounds are nodes.
 
 `cy.expandCollapse(options)`
 To initialize the extension with given options.
@@ -36,7 +36,7 @@ To initialize the extension with given options.
 `var api = cy.expandCollapse('get')`
 To get the extension instance after initialization.
 
-* Following functions get options parameter to apply during a particular event unlike the function above.
+- Following functions get options parameter to apply during a particular event unlike the function above.
 
 `api.collapse(nodes, options)`
 Collapse given nodes, extend options with given param.
@@ -101,11 +101,11 @@ Get the parent of a node given its node id. Useful to reach parent of a node rem
 `api.collapseEdges(edges,options)`
 Collapse the given edges if all the given edges are between same two nodes and number of edges passed is at least 2. Does nothing otherwise.
 
-` api.expandEdges(edges){ `
+`api.expandEdges(edges){`
 Expand the given collapsed edges
 
 `api.collapseEdgesBetweenNodes(nodes, options)`
-Collapse all edges between the set of given nodes. 
+Collapse all edges between the set of given nodes.
 
 `api.expandEdgesBetweenNodes(nodes)`
 Expand all collapsed edges between the set of given nodes
@@ -123,7 +123,8 @@ Load elements from JSON string.
 Return elements in JSON format and saves them to a file if a file name is provided via `filename` parameter. Default value for `elems` is all the elements.
 
 ## Events
-Notice that following events are performed for *each* node that is collapsed/expanded. Also, notice that any post-processing layout is performed *after* the event.
+
+Notice that following events are performed for _each_ node that is collapsed/expanded. Also, notice that any post-processing layout is performed _after_ the event.
 
 `cy.nodes().on("expandcollapse.beforecollapse", function(event) { var node = this; ... })` Triggered before a node is collapsed
 
@@ -131,7 +132,7 @@ Notice that following events are performed for *each* node that is collapsed/exp
 
 `cy.nodes().on("expandcollapse.beforeexpand", function(event) { var node = this; ... })` Triggered before a node is expanded
 
-`cy.nodes().on("expandcollapse.afterexpand", function(event) { var node = this; ... })`  Triggered after a node is expanded
+`cy.nodes().on("expandcollapse.afterexpand", function(event) { var node = this; ... })` Triggered after a node is expanded
 
 `cy.edges().on("expandcollapse.beforecollapseedge", function(event) { var edge = this; ... })` Triggered before an edge is collapsed
 
@@ -139,39 +140,41 @@ Notice that following events are performed for *each* node that is collapsed/exp
 
 `cy.edges().on("expandcollapse.beforeexpandedge", function(event) { var edge = this; ... })` Triggered before an edge is expanded
 
-`cy.edges().on("expandcollapse.afterexpandedge", function(event) { var edge = this; ... })`  Triggered after an edge is expanded
+`cy.edges().on("expandcollapse.afterexpandedge", function(event) { var edge = this; ... })` Triggered after an edge is expanded
 
 All these events can also be listened as [cytoscape.js core events](https://js.cytoscape.org/#cy.on)
-e.g. 
+e.g.
 
 `cy.on("expandcollapse.afterexpandedge", function(event) { var elem = event.target; ... })`
 
 ## Default Options
-```javascript
-    var options = {
-      layoutBy: null, // to rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
-      // recommended usage: use cose-bilkent layout with randomize: false to preserve mental map upon expand/collapse
-      fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too
-      animate: true, // whether to animate on drawing changes you can specify a function too
-      animationDuration: 1000, // when animate is true, the duration in milliseconds of the animation
-      ready: function () { }, // callback when expand/collapse initialized
-      undoable: true, // and if undoRedoExtension exists,
 
-      cueEnabled: true, // Whether cues are enabled
-      expandCollapseCuePosition: 'top-left', // default cue position is top left you can specify a function per node too
-      expandCollapseCueSize: 12, // size of expand-collapse cue
-      expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
-      expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
-      collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
-      expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
-      edgeTypeInfo: "edgeType", // the name of the field that has the edge type, retrieved from edge.data(), can be a function, if reading the field returns undefined the collapsed edge type will be "unknown"
-      groupEdgesOfSameTypeOnCollapse : false, // if true, the edges to be collapsed will be grouped according to their types, and the created collapsed edges will have same type as their group. if false the collapased edge will have "unknown" type.
-      allowNestedEdgeCollapse: true, // when you want to collapse a compound edge (edge which contains other edges) and normal edge, should it collapse without expanding the compound first
-      zIndex: 999 // z-index value of the canvas in which cue ımages are drawn
-    };
+```javascript
+var options = {
+  layoutBy: null, // to rearrange after expand/collapse. It's just layout options or whole layout function. Choose your side!
+  // recommended usage: use cose-bilkent layout with randomize: false to preserve mental map upon expand/collapse
+  fisheye: true, // whether to perform fisheye view after expand/collapse you can specify a function too
+  animate: true, // whether to animate on drawing changes you can specify a function too
+  animationDuration: 1000, // when animate is true, the duration in milliseconds of the animation
+  ready: function () {}, // callback when expand/collapse initialized
+  undoable: true, // and if undoRedoExtension exists,
+
+  cueEnabled: true, // Whether cues are enabled
+  expandCollapseCuePosition: "top-left", // default cue position is top left you can specify a function per node too
+  expandCollapseCueSize: 12, // size of expand-collapse cue
+  expandCollapseCueLineSize: 8, // size of lines used for drawing plus-minus icons
+  expandCueImage: undefined, // image of expand icon if undefined draw regular expand cue
+  collapseCueImage: undefined, // image of collapse icon if undefined draw regular collapse cue
+  expandCollapseCueSensitivity: 1, // sensitivity of expand-collapse cues
+  edgeTypeInfo: "edgeType", // the name of the field that has the edge type, retrieved from edge.data(), can be a function, if reading the field returns undefined the collapsed edge type will be "unknown"
+  groupEdgesOfSameTypeOnCollapse: false, // if true, the edges to be collapsed will be grouped according to their types, and the created collapsed edges will have same type as their group. if false the collapased edge will have "unknown" type.
+  allowNestedEdgeCollapse: true, // when you want to collapse a compound edge (edge which contains other edges) and normal edge, should it collapse without expanding the compound first
+  zIndex: 999, // z-index value of the canvas in which cue ımages are drawn
+};
 ```
 
 ## Default Undo/Redo Actions
+
 `ur.do("collapse", { nodes: eles, options: opts)` Equivalent of eles.collapse(opts)
 
 `ur.do("expand", { nodes: eles, options: opts)` Equivalent of eles.expand(opts)
@@ -196,62 +199,63 @@ e.g.
 
 `ur.do("expandAllEdges")`Equivalent of cy.expandAllEdges()
 
-
 ## Elements Style
 
- * Collapsed nodes have 'cy-expand-collapse-collapsed-node' class.
- * Meta edges (edges from/to collapsed nodes) have 'cy-expand-collapse-meta-edge' class.
- * Collapsed edges have 'cy-expand-collapse-collapsed-edge' class.
- * Collapsed edges data have 'directionType' field which can be either:
-    - 'unidirection' if all the edges that are collapsed into this edge have the same direction (all have same source and same target) 
-      or 
-    - 'bidirection' if  the edges that are collapsed into this edge have different direction (different target and/or source)
- * Collapsed edges data have a field that holds the type, the field name is as defined in options but if it is not defined in options or was defined as a function it will be named 'edgeType'
-
- 
+- Collapsed nodes have 'cy-expand-collapse-collapsed-node' class.
+- Meta edges (edges from/to collapsed nodes) have 'cy-expand-collapse-meta-edge' class.
+- Collapsed edges have 'cy-expand-collapse-collapsed-edge' class.
+- Collapsed edges data have 'directionType' field which can be either:
+  - 'unidirection' if all the edges that are collapsed into this edge have the same direction (all have same source and same target)
+    or
+  - 'bidirection' if the edges that are collapsed into this edge have different direction (different target and/or source)
+- Collapsed edges data have a field that holds the type, the field name is as defined in options but if it is not defined in options or was defined as a function it will be named 'edgeType'
 
 ## Dependencies
 
- * Cytoscape.js ^3.3.0
- * cytoscape-undo-redo.js(optional) ^1.0.1
- * cytoscape-cose-bilkent.js(optional/suggested for layout after expand/collapse) ^4.0.0
-
+- Cytoscape.js ^3.3.0
+- cytoscape-undo-redo.js(optional) ^1.0.1
+- cytoscape-cose-bilkent.js(optional/suggested for layout after expand/collapse) ^4.0.0
 
 ## Usage instructions
 
 Download the library:
- * via npm: `npm install cytoscape-expand-collapse`,
- * via bower: `bower install cytoscape-expand-collapse`, or
- * via direct download in the repository (probably from a tag).
+
+- via npm: `npm install cytoscape-expand-collapse`,
+- via bower: `bower install cytoscape-expand-collapse`, or
+- via direct download in the repository (probably from a tag).
 
 `require()` the library as appropriate for your project:
 
 CommonJS:
-```js
-var cytoscape = require('cytoscape');
-var expandCollapse = require('cytoscape-expand-collapse');
 
-expandCollapse( cytoscape ); // register extension
+```js
+var cytoscape = require("cytoscape");
+var expandCollapse = require("cytoscape-expand-collapse");
+
+expandCollapse(cytoscape); // register extension
 ```
 
 AMD:
+
 ```js
-require(['cytoscape', 'cytoscape-expand-collapse'], function( cytoscape, expandCollapse ){
-  expandCollapse( cytoscape ); // register extension
+require(["cytoscape", "cytoscape-expand-collapse"], function (
+  cytoscape,
+  expandCollapse
+) {
+  expandCollapse(cytoscape); // register extension
 });
 ```
 
 Plain HTML/JS has the extension registered for you automatically, because no `require()` is needed.
 
-
 ## Build targets
 
-* `npm run build` : Build `./src/**` into `cytoscape-expand-collapse.js` in production environment and minimize the file.
-* `npm run build:dev` :  Build `./src/**` into `cytoscape-expand-collapse.js` in development environment without minimizing the file.
+- `npm run build` : Build `./src/**` into `cytoscape-expand-collapse.js` in production environment and minimize the file.
+- `npm run build:dev` : Build `./src/**` into `cytoscape-expand-collapse.js` in development environment without minimizing the file.
 
 ## Publishing instructions
 
-This project is set up to automatically be published to npm and bower.  To publish:
+This project is set up to automatically be published to npm and bower. To publish:
 
 1. Build the extension : `npm run build`
 1. Commit the build : `git commit -am "Build for release"`
@@ -260,11 +264,10 @@ This project is set up to automatically be published to npm and bower.  To publi
 1. Publish to npm: `npm publish .`
 1. If publishing to bower for the first time, you'll need to run `bower register cytoscape-expand-collapse https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse.git`
 
-
 ## Team
 
-  * [Hasan Balci](https://github.com/hasanbalci), [Yusuf Canbaz](https://github.com/canbax), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis) and [Metin Can Siper](https://github.com/metincansiper) of the Demir Lab at [OHSU](http://www.ohsu.edu/)
+- [Hasan Balci](https://github.com/hasanbalci), [Yusuf Canbaz](https://github.com/canbax), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis) and [Metin Can Siper](https://github.com/metincansiper) of the Demir Lab at [OHSU](http://www.ohsu.edu/)
 
 ## Alumni
 
-  * [Alper Karacelik](https://github.com/alperkaracelik), [Ilkin Safarli](https://github.com/kinimesi), [Nasim Saleh](https://github.com/nasimsaleh), [Selim Firat Yilmaz](https://github.com/mrsfy)
+- [Alper Karacelik](https://github.com/alperkaracelik), [Ilkin Safarli](https://github.com/kinimesi), [Nasim Saleh](https://github.com/nasimsaleh), [Selim Firat Yilmaz](https://github.com/mrsfy)

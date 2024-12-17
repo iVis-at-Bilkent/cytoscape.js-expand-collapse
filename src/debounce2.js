@@ -12,7 +12,8 @@ var debounce2 = (function () {
     let timeout;
     let isInit = true;
     return function () {
-      const context = this, args = arguments;
+      const context = this,
+        args = arguments;
       const later = function () {
         timeout = null;
         fn1.apply(context, args);

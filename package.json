@@ -1,10 +1,10 @@
 {
-  "name": "cytoscape-expand-collapse",
-  "version": "4.1.1",
+  "name": "nr-cytoscape-expand-collapse",
+  "version": "1.0.0",
   "description": "This extension provides an interface to expand-collapse nodes.",
-  "main": "cytoscape-expand-collapse.js",
+  "main": "./src/index.js",
   "spm": {
-    "main": "cytoscape-expand-collapse.js"
+    "main": "./src/index.js"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse.git"
+    "url": "https://github.com/newrelic-forks/cytoscape.js-expand-collapse.git"
   },
   "keywords": [
     "cytoscape",
@@ -21,9 +21,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse/issues"
+    "url": "https://github.com/newrelic-forks/cytoscape.js-expand-collapse/issues"
   },
-  "homepage": "https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse",
+  "homepage": "https://github.com/newrelic-forks/cytoscape.js-expand-collapse",
   "devDependencies": {
     "@babel/core": "^7.10.3",
     "@babel/preset-env": "^7.10.3",
@@ -39,6 +39,7 @@
     "webpack-cli": "^4.6.0"
   },
   "peerDependencies": {
-    "cytoscape": "^3.3.0"
+    "cytoscape": "^3.3.0",
+    "cytoscape-fcose": "^2.2.0"
   }
 }

@@ -1,5 +1,5 @@
-var debounce = require('./debounce');
-var debounce2 = require('./debounce2');
+var debounce = require("./debounce");
+var debounce2 = require("./debounce2");
 
 module.exports = function (params, cy, api) {
   var elementUtilities;
@@ -8,43 +8,43 @@ module.exports = function (params, cy, api) {
   var nodeWithRenderedCue;
 
   const getData = function () {
-    var scratch = cy.scratch('_cyExpandCollapse');
+    var scratch = cy.scratch("_cyExpandCollapse");
     return scratch && scratch.cueUtilities;
   };
 
   const setData = function (data) {
-    var scratch = cy.scratch('_cyExpandCollapse');
+    var scratch = cy.scratch("_cyExpandCollapse");
     if (scratch == null) {
       scratch = {};
     }
 
     scratch.cueUtilities = data;
-    cy.scratch('_cyExpandCollapse', scratch);
+    cy.scratch("_cyExpandCollapse", scratch);
   };
 
   var functions = {
     init: function () {
-      var $canvas = document.createElement('canvas');
+      var $canvas = document.createElement("canvas");
       $canvas.classList.add("expand-collapse-canvas");
       var $container = cy.container();
-      var ctx = $canvas.getContext('2d');
+      var ctx = $canvas.getContext("2d");
       $container.append($canvas);
 
-      elementUtilities = require('./elementUtilities')(cy);
+      elementUtilities = require("./elementUtilities")(cy);
 
       var offset = function (elt) {
         var rect = elt.getBoundingClientRect();
 
         return {
           top: rect.top + document.documentElement.scrollTop,
-          left: rect.left + document.documentElement.scrollLeft
-        }
-      }
+          left: rect.left + document.documentElement.scrollLeft,
+        };
+      };
 
       var _sizeCanvas = debounce(function () {
         $canvas.height = cy.container().offsetHeight;
         $canvas.width = cy.container().offsetWidth;
-        $canvas.style.position = 'absolute';
+        $canvas.style.position = "absolute";
         $canvas.style.top = 0;
         $canvas.style.left = 0;
         $canvas.style.zIndex = options().zIndex;
@@ -60,7 +60,6 @@ module.exports = function (params, cy, api) {
             clearDraws(true);
           }
         }, 0);
-
       }, 250);
 
       function sizeCanvas() {
@@ -78,7 +77,7 @@ module.exports = function (params, cy, api) {
       // }
 
       function options() {
-        return cy.scratch('_cyExpandCollapse').options;
+        return cy.scratch("_cyExpandCollapse").options;
       }
 
       function clearDraws() {
@@ -91,14 +90,15 @@ module.exports = function (params, cy, api) {
 
       function drawExpandCollapseCue(node) {
         var children = node.children();
-        var collapsedChildren = node.data('collapsedChildren');
-        var hasChildren = children != null && children != undefined && children.length > 0;
+        var collapsedChildren = node.data("collapsedChildren");
+        var hasChildren =
+          children != null && children != undefined && children.length > 0;
         // If this is a simple node with no collapsed children return directly
         if (!hasChildren && !collapsedChildren) {
           return;
         }
 
-        var isCollapsed = node.hasClass('cy-expand-collapse-collapsed-node');
+        var isCollapsed = node.hasClass("cy-expand-collapse-collapsed-node");
 
         //Draw expand-collapse rectangles
         var rectSize = options().expandCollapseCueSize;
@@ -106,22 +106,34 @@ module.exports = function (params, cy, api) {
 
         var cueCenter;
 
-        if (options().expandCollapseCuePosition === 'top-left') {
+        if (options().expandCollapseCuePosition === "top-left") {
           var offset = 1;
           var size = cy.zoom() < 1 ? rectSize / (2 * cy.zoom()) : rectSize / 2;
-          var nodeBorderWid = parseFloat(node.css('border-width'));
-          var x = node.position('x') - node.width() / 2 - parseFloat(node.css('padding-left'))
-            + nodeBorderWid + size + offset;
-          var y = node.position('y') - node.height() / 2 - parseFloat(node.css('padding-top'))
-            + nodeBorderWid + size + offset;
+          var nodeBorderWid = parseFloat(node.css("border-width"));
+          var x =
+            node.position("x") -
+            node.width() / 2 -
+            parseFloat(node.css("padding-left")) +
+            nodeBorderWid +
+            size +
+            offset;
+          var y =
+            node.position("y") -
+            node.height() / 2 -
+            parseFloat(node.css("padding-top")) +
+            nodeBorderWid +
+            size +
+            offset;
 
           cueCenter = { x: x, y: y };
         } else {
           var option = options().expandCollapseCuePosition;
-          cueCenter = typeof option === 'function' ? option.call(this, node) : option;
+          cueCenter =
+            typeof option === "function" ? option.call(this, node) : option;
         }
 
-        var expandcollapseCenter = elementUtilities.convertToRenderedPosition(cueCenter);
+        var expandcollapseCenter =
+          elementUtilities.convertToRenderedPosition(cueCenter);
 
         // convert to rendered sizes
         rectSize = Math.max(rectSize, rectSize * cy.zoom());
@@ -137,12 +149,22 @@ module.exports = function (params, cy, api) {
 
         // Draw expand/collapse cue if specified use an image else render it in the default way
         if (isCollapsed && options().expandCueImage) {
-          drawImg(options().expandCueImage, expandcollapseStartX, expandcollapseStartY, rectSize, rectSize);
-        }
-        else if (!isCollapsed && options().collapseCueImage) {
-          drawImg(options().collapseCueImage, expandcollapseStartX, expandcollapseStartY, rectSize, rectSize);
-        }
-        else {
+          drawImg(
+            options().expandCueImage,
+            expandcollapseStartX,
+            expandcollapseStartY,
+            rectSize,
+            rectSize
+          );
+        } else if (!isCollapsed && options().collapseCueImage) {
+          drawImg(
+            options().collapseCueImage,
+            expandcollapseStartX,
+            expandcollapseStartY,
+            rectSize,
+            rectSize
+          );
+        } else {
           var oldFillStyle = ctx.fillStyle;
           var oldWidth = ctx.lineWidth;
           var oldStrokeStyle = ctx.strokeStyle;
@@ -150,7 +172,15 @@ module.exports = function (params, cy, api) {
           ctx.fillStyle = "black";
           ctx.strokeStyle = "black";
 
-          ctx.ellipse(expandcollapseCenterX, expandcollapseCenterY, rectSize / 2, rectSize / 2, 0, 0, 2 * Math.PI);
+          ctx.ellipse(
+            expandcollapseCenterX,
+            expandcollapseCenterY,
+            rectSize / 2,
+            rectSize / 2,
+            0,
+            0,
+            2 * Math.PI
+          );
           ctx.fill();
 
           ctx.beginPath();
@@ -158,12 +188,24 @@ module.exports = function (params, cy, api) {
           ctx.strokeStyle = "white";
           ctx.lineWidth = Math.max(2.6, 2.6 * cy.zoom());
 
-          ctx.moveTo(expandcollapseStartX + diff, expandcollapseStartY + rectSize / 2);
-          ctx.lineTo(expandcollapseStartX + lineSize + diff, expandcollapseStartY + rectSize / 2);
+          ctx.moveTo(
+            expandcollapseStartX + diff,
+            expandcollapseStartY + rectSize / 2
+          );
+          ctx.lineTo(
+            expandcollapseStartX + lineSize + diff,
+            expandcollapseStartY + rectSize / 2
+          );
 
           if (isCollapsed) {
-            ctx.moveTo(expandcollapseStartX + rectSize / 2, expandcollapseStartY + diff);
-            ctx.lineTo(expandcollapseStartX + rectSize / 2, expandcollapseStartY + lineSize + diff);
+            ctx.moveTo(
+              expandcollapseStartX + rectSize / 2,
+              expandcollapseStartY + diff
+            );
+            ctx.lineTo(
+              expandcollapseStartX + rectSize / 2,
+              expandcollapseStartY + lineSize + diff
+            );
           }
 
           ctx.closePath();
@@ -176,7 +218,8 @@ module.exports = function (params, cy, api) {
 
         node._private.data.expandcollapseRenderedStartX = expandcollapseStartX;
         node._private.data.expandcollapseRenderedStartY = expandcollapseStartY;
-        node._private.data.expandcollapseRenderedCueSize = expandcollapseRectSize;
+        node._private.data.expandcollapseRenderedCueSize =
+          expandcollapseRectSize;
 
         nodeWithRenderedCue = node;
       }
@@ -189,107 +232,155 @@ module.exports = function (params, cy, api) {
         };
       }
 
-      cy.on('resize', data.eCyResize = function () {
-        sizeCanvas();
-      });
+      cy.on(
+        "resize",
+        (data.eCyResize = function () {
+          sizeCanvas();
+        })
+      );
 
-      cy.on('expandcollapse.clearvisualcue', function () {
+      cy.on("expandcollapse.clearvisualcue", function () {
         if (nodeWithRenderedCue) {
           clearDraws();
         }
       });
 
-      var oldMousePos = null, currMousePos = null;
-      cy.on('mousedown', data.eMouseDown = function (e) {
-        oldMousePos = e.renderedPosition || e.cyRenderedPosition
-      });
+      var oldMousePos = null,
+        currMousePos = null;
+      cy.on(
+        "mousedown",
+        (data.eMouseDown = function (e) {
+          oldMousePos = e.renderedPosition || e.cyRenderedPosition;
+        })
+      );
 
-      cy.on('mouseup', data.eMouseUp = function (e) {
-        currMousePos = e.renderedPosition || e.cyRenderedPosition
-      });
+      cy.on(
+        "mouseup",
+        (data.eMouseUp = function (e) {
+          currMousePos = e.renderedPosition || e.cyRenderedPosition;
+        })
+      );
 
-      cy.on('remove', 'node', data.eRemove = function (evt) {
-        const node = evt.target;
-        if (node == nodeWithRenderedCue) {
-          clearDraws();
-        }
-      });
+      cy.on(
+        "remove",
+        "node",
+        (data.eRemove = function (evt) {
+          const node = evt.target;
+          if (node == nodeWithRenderedCue) {
+            clearDraws();
+          }
+        })
+      );
 
       var ur;
-      cy.on('select unselect', data.eSelect = function () {
-        if (nodeWithRenderedCue) {
-          clearDraws();
-        }
-        var selectedNodes = cy.nodes(':selected');
-        if (selectedNodes.length !== 1) {
-          return;
-        }
-        var selectedNode = selectedNodes[0];
-
-        if (selectedNode.isParent() || selectedNode.hasClass('cy-expand-collapse-collapsed-node')) {
-          drawExpandCollapseCue(selectedNode);
-        }
-      });
-
-      cy.on('tap', data.eTap = function (event) {
-        var node = nodeWithRenderedCue;
-        if (!node) {
-          return;
-        }
-        var expandcollapseRenderedStartX = node.data('expandcollapseRenderedStartX');
-        var expandcollapseRenderedStartY = node.data('expandcollapseRenderedStartY');
-        var expandcollapseRenderedRectSize = node.data('expandcollapseRenderedCueSize');
-        var expandcollapseRenderedEndX = expandcollapseRenderedStartX + expandcollapseRenderedRectSize;
-        var expandcollapseRenderedEndY = expandcollapseRenderedStartY + expandcollapseRenderedRectSize;
-
-        var cyRenderedPos = event.renderedPosition || event.cyRenderedPosition;
-        var cyRenderedPosX = cyRenderedPos.x;
-        var cyRenderedPosY = cyRenderedPos.y;
-        var opts = options();
-        var factor = (opts.expandCollapseCueSensitivity - 1) / 2;
-
-        if ((Math.abs(oldMousePos.x - currMousePos.x) < 5 && Math.abs(oldMousePos.y - currMousePos.y) < 5)
-          && cyRenderedPosX >= expandcollapseRenderedStartX - expandcollapseRenderedRectSize * factor
-          && cyRenderedPosX <= expandcollapseRenderedEndX + expandcollapseRenderedRectSize * factor
-          && cyRenderedPosY >= expandcollapseRenderedStartY - expandcollapseRenderedRectSize * factor
-          && cyRenderedPosY <= expandcollapseRenderedEndY + expandcollapseRenderedRectSize * factor) {
-          if (opts.undoable && !ur) {
-            ur = cy.undoRedo({ defaultActions: false });
-          }
-
-          if (api.isCollapsible(node)) {
+      cy.on(
+        "select unselect",
+        (data.eSelect = function () {
+          if (nodeWithRenderedCue) {
             clearDraws();
-            if (opts.undoable) {
-              ur.do("collapse", {
-                nodes: node,
-                options: opts
-              });
+          }
+          var selectedNodes = cy.nodes(":selected");
+          if (selectedNodes.length !== 1) {
+            return;
+          }
+          var selectedNode = selectedNodes[0];
+
+          if (
+            selectedNode.isParent() ||
+            selectedNode.hasClass("cy-expand-collapse-collapsed-node")
+          ) {
+            drawExpandCollapseCue(selectedNode);
+          }
+        })
+      );
+
+      cy.on(
+        "tap",
+        (data.eTap = function (event) {
+          var node = nodeWithRenderedCue;
+          if (!node) {
+            return;
+          }
+          var expandcollapseRenderedStartX = node.data(
+            "expandcollapseRenderedStartX"
+          );
+          var expandcollapseRenderedStartY = node.data(
+            "expandcollapseRenderedStartY"
+          );
+          var expandcollapseRenderedRectSize = node.data(
+            "expandcollapseRenderedCueSize"
+          );
+          var expandcollapseRenderedEndX =
+            expandcollapseRenderedStartX + expandcollapseRenderedRectSize;
+          var expandcollapseRenderedEndY =
+            expandcollapseRenderedStartY + expandcollapseRenderedRectSize;
+
+          var cyRenderedPos =
+            event.renderedPosition || event.cyRenderedPosition;
+          var cyRenderedPosX = cyRenderedPos.x;
+          var cyRenderedPosY = cyRenderedPos.y;
+          var opts = options();
+          var factor = (opts.expandCollapseCueSensitivity - 1) / 2;
+
+          if (
+            Math.abs(oldMousePos.x - currMousePos.x) < 5 &&
+            Math.abs(oldMousePos.y - currMousePos.y) < 5 &&
+            cyRenderedPosX >=
+              expandcollapseRenderedStartX -
+                expandcollapseRenderedRectSize * factor &&
+            cyRenderedPosX <=
+              expandcollapseRenderedEndX +
+                expandcollapseRenderedRectSize * factor &&
+            cyRenderedPosY >=
+              expandcollapseRenderedStartY -
+                expandcollapseRenderedRectSize * factor &&
+            cyRenderedPosY <=
+              expandcollapseRenderedEndY +
+                expandcollapseRenderedRectSize * factor
+          ) {
+            if (opts.undoable && !ur) {
+              ur = cy.undoRedo({ defaultActions: false });
             }
-            else {
-              api.collapse(node, opts);
+
+            if (api.isCollapsible(node)) {
+              clearDraws();
+              if (opts.undoable) {
+                ur.do("collapse", {
+                  nodes: node,
+                  options: opts,
+                });
+              } else {
+                api.collapse(node, opts);
+              }
+            } else if (api.isExpandable(node)) {
+              clearDraws();
+              if (opts.undoable) {
+                ur.do("expand", { nodes: node, options: opts });
+              } else {
+                api.expand(node, opts);
+              }
+            }
+            if (node.selectable()) {
+              node.unselectify();
+              cy.scratch("_cyExpandCollapse").selectableChanged = true;
             }
           }
-          else if (api.isExpandable(node)) {
-            clearDraws();
-            if (opts.undoable) {
-              ur.do("expand", { nodes: node, options: opts });
-            }
-            else {
-              api.expand(node, opts);
-            }
-          }
-          if (node.selectable()) {
-            node.unselectify();
-            cy.scratch('_cyExpandCollapse').selectableChanged = true;
-          }
-        }
-      });
+        })
+      );
 
-      cy.on('afterUndo afterRedo', data.eUndoRedo = data.eSelect);
+      cy.on("afterUndo afterRedo", (data.eUndoRedo = data.eSelect));
 
-      cy.on('position', 'node', data.ePosition = debounce2(data.eSelect, CUE_POS_UPDATE_DELAY, clearDraws));
+      cy.on(
+        "position",
+        "node",
+        (data.ePosition = debounce2(
+          data.eSelect,
+          CUE_POS_UPDATE_DELAY,
+          clearDraws
+        ))
+      );
 
-      cy.on('pan zoom', data.ePosition);
+      cy.on("pan zoom", data.ePosition);
 
       // write options to data
       data.hasEventFields = true;
@@ -300,51 +391,55 @@ module.exports = function (params, cy, api) {
       var data = getData();
 
       if (!data.hasEventFields) {
-        console.log('events to unbind does not exist');
+        console.log("events to unbind does not exist");
         return;
       }
 
-      cy.trigger('expandcollapse.clearvisualcue');
+      cy.trigger("expandcollapse.clearvisualcue");
 
-      cy.off('mousedown', 'node', data.eMouseDown)
-        .off('mouseup', 'node', data.eMouseUp)
-        .off('remove', 'node', data.eRemove)
-        .off('tap', 'node', data.eTap)
-        .off('add', 'node', data.eAdd)
-        .off('position', 'node', data.ePosition)
-        .off('pan zoom', data.ePosition)
-        .off('select unselect', data.eSelect)
-        .off('free', 'node', data.eFree)
-        .off('resize', data.eCyResize)
-        .off('afterUndo afterRedo', data.eUndoRedo);
+      cy.off("mousedown", "node", data.eMouseDown)
+        .off("mouseup", "node", data.eMouseUp)
+        .off("remove", "node", data.eRemove)
+        .off("tap", "node", data.eTap)
+        .off("add", "node", data.eAdd)
+        .off("position", "node", data.ePosition)
+        .off("pan zoom", data.ePosition)
+        .off("select unselect", data.eSelect)
+        .off("free", "node", data.eFree)
+        .off("resize", data.eCyResize)
+        .off("afterUndo afterRedo", data.eUndoRedo);
     },
     rebind: function () {
       var data = getData();
 
       if (!data.hasEventFields) {
-        console.log('events to rebind does not exist');
+        console.log("events to rebind does not exist");
         return;
       }
 
-      cy.on('mousedown', 'node', data.eMouseDown)
-        .on('mouseup', 'node', data.eMouseUp)
-        .on('remove', 'node', data.eRemove)
-        .on('tap', 'node', data.eTap)
-        .on('add', 'node', data.eAdd)
-        .on('position', 'node', data.ePosition)
-        .on('pan zoom', data.ePosition)
-        .on('select unselect', data.eSelect)
-        .on('free', 'node', data.eFree)
-        .on('resize', data.eCyResize)
-        .on('afterUndo afterRedo', data.eUndoRedo);
-    }
+      cy.on("mousedown", "node", data.eMouseDown)
+        .on("mouseup", "node", data.eMouseUp)
+        .on("remove", "node", data.eRemove)
+        .on("tap", "node", data.eTap)
+        .on("add", "node", data.eAdd)
+        .on("position", "node", data.ePosition)
+        .on("pan zoom", data.ePosition)
+        .on("select unselect", data.eSelect)
+        .on("free", "node", data.eFree)
+        .on("resize", data.eCyResize)
+        .on("afterUndo afterRedo", data.eUndoRedo);
+    },
   };
 
   if (functions[fn]) {
-    return functions[fn].apply(cy.container(), Array.prototype.slice.call(arguments, 1));
-  } else if (typeof fn == 'object' || !fn) {
+    return functions[fn].apply(
+      cy.container(),
+      Array.prototype.slice.call(arguments, 1)
+    );
+  } else if (typeof fn == "object" || !fn) {
     return functions.init.apply(cy.container(), arguments);
   }
-  throw new Error('No such function `' + fn + '` for cytoscape.js-expand-collapse');
-
+  throw new Error(
+    "No such function `" + fn + "` for cytoscape.js-expand-collapse"
+  );
 };

@@ -1,15 +1,15 @@
 function saveLoadUtilities(cy, api) {
   /** converts array of JSON to a cytoscape.js collection (bottom-up recursive)
    * keeps information about parents, all nodes added to cytoscape, and nodes to be collapsed
-  * @param  {} jsonArr an array of objects (a JSON array)
-  * @param  {} allNodes a cytoscape.js collection
-  * @param  {} nodes2collapse a cytoscape.js collection
-  * @param  {} node2parent a JS object (simply key-value pairs)
-  */
+   * @param  {} jsonArr an array of objects (a JSON array)
+   * @param  {} allNodes a cytoscape.js collection
+   * @param  {} nodes2collapse a cytoscape.js collection
+   * @param  {} node2parent a JS object (simply key-value pairs)
+   */
   function json2cyCollection(jsonArr, allNodes, nodes2collapse, node2parent) {
     // process edges last since they depend on nodes
     jsonArr.sort((a) => {
-      if (a.group === 'edges') {
+      if (a.group === "edges") {
         return 1;
       }
       return -1;
@@ -33,22 +33,37 @@ function saveLoadUtilities(cy, api) {
         // all nodes should be in the memory (in cy or not)
         let src = allNodes.$id(d.originalEnds.source.data.id);
         if (d.originalEnds.source.data.parent) {
-          node2parent[d.originalEnds.source.data.id] = d.originalEnds.source.data.parent;
+          node2parent[d.originalEnds.source.data.id] =
+            d.originalEnds.source.data.parent;
         }
         let tgt = allNodes.$id(d.originalEnds.target.data.id);
         if (d.originalEnds.target.data.parent) {
-          node2parent[d.originalEnds.target.data.id] = d.originalEnds.target.data.parent;
+          node2parent[d.originalEnds.target.data.id] =
+            d.originalEnds.target.data.parent;
         }
-        e.data('originalEnds', { source: src, target: tgt });
+        e.data("originalEnds", { source: src, target: tgt });
       }
       if (d.collapsedChildren) {
         nodes2collapse.merge(e);
-        json2cyCollection(d.collapsedChildren, allNodes, nodes2collapse, node2parent);
+        json2cyCollection(
+          d.collapsedChildren,
+          allNodes,
+          nodes2collapse,
+          node2parent
+        );
         clearCollapseMetaData(e);
       } else if (d.collapsedEdges) {
-        e.data('collapsedEdges', json2cyCollection(d.collapsedEdges, allNodes, nodes2collapse, node2parent));
+        e.data(
+          "collapsedEdges",
+          json2cyCollection(
+            d.collapsedEdges,
+            allNodes,
+            nodes2collapse,
+            node2parent
+          )
+        );
         // delete collapsed edges from cy
-        cy.remove(e.data('collapsedEdges'));
+        cy.remove(e.data("collapsedEdges"));
       }
       e.position(pos); // adding new elements to a compound might change its position
       coll.merge(e);
@@ -60,13 +75,13 @@ function saveLoadUtilities(cy, api) {
    * @param  {} e a cytoscape element
    */
   function clearCollapseMetaData(e) {
-    e.data('collapsedChildren', null);
-    e.removeClass('cy-expand-collapse-collapsed-node');
-    e.data('position-before-collapse', null);
-    e.data('size-before-collapse', null);
-    e.data('expandcollapseRenderedStartX', null);
-    e.data('expandcollapseRenderedStartY', null);
-    e.data('expandcollapseRenderedCueSize', null);
+    e.data("collapsedChildren", null);
+    e.removeClass("cy-expand-collapse-collapsed-node");
+    e.data("position-before-collapse", null);
+    e.data("size-before-collapse", null);
+    e.data("expandcollapseRenderedStartX", null);
+    e.data("expandcollapseRenderedStartY", null);
+    e.data("expandcollapseRenderedCueSize", null);
   }
 
   /** converts cytoscape collection to JSON array.(bottom-up recursive)
@@ -79,13 +94,16 @@ function saveLoadUtilities(cy, api) {
       let jsonObj = null;
       if (!elem.collapsedChildren && !elem.collapsedEdges) {
         jsonObj = elem.cy.json();
-      }
-      else if (elem.collapsedChildren) {
-        elem.collapsedChildren = cyCollection2Json(halfDeepCopyCollection(elem.collapsedChildren));
+      } else if (elem.collapsedChildren) {
+        elem.collapsedChildren = cyCollection2Json(
+          halfDeepCopyCollection(elem.collapsedChildren)
+        );
         jsonObj = elem.cy.json();
         jsonObj.data.collapsedChildren = elem.collapsedChildren;
       } else if (elem.collapsedEdges) {
-        elem.collapsedEdges = cyCollection2Json(halfDeepCopyCollection(elem.collapsedEdges));
+        elem.collapsedEdges = cyCollection2Json(
+          halfDeepCopyCollection(elem.collapsedEdges)
+        );
         jsonObj = elem.cy.json();
         jsonObj.data.collapsedEdges = elem.collapsedEdges;
       }
@@ -93,10 +111,14 @@ function saveLoadUtilities(cy, api) {
         const src = elem.originalEnds.source.json();
         const tgt = elem.originalEnds.target.json();
         if (src.data.collapsedChildren) {
-          src.data.collapsedChildren = cyCollection2Json(halfDeepCopyCollection(src.data.collapsedChildren));
+          src.data.collapsedChildren = cyCollection2Json(
+            halfDeepCopyCollection(src.data.collapsedChildren)
+          );
         }
         if (tgt.data.collapsedChildren) {
-          tgt.data.collapsedChildren = cyCollection2Json(halfDeepCopyCollection(tgt.data.collapsedChildren));
+          tgt.data.collapsedChildren = cyCollection2Json(
+            halfDeepCopyCollection(tgt.data.collapsedChildren)
+          );
         }
         jsonObj.data.originalEnds = { source: src, target: tgt };
       }
@@ -112,7 +134,12 @@ function saveLoadUtilities(cy, api) {
   function halfDeepCopyCollection(col) {
     let arr = [];
     for (let i = 0; i < col.length; i++) {
-      arr.push({ cy: col[i], collapsedEdges: col[i].data('collapsedEdges'), collapsedChildren: col[i].data('collapsedChildren'), originalEnds: col[i].data('originalEnds') });
+      arr.push({
+        cy: col[i],
+        collapsedEdges: col[i].data("collapsedEdges"),
+        collapsedChildren: col[i].data("collapsedChildren"),
+        originalEnds: col[i].data("originalEnds"),
+      });
     }
     return arr;
   }
@@ -122,34 +149,36 @@ function saveLoadUtilities(cy, api) {
    * @param  {} fileName string
    */
   function str2file(str, fileName) {
-    const blob = new Blob([str], { type: 'text/plain' });
-    const anchor = document.createElement('a');
+    const blob = new Blob([str], { type: "text/plain" });
+    const anchor = document.createElement("a");
 
     anchor.download = fileName;
-    anchor.href = (window.URL).createObjectURL(blob);
-    anchor.dataset.downloadurl =
-      ['text/plain', anchor.download, anchor.href].join(':');
+    anchor.href = window.URL.createObjectURL(blob);
+    anchor.dataset.downloadurl = [
+      "text/plain",
+      anchor.download,
+      anchor.href,
+    ].join(":");
     anchor.click();
   }
 
   function overrideJson2Elem(elem, json) {
-    const collapsedChildren = elem.data('collapsedChildren');
-    const collapsedEdges = elem.data('collapsedEdges');
-    const originalEnds = elem.data('originalEnds');
+    const collapsedChildren = elem.data("collapsedChildren");
+    const collapsedEdges = elem.data("collapsedEdges");
+    const originalEnds = elem.data("originalEnds");
     elem.json(json);
     if (collapsedChildren) {
-      elem.data('collapsedChildren', collapsedChildren);
+      elem.data("collapsedChildren", collapsedChildren);
     }
     if (collapsedEdges) {
-      elem.data('collapsedEdges', collapsedEdges);
+      elem.data("collapsedEdges", collapsedEdges);
     }
     if (originalEnds) {
-      elem.data('originalEnds', originalEnds);
+      elem.data("originalEnds", originalEnds);
     }
   }
 
   return {
-
     /** Load elements from JSON formatted string representation.
      * For collapsed compounds, first add all collapsed nodes as normal nodes then collapse them. Then reposition them.
      * For collapsed edges, first add all of the edges then remove collapsed edges from cytoscape.
@@ -160,8 +189,8 @@ function saveLoadUtilities(cy, api) {
       const fileJSON = JSON.parse(txt);
       // original endpoints won't exist in cy. So keep a reference.
       const nodePositions = {};
-      const allNodes = cy.collection(); // some elements are stored in cy, some are deleted 
-      const nodes2collapse = cy.collection(); // some are deleted 
+      const allNodes = cy.collection(); // some elements are stored in cy, some are deleted
+      const nodes2collapse = cy.collection(); // some are deleted
       const node2parent = {};
       for (const n of fileJSON.nodes) {
         nodePositions[n.data.id] = { x: n.position.x, y: n.position.y };
@@ -170,22 +199,38 @@ function saveLoadUtilities(cy, api) {
         }
         const node = cy.add(n);
         allNodes.merge(node);
-        if (node.data('collapsedChildren')) {
-          json2cyCollection(node.data('collapsedChildren'), allNodes, nodes2collapse, node2parent);
+        if (node.data("collapsedChildren")) {
+          json2cyCollection(
+            node.data("collapsedChildren"),
+            allNodes,
+            nodes2collapse,
+            node2parent
+          );
           nodes2collapse.merge(node);
           clearCollapseMetaData(node);
         }
       }
       for (const e of fileJSON.edges) {
         const edge = cy.add(e);
-        if (edge.data('collapsedEdges')) {
-          edge.data('collapsedEdges', json2cyCollection(e.data.collapsedEdges, allNodes, nodes2collapse, node2parent));
-          cy.remove(edge.data('collapsedEdges')); // delete collapsed edges from cy
+        if (edge.data("collapsedEdges")) {
+          edge.data(
+            "collapsedEdges",
+            json2cyCollection(
+              e.data.collapsedEdges,
+              allNodes,
+              nodes2collapse,
+              node2parent
+            )
+          );
+          cy.remove(edge.data("collapsedEdges")); // delete collapsed edges from cy
         }
-        if (edge.data('originalEnds')) {
+        if (edge.data("originalEnds")) {
           const srcId = e.data.originalEnds.source.data.id;
           const tgtId = e.data.originalEnds.target.data.id;
-          e.data.originalEnds = { source: allNodes.filter('#' + srcId), target: allNodes.filter('#' + tgtId) };
+          e.data.originalEnds = {
+            source: allNodes.filter("#" + srcId),
+            target: allNodes.filter("#" + tgtId),
+          };
         }
       }
       // set parents
@@ -196,11 +241,15 @@ function saveLoadUtilities(cy, api) {
         }
       }
       // collapse the collapsed nodes
-      api.collapse(nodes2collapse, { layoutBy: null, fisheye: false, animate: false });
+      api.collapse(nodes2collapse, {
+        layoutBy: null,
+        fisheye: false,
+        animate: false,
+      });
 
       // positions might be changed in collapse extension
       for (const n of fileJSON.nodes) {
-        const node = cy.$id(n.data.id)
+        const node = cy.$id(n.data.id);
         if (node.isChildless()) {
           cy.$id(n.data.id).position(nodePositions[n.data.id]);
         }
@@ -208,9 +257,8 @@ function saveLoadUtilities(cy, api) {
       cy.fit();
     },
 
-
     /** saves cytoscape elements (collection) as JSON
-     * calls elements' json method (https://js.cytoscape.org/#ele.json) when we keep a cytoscape element in the data. 
+     * calls elements' json method (https://js.cytoscape.org/#ele.json) when we keep a cytoscape element in the data.
      * @param  {} elems cytoscape collection
      * @param  {} filename string
      */
@@ -228,17 +276,23 @@ function saveLoadUtilities(cy, api) {
       const o = { nodes: [], edges: [] };
       for (const e of edges) {
         if (e.collapsedEdges) {
-          e.collapsedEdges = cyCollection2Json(halfDeepCopyCollection(e.collapsedEdges));
+          e.collapsedEdges = cyCollection2Json(
+            halfDeepCopyCollection(e.collapsedEdges)
+          );
         }
         if (e.originalEnds) {
           const src = e.originalEnds.source.json();
           const tgt = e.originalEnds.target.json();
           if (src.data.collapsedChildren) {
             // e.originalEnds.source.data.collapsedChildren will be changed
-            src.data.collapsedChildren = cyCollection2Json(halfDeepCopyCollection(src.data.collapsedChildren));
+            src.data.collapsedChildren = cyCollection2Json(
+              halfDeepCopyCollection(src.data.collapsedChildren)
+            );
           }
           if (tgt.data.collapsedChildren) {
-            tgt.data.collapsedChildren = cyCollection2Json(halfDeepCopyCollection(tgt.data.collapsedChildren));
+            tgt.data.collapsedChildren = cyCollection2Json(
+              halfDeepCopyCollection(tgt.data.collapsedChildren)
+            );
           }
           e.originalEnds = { source: src, target: tgt };
         }
@@ -249,7 +303,9 @@ function saveLoadUtilities(cy, api) {
       }
       for (const n of nodes) {
         if (n.collapsedChildren) {
-          n.collapsedChildren = cyCollection2Json(halfDeepCopyCollection(n.collapsedChildren));
+          n.collapsedChildren = cyCollection2Json(
+            halfDeepCopyCollection(n.collapsedChildren)
+          );
         }
         const jsonObj = n.cy.json();
         jsonObj.data.collapsedChildren = n.collapsedChildren;
@@ -261,7 +317,7 @@ function saveLoadUtilities(cy, api) {
         str2file(stringifiedJSON, filename);
       }
       return stringifiedJSON;
-    }
+    },
   };
 }
 
